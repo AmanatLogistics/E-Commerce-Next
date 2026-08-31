@@ -108,8 +108,14 @@ export default async function GemPage({ params }: Props) {
         <span aria-current="page" className="text-ink">{gem.reference}</span>
       </nav>
 
-      <div className="mt-6 grid gap-10 lg:grid-cols-2 lg:gap-14">
-        <GemGallery images={gem.images} title={gem.title} />
+      <div className="mt-6 grid items-start gap-10 lg:grid-cols-2 lg:gap-14">
+        {/*
+          * Sticky on desktop: the specification and the enquiry form run long, and a buyer
+          * reading "vivid red, eye clean, 7.80 × 6.05 mm" wants the stone still in view.
+          */}
+        <div className="lg:sticky lg:top-28">
+          <GemGallery images={gem.images} title={gem.title} />
+        </div>
 
         <div className="flex flex-col gap-6">
           <div>
