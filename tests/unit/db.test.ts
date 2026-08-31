@@ -86,7 +86,7 @@ describe("memory driver: filtering", () => {
   it("throws on an unsupported operator instead of silently matching nothing", async () => {
     const c = makeCollection();
     await c.insertOne(widget());
-    await assert.rejects(() => c.find({ price: { $mod: [2, 0] } }), /Unsupported query operator/);
+    await assert.rejects(() => c.find({ price: { $mod: [2, 0] } } as never), /Unsupported query operator/);
   });
 
   it("compares ObjectId and Date by value", async () => {

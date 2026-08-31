@@ -1,26 +1,227 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * Design tokens — the single source of truth for colour, type, spacing, radius and
+ * elevation. Implements docs/DESIGN.md ("Blueprint & Brass"). Components never hardcode a
+ * hex value or a font family; if a token is missing, it is added here first.
+ */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  color-scheme: light;
+
+  /* Colour — light */
+  --surface: #ffffff;
+  --surface-sunken: #ebeff1;
+  --surface-raised: #ffffff;
+  --ink: #0b1a24;
+  --ink-muted: #4a5b66;
+  --line: #d3dce1;
+  --primary: #0e5a74;
+  --primary-hover: #0a4457;
+  --primary-ink: #ffffff;
+  --primary-wash: #e3eef2;
+  --accent: #e8a200;
+  --accent-ink: #2a1f00;
+  --accent-wash: #fdf1d8;
+  --success: #1b7a4b;
+  --success-wash: #e2f2ea;
+  --danger: #b3261e;
+  --danger-wash: #fbe9e7;
+  --focus: #0e5a74;
+
+  /* Type */
+  --font-heading: var(--font-archivo), "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-body: var(--font-plex), "IBM Plex Sans", "Segoe UI", Roboto, Arial, sans-serif;
+
+  --text-display: clamp(1.75rem, 1.2rem + 2.2vw, 2.75rem);
+  --text-h1: clamp(1.5rem, 1.15rem + 1.4vw, 2.125rem);
+  --text-h2: clamp(1.25rem, 1.05rem + 0.8vw, 1.5rem);
+  --text-h3: 1.125rem;
+  --text-body: 0.9375rem;
+  --text-sm: 0.8125rem;
+  --text-xs: 0.6875rem;
+
+  --leading-display: 1.08;
+  --leading-h1: 1.15;
+  --leading-h2: 1.2;
+  --leading-h3: 1.3;
+  --leading-body: 1.55;
+  --leading-sm: 1.45;
+  --leading-xs: 1.4;
+
+  /* Spacing — 4px base */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+
+  /* Radius — encodes what a thing is, rather than one value everywhere */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+  --radius-full: 999px;
+
+  /* Elevation — shadow only for things that genuinely float */
+  --elevation-1: 0 2px 8px -2px rgb(11 26 36 / 0.14);
+  --elevation-2: 0 12px 32px -8px rgb(11 26 36 / 0.24);
+
+  --header-height: 3.5rem;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    color-scheme: dark;
+
+    --surface: #0b1418;
+    --surface-sunken: #111e24;
+    --surface-raised: #14232a;
+    --ink: #e6edf0;
+    --ink-muted: #9cb0ba;
+    --line: #24343c;
+    --primary: #3fa0c4;
+    --primary-hover: #5fb6d6;
+    --primary-ink: #04161d;
+    --primary-wash: #14313c;
+    --accent: #f5b93a;
+    --accent-ink: #241900;
+    --accent-wash: #35290f;
+    --success: #3fb37c;
+    --success-wash: #16302479;
+    --danger: #e4675e;
+    --danger-wash: #3a1c19;
+    --focus: #5fb6d6;
+
+    --elevation-1: 0 2px 8px -2px rgb(0 0 0 / 0.5);
+    --elevation-2: 0 12px 32px -8px rgb(0 0 0 / 0.65);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Expose the tokens to Tailwind as utilities: bg-surface, text-ink, border-line, ... */
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-raised: var(--surface-raised);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-line: var(--line);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-ink: var(--primary-ink);
+  --color-primary-wash: var(--primary-wash);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-wash: var(--accent-wash);
+  --color-success: var(--success);
+  --color-success-wash: var(--success-wash);
+  --color-danger: var(--danger);
+  --color-danger-wash: var(--danger-wash);
+
+  --font-heading: var(--font-heading);
+  --font-body: var(--font-body);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+
+  --shadow-e1: var(--elevation-1);
+  --shadow-e2: var(--elevation-2);
+}
+
+@layer base {
+  * {
+    border-color: var(--line);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--surface);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    /* Prices, quantities and totals must align on the decimal. */
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    letter-spacing: -0.011em;
+  }
+
+  /* One visible focus treatment for the whole app. Never removed, only restyled. */
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  ::selection {
+    background: var(--primary-wash);
+    color: var(--ink);
+  }
+
+  /* Honour a reader's motion preference everywhere, including third-party primitives. */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  .text-display { font-size: var(--text-display); line-height: var(--leading-display); font-weight: 700; }
+  .text-h1 { font-size: var(--text-h1); line-height: var(--leading-h1); font-weight: 700; }
+  .text-h2 { font-size: var(--text-h2); line-height: var(--leading-h2); font-weight: 600; }
+  .text-h3 { font-size: var(--text-h3); line-height: var(--leading-h3); font-weight: 600; }
+  .text-body { font-size: var(--text-body); line-height: var(--leading-body); }
+  .text-sm { font-size: var(--text-sm); line-height: var(--leading-sm); }
+  .text-xs { font-size: var(--text-xs); line-height: var(--leading-xs); font-weight: 500; }
+
+  /* Skip link: present for keyboard users, out of the way for everyone else. */
+  .skip-link {
+    position: absolute;
+    left: var(--space-2);
+    top: calc(var(--space-2) * -1);
+    transform: translateY(-150%);
+    z-index: 100;
+    background: var(--primary);
+    color: var(--primary-ink);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    transition: transform 120ms ease;
+  }
+  .skip-link:focus {
+    transform: translateY(calc(var(--space-2) + 150%));
+  }
+
+  /* The product grid density from docs/DESIGN.md. */
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+  @media (min-width: 600px) {
+    .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+  }
+  @media (min-width: 900px) {
+    .product-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1280px) {
+    .product-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-4); }
+  }
+
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
 }
