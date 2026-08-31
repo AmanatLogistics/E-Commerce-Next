@@ -7,20 +7,13 @@ import { loginSchema } from "../validation/schemas";
 import { verifyPassword } from "./password";
 import { limits, rateLimit } from "./rate-limit";
 import { clearSessionCookie, setSessionCookie } from "./session";
+import { fieldErrorsFrom, type FormState } from "../forms/state";
 
 /**
  * There is no sign-up action, and no customer accounts. Buyers enquire; they never
  * register. The only account is the admin, created by `npm run seed`, so there is no code
  * path anywhere in the application that can create or promote an account.
  */
-
-export interface FormState {
-  ok: boolean;
-  message: string;
-  fieldErrors?: Record<string, string>;
-}
-
-export const initialFormState: FormState = { ok: false, message: "" };
 
 async function clientIp(): Promise<string> {
   const h = await headers();
@@ -39,12 +32,7 @@ export async function loginAction(_prev: FormState, formData: FormData): Promise
     password: formData.get("password"),
   });
   if (!parsed.success) {
-    const fieldErrors: Record<string, string> = {};
-    for (const issue of parsed.error.issues) {
-      const key = String(issue.path[0] ?? "form");
-      fieldErrors[key] ??= issue.message;
-    }
-    return { ok: false, message: "", fieldErrors };
+    return { ok: false, message: "", fieldErrors: fieldErrorsFrom(parsed.error.issues) };
   }
 
   const { email, password } = parsed.data;

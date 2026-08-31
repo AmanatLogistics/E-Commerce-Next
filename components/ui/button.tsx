@@ -2,18 +2,15 @@ import { Slot } from "@radix-ui/react-slot";
 import type { ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/cn";
 
-type Variant = "primary" | "secondary" | "ghost" | "danger" | "accent";
+type Variant = "primary" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
 const VARIANTS: Record<Variant, string> = {
-  primary:
-    "bg-primary text-primary-ink hover:bg-primary-hover active:bg-primary-hover disabled:bg-ink-muted",
-  secondary:
-    "bg-surface text-ink border border-line hover:bg-surface-sunken active:bg-surface-sunken",
-  ghost: "bg-transparent text-primary hover:bg-primary-wash",
+  // Gold is the only non-neutral in the interface, and it marks the primary action.
+  primary: "bg-accent text-accent-ink hover:bg-accent-hover disabled:bg-ink-muted",
+  secondary: "bg-surface text-ink border border-line hover:bg-surface-sunken",
+  ghost: "bg-transparent text-ink hover:bg-surface-sunken",
   danger: "bg-danger text-white hover:brightness-110",
-  // Brass is reserved for commerce: buy actions and price-led calls only.
-  accent: "bg-accent text-accent-ink hover:brightness-105 font-semibold",
 };
 
 const SIZES: Record<Size, string> = {

@@ -70,7 +70,8 @@ async function sendViaSmtp(message: MailMessage): Promise<MailOutcome> {
 
 function sendViaOutbox(message: MailMessage): MailOutcome {
   try {
-    const dir = resolve(process.cwd(), env.mailOutbox);
+    // turbopackIgnore: see lib/db/memory/store.ts — configuration path, not a module.
+    const dir = resolve(/* turbopackIgnore: true */ process.cwd(), env.mailOutbox);
     mkdirSync(dir, { recursive: true });
 
     const stamp = new Date().toISOString().replace(/[:.]/g, "-");

@@ -3,41 +3,31 @@
 import { randomBytes } from "node:crypto";
 import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
-import { enquiries, gems } from "../db/collections";
+import { enquiries } from "../db/collections";
 import { limits, rateLimit } from "../auth/rate-limit";
 import { buildEnquiryEmail, sendMail } from "../email/mailer";
 import { siteConfig } from "../site-config";
-import { enquirySchema } from "../validation/schemas";
+import { contactSchema } from "../validation/schemas";
 import { fieldErrorsFrom, type EnquiryFormState } from "../forms/state";
 
-/** KG-7Q2M4X — short enough to read down a phone, random enough not to collide. */
+/**
+ * The general enquiry form, for buyers who want something we do not currently list.
+ * It lands in the same inbox as a stone enquiry, with no stone attached, so the dealer has
+ * one place to look rather than two.
+ */
 function makeReference(): string {
-  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no I/O/0/1
+  const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   const bytes = randomBytes(6);
   let out = "";
   for (const byte of bytes) out += alphabet[byte % alphabet.length];
   return `${siteConfig.enquiryPrefix}-${out}`;
 }
 
-async function clientIp(): Promise<string> {
-  const h = await headers();
-  return h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? h.get("x-real-ip") ?? "unknown";
-}
-
-/**
- * The public enquiry submission — the only write an anonymous visitor can make.
- *
- * Order of operations matters: the enquiry is persisted BEFORE the email is attempted, and
- * a mail failure is recorded on the record rather than surfaced as a failure to the buyer.
- * A dealer who loses a lead because an SMTP server was briefly down has lost real money;
- * the admin inbox is the source of truth and the email is a notification on top of it.
- */
-export async function submitEnquiryAction(
+export async function submitContactAction(
   _prev: EnquiryFormState,
   formData: FormData,
 ): Promise<EnquiryFormState> {
-  const parsed = enquirySchema.safeParse({
-    gemSlug: formData.get("gemSlug"),
+  const parsed = contactSchema.safeParse({
     name: formData.get("name"),
     email: formData.get("email"),
     phone: formData.get("phone") ?? "",
@@ -47,16 +37,15 @@ export async function submitEnquiryAction(
 
   if (!parsed.success) {
     const fieldErrors = fieldErrorsFrom(parsed.error.issues);
-    // The honeypot has no visible field, so its message would be meaningless to a person.
     if (fieldErrors.website) {
       return { ok: true, message: "Thank you — your enquiry has been received." };
     }
     return { ok: false, message: "Please check the details below.", fieldErrors };
   }
 
-  const { gemSlug, name, email, phone, message } = parsed.data;
-
-  const gate = rateLimit(`enquiry:${await clientIp()}`, limits.enquiry.limit, limits.enquiry.windowMs);
+  const h = await headers();
+  const ip = h.get("x-forwarded-for")?.split(",")[0]?.trim() ?? h.get("x-real-ip") ?? "unknown";
+  const gate = rateLimit(`enquiry:${ip}`, limits.enquiry.limit, limits.enquiry.windowMs);
   if (!gate.ok) {
     return {
       ok: false,
@@ -64,21 +53,16 @@ export async function submitEnquiryAction(
     };
   }
 
-  // Every stored detail about the stone is read here, never taken from the form.
-  const gem = await gems().findOne({ slug: gemSlug, published: true, deletedAt: null });
-  if (!gem) {
-    return { ok: false, message: "That stone is no longer listed. Please choose another." };
-  }
-
+  const { name, email, phone, message } = parsed.data;
   const now = new Date();
   const reference = makeReference();
 
   const inserted = await enquiries().insertOne({
     reference,
-    gemId: gem._id,
-    gemSlug: gem.slug,
-    gemTitle: gem.title,
-    gemReference: gem.reference,
+    gemId: null,
+    gemSlug: "",
+    gemTitle: "General enquiry",
+    gemReference: "—",
     name,
     email,
     phone,
@@ -98,9 +82,9 @@ export async function submitEnquiryAction(
       email,
       phone,
       message,
-      gemTitle: gem.title,
-      gemReference: gem.reference,
-      gemUrl: `${siteConfig.url}/gem/${gem.slug}`,
+      gemTitle: "General enquiry",
+      gemReference: "—",
+      gemUrl: `${siteConfig.url}/contact`,
     }),
   );
 
@@ -116,10 +100,5 @@ export async function submitEnquiryAction(
   );
 
   revalidatePath("/admin/enquiries");
-
-  return {
-    ok: true,
-    reference,
-    message: "Thank you — your enquiry has been received.",
-  };
+  return { ok: true, reference, message: "Thank you — your enquiry has been received." };
 }

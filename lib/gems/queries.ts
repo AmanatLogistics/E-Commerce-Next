@@ -68,6 +68,9 @@ function browseFilter(params: BrowseParams, categorySlug?: string): Filter<GemDo
   return filter;
 }
 
+/** Stock references look like KG-EM-0101: letters, hyphens and digits, no spaces. */
+const REFERENCE_PATTERN = /^[a-z]{1,4}-[a-z]{1,4}-\d{2,8}$/i;
+
 function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -91,6 +94,30 @@ export async function browseGems(
   const skip = (params.page - 1) * PAGE_SIZE;
 
   if (params.q) {
+    /*
+     * A stock reference is looked up exactly, not tokenised. "KG-EM-0101" splits into
+     * "kg", "em" and "0101", and "kg" alone matches every reference in the catalogue —
+     * so a dealer typing a stock number would get the whole shop back. Anyone entering
+     * something of this shape wants that one stone.
+     */
+    if (REFERENCE_PATTERN.test(params.q)) {
+      const exact = await gems().find({
+        ...filter,
+        reference: { $regex: `^${escapeRegex(params.q)}$`, $options: "i" },
+      });
+      /*
+       * Returned whether or not it matched. Falling through to the tokenised search on a
+       * miss would answer "KG-ZZ-9999" with the entire catalogue, for the same reason as
+       * above; an unknown stock number should show the empty state.
+       */
+      return {
+        items: exact.map(toCardView),
+        total: exact.length,
+        page: 1,
+        totalPages: 1,
+      };
+    }
+
     // Text search cannot also count, so ranking happens first and the page is taken after.
     const matches = await gems().textSearch(params.q, filter, {
       weights: { ...GEM_TEXT_WEIGHTS },

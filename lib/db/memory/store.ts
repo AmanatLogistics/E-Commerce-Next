@@ -53,7 +53,9 @@ export class MemoryStore {
   private readonly file: string;
 
   constructor(file: string) {
-    this.file = resolve(process.cwd(), file);
+    // turbopackIgnore: the path is configuration, not a module reference, so it must not
+    // drag the whole project into the server bundle's file trace.
+    this.file = resolve(/* turbopackIgnore: true */ process.cwd(), file);
   }
 
   /**
