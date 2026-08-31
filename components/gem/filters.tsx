@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { buildBrowseHref, hasActiveFilters, type BrowseParams } from "@/lib/browse-params";
-import type { CategoryDoc } from "@/lib/db/documents";
+import type { CategoryOption } from "@/lib/view-models";
 import { cn } from "@/lib/cn";
 
 /**
@@ -21,7 +21,7 @@ export function GemFilters({
 }: {
   basePath: string;
   params: BrowseParams;
-  categories: CategoryDoc[];
+  categories: CategoryOption[];
   origins: string[];
   lockedCategory: boolean;
   activeCount: number;

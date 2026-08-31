@@ -45,7 +45,7 @@ export function Pagination({
               aria-current={p === page ? "page" : undefined}
               className={cn(
                 linkClass,
-                p === page && "border-primary bg-primary text-primary-ink hover:bg-primary-hover",
+                p === page && "border-accent bg-accent text-accent-ink hover:bg-accent-hover",
               )}
             >
               {p}

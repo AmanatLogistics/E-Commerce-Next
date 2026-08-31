@@ -51,7 +51,7 @@ function FieldShell({ label, error, hint, required, children }: FieldShellProps)
 const CONTROL =
   "h-10 w-full rounded-[var(--radius-md)] border bg-surface px-3 text-body text-ink " +
   "placeholder:text-ink-muted transition-colors " +
-  "hover:border-ink-muted focus:border-primary disabled:bg-surface-sunken disabled:cursor-not-allowed";
+  "hover:border-ink-muted focus:border-accent disabled:bg-surface-sunken disabled:cursor-not-allowed";
 
 export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "id"> {
   label: string;
@@ -162,7 +162,7 @@ export function Checkbox({
         id={id}
         type="checkbox"
         className={cn(
-          "mt-0.5 size-4 shrink-0 rounded-[var(--radius-sm)] border accent-[var(--primary)]",
+          "mt-0.5 size-4 shrink-0 rounded-[var(--radius-sm)] border accent-[var(--accent)]",
           className,
         )}
         {...props}

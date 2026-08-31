@@ -4,6 +4,7 @@ import { GemGrid } from "./gem-card";
 import { Pagination } from "@/components/ui/pagination";
 import { GemFilters } from "./filters";
 import { SortSelect } from "./sort-select";
+import { toCategoryOption } from "@/lib/view-models";
 import type { CategoryDoc } from "@/lib/db/documents";
 import type { BrowseResult } from "@/lib/gems/queries";
 import {
@@ -84,7 +85,7 @@ export function BrowseView({
           <GemFilters
             basePath={basePath}
             params={params}
-            categories={categories}
+            categories={categories.map(toCategoryOption)}
             origins={origins}
             lockedCategory={lockedCategory}
             activeCount={activeFilterCount(params)}
