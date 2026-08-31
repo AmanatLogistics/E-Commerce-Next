@@ -1,39 +1,48 @@
-# Project: Chowk
+# Project: Karakoram Gems
 
-Marketplace-style e-commerce store (consumer electronics + home goods, PKR / en-PK).
-Customer storefront + private admin panel. Store name lives in `lib/site-config.ts` only.
+A loose-gemstone dealer's site: public catalogue + private admin panel. PKR / en-PK.
+Business name lives in `lib/site-config.ts` only.
+
+**Buyers enquire; they do not check out.** There is no cart, no checkout, no payment, no
+order and no customer account. A stone is one of a kind and is often priced on request, so
+the sale starts as a conversation. Do not add e-commerce machinery back without being asked.
 
 ## Commands
 - `npm run dev` — dev server
 - `npm run build` — production build (MUST pass before any commit)
 - `npm run typecheck` — tsc --noEmit
 - `npm run lint`
-- `npm run seed` — reset + seed the database with the demo catalogue and the admin user
-- `npm run test:unit` — node:test unit tests (money, query matcher, pricing, transitions)
-- `npm run test:e2e` — Playwright golden-path tests
+- `npm run seed` — reset + seed the catalogue and the admin user
+- `npm run test:unit` — node:test unit tests
+- `npm run test:e2e` — Playwright (set `CHROMIUM_PATH` if a browser is pre-installed)
 
 ## Non-negotiables
-- IMPORTANT: Never invent an API, package name, env var, or config key. If you are not
-  certain a symbol exists, read the types in `node_modules/` or run `npm view`. Say
-  "I need to verify X" rather than guessing.
+- IMPORTANT: Never invent an API, package name, env var, or config key. If unsure a symbol
+  exists, read the types in `node_modules/` or run `npm view`. Say "I need to verify X".
 - YOU MUST run `npm run typecheck && npm run build` before saying a task is done.
 - YOU MUST NOT mark work complete based on code that was written but never executed.
-- Every admin route, server action, and API handler calls `requireAdmin()` from
-  `lib/auth/guards.ts`, which re-reads the session AND re-loads the user from the database.
-  Middleware is a first line of defence, never the only one. A hidden UI element is not
-  security.
-- Prices are integers in paisa (1 PKR = 100 paisa). Never floats. Never a price on the wire
-  from the client.
-- Server recalculates every order total from the database via `lib/orders/pricing.ts`.
-  The checkout payload schema has no price field at all.
-- Use the simplest approach that satisfies the requirement. No speculative abstraction.
+- Every admin page and EVERY admin server action calls its own guard from
+  `lib/auth/guards.ts` as its first statement. `proxy.ts` and the admin layout are a first
+  line of defence, never the only one — a Server Action re-runs neither. A hidden UI element
+  is not security.
+- There is no code path that creates or promotes an account. The only admin comes from
+  `npm run seed`. `role` is not a field in any schema.
+- Prices are integers in paisa (1 PKR = 100 paisa). Never floats. `priceMinor: null` means
+  "price on request" and must render as that, never as a blank or a zero.
+- `treatment` is required on every stone, including when it is "None (untreated)".
+  Disclosure is a trade obligation, not a nicety.
+- An enquiry is written to the database BEFORE the notification email is attempted, and a
+  send failure is recorded on the record rather than shown to the buyer. Losing a lead to an
+  SMTP outage is worse than a missing email.
+- Never pass a database document into a Client Component. ObjectId does not survive React
+  serialisation. Map through `lib/view-models.ts`.
 
 ## Data layer
-Application code talks to `GemCollection` (`lib/db/types.ts`), a narrow subset of
-the official MongoDB driver's Collection API. Two implementations: the real driver when
+Application code talks to `GemCollection` (`lib/db/types.ts`), a narrow subset of the
+official MongoDB driver's Collection API. Two implementations: the real driver when
 `MONGODB_URI` is set, and `lib/db/memory/` otherwise. Adding a data feature means using the
 existing subset — extend the interface only if genuinely needed, and implement BOTH sides.
-See `docs/SPEC.md` §9 for why this exists.
+See `docs/SPEC.md` §7 for why this exists.
 
 ## Conventions
 - Follow the patterns already in the repo. Before adding a file, find the closest existing
@@ -42,11 +51,14 @@ See `docs/SPEC.md` §9 for why this exists.
 - Secrets live in `.env.local` only; keep `.env.example` in sync with placeholders.
 
 ## Design system
-Palette, typefaces, spacing, radii and elevation are defined in `docs/DESIGN.md` and
-implemented as tokens in `app/globals.css` (Tailwind v4 `@theme`, there is no
-`tailwind.config.ts`). Never hardcode a hex value or font family in a component. If a token
-is missing, add it to `globals.css` first. `--accent` (brass) is reserved for price and
-discount only.
+Palette, typefaces, spacing, radii and elevation are in `docs/DESIGN.md` and implemented as
+tokens in `app/globals.css` (Tailwind v4 `@theme`, there is no `tailwind.config.ts`). Never
+hardcode a hex value or font family in a component; if a token is missing, add it first.
+
+The governing rule: **the interface is achromatic so the stones are the only saturated
+colour on screen.** Gold (`--accent`) marks the primary action and nothing else. `--tray` is
+the dark plate every stone photograph sits on, in both themes. `/styleguide` renders every
+token with measured contrast ratios.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

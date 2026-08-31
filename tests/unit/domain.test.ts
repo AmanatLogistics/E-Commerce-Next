@@ -95,8 +95,9 @@ describe("enquiry validation", () => {
   });
 
   it("the contact form is the same schema without a stone", () => {
-    const { gemSlug: _gemSlug, ...rest } = valid;
-    assert.ok(contactSchema.safeParse(rest).success);
+    const withoutStone = { ...valid, gemSlug: undefined };
+    delete withoutStone.gemSlug;
+    assert.ok(contactSchema.safeParse(withoutStone).success);
   });
 });
 

@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { BrowseView } from "@/components/gem/browse-view";
 import { EmptyState } from "@/components/ui/empty";
 import { Button } from "@/components/ui/button";
 import { browseGems, getActiveCategories, getOrigins } from "@/lib/gems/queries";
-import { parseBrowseParams, type RawSearchParams } from "@/lib/browse-params";
+import { GemGridSkeleton } from "@/components/gem/grid-skeleton";
+import { parseBrowseParams, type BrowseParams, type RawSearchParams } from "@/lib/browse-params";
 
 export const metadata: Metadata = {
   title: "All stones",
@@ -16,8 +18,33 @@ export default async function CollectionPage({
 }: {
   searchParams: Promise<RawSearchParams>;
 }) {
-  const params = parseBrowseParams(await searchParams);
+  const raw = await searchParams;
+  const params = parseBrowseParams(raw);
 
+  /*
+   * The Suspense boundary lives here rather than in a route-level loading.tsx: a loading
+   * file streams the whole route, and a streamed response has already sent 200 by the time
+   * a sibling route calls notFound(). Keyed on the query so changing a filter shows the
+   * skeleton again instead of holding the previous results.
+   */
+  return (
+    <Suspense
+      key={JSON.stringify(raw)}
+      fallback={
+        <div className="mx-auto max-w-6xl px-4 py-10">
+          <div className="h-9 w-56 animate-pulse rounded-[var(--radius-md)] bg-surface-sunken" />
+          <div className="mt-8">
+            <GemGridSkeleton />
+          </div>
+        </div>
+      }
+    >
+      <CollectionResults params={params} />
+    </Suspense>
+  );
+}
+
+async function CollectionResults({ params }: { params: BrowseParams }) {
   const [result, categories, origins] = await Promise.all([
     browseGems(params),
     getActiveCategories(),

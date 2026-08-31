@@ -1,154 +1,143 @@
-# Design direction — Chowk
+# Design direction — Karakoram Gems
 
-**Direction name: "Blueprint & Brass".**
+**Direction name: "Tray and Loupe".**
 
-The catalogue has two halves that usually fight each other: engineered goods (phones,
-audio, appliances) and domestic goods (kitchen, textiles, lighting). The system gives each
-half a colour job. **Petrol blue** is the technical, structural, load-bearing colour — it
-carries navigation, actions, and every piece of chrome. **Brass-yellow** is the warm,
-human, commercial colour — it carries price, discount, and urgency, and it appears nowhere
-else. Two colours, two jobs, no decoration. The result reads like a well-printed parts
-catalogue rather than a lifestyle boutique, which is the honest register for a marketplace
-selling a rice cooker next to a mid-range phone.
+One rule governs the whole system: **the interface is achromatic, so the stones are the
+only saturated colour on any page.** Greys, warm ivory and a single restrained gold are all
+the UI gets. A gem shop that puts a brand colour next to a vivid red spinel is competing
+with its own product; a jeweller puts the stone on a plain dark tray for exactly this
+reason, and the image plate here is that tray, in both light and dark themes.
+
+Everything else follows from it. Cards are quiet. Badges are washes, not blocks. Gold
+appears on the primary action and nowhere it would sit beside a photograph.
 
 ## Palette
 
-Six named roles. Every value is a token in `app/globals.css`; components never hardcode a hex.
-
-### Light
+### Light — "gallery"
 
 | Token | Hex | Role |
 |---|---|---|
 | `--surface` | `#FFFFFF` | Page and card ground |
-| `--surface-sunken` | `#EBEFF1` | Recessed panels, image plates, table zebra |
-| `--ink` | `#0B1A24` | Primary text. Blue-cast near-black, never pure `#000` |
-| `--ink-muted` | `#4A5B66` | Secondary text, meta, spec labels |
-| `--line` | `#D3DCE1` | Hairline borders — the only separation device we use |
-| `--primary` | `#0E5A74` | Petrol blue. Actions, links, focus, active nav |
-| `--primary-hover` | `#0A4457` | Action hover/active |
-| `--accent` | `#E8A200` | Brass. Price urgency, discount chips, deals strip **only** |
-| `--success` | `#1B7A4B` | In stock, order delivered |
-| `--danger` | `#B3261E` | Errors, destructive, out of stock |
+| `--surface-sunken` | `#F1F3F4` | Recessed panels, table zebra. A cool grey, deliberately not a warm cream |
+| `--tray` | `#1A1E21` | The plate every stone photograph sits on — dark in **both** themes |
+| `--ink` | `#16191C` | Primary text |
+| `--ink-muted` | `#5A6169` | Secondary text, spec labels |
+| `--line` | `#DDE1E4` | Hairline borders — the main separation device |
+| `--accent` | `#8A6D12` | Antique gold. Primary action, active state, links on hover |
+| `--success` | `#1F7A4C` | Available |
+| `--danger` | `#B3261E` | Errors, destructive, failed delivery |
 
-### Dark
+### Dark — the design's home ground
 
 | Token | Hex |
 |---|---|
-| `--surface` | `#0B1418` |
-| `--surface-sunken` | `#111E24` |
-| `--ink` | `#E6EDF0` |
-| `--ink-muted` | `#9CB0BA` |
-| `--line` | `#24343C` |
-| `--primary` | `#3FA0C4` |
-| `--primary-hover` | `#5FB6D6` |
-| `--accent` | `#F5B93A` |
-| `--success` | `#3FB37C` |
-| `--danger` | `#E4675E` |
+| `--surface` | `#14171A` |
+| `--surface-sunken` | `#0F1214` |
+| `--tray` | `#0D1012` |
+| `--ink` | `#ECE7DF` (warm ivory on a cool ground — the candlelit-case effect) |
+| `--ink-muted` | `#9AA0A6` |
+| `--line` | `#2C3238` |
+| `--accent` | `#C9A227` |
+| `--success` | `#4E9A6A` |
+| `--danger` | `#D96A5E` |
 
-Contrast: white on `--primary` `#0E5A74` ≈ 6.0:1 and `--ink` on `--surface` ≈ 17:1, both
-past WCAG AA. `--accent` is never used as text on white — it is a chip **background** with
-`--ink` on top (≈ 9:1). Verified with the ratio calculation in `/styleguide`, which prints
-the measured number next to each pair rather than asserting compliance.
+Contrast: white on `--accent` `#8A6D12` ≈ 5.2:1 and `--ink` on `--surface` ≈ 16:1, both past
+WCAG AA. Gold is never used as small text on white — it is a button ground or a hover state.
 
 ## Typography
 
-Two faces, deliberately unalike in skeleton, not just in weight.
+- **Cormorant Garamond** — stone names, headings, the display line. A high-contrast old-style
+  serif: fine hairlines against heavy stems, which is the same visual event as light through
+  a faceted stone. Used 500/600.
+- **IBM Plex Sans** — body, spec tables, forms, the entire admin panel. It is here for one
+  functional reason: **true tabular figures**. This catalogue is columns of carat weights and
+  millimetre dimensions, and `2.14` must sit under `12.60` on the decimal. Used 400/500/600.
 
-- **Archivo** — headings, product titles, buttons, numerals in the price block.
-  A grotesque with a tall x-height and a wide weight axis that stays legible when a product
-  title is squeezed into two lines in a 5-up grid. Used 500/600/700.
-- **IBM Plex Sans** — body, specs, forms, tables. Drawn for technical documentation, and
-  the reason it is here: it has **true tabular figures**, so price columns, quantities, and
-  order totals align on the decimal without manual spacing. Used 400/500/600.
-
-Both are loaded through `next/font/google` with `display: swap` and a real fallback stack.
-Prices, quantities, and any numeric table column set `font-variant-numeric: tabular-nums`.
+The two are unalike in skeleton, not just in weight, so a heading never reads as bolded body
+text. The admin panel uses Plex for its chrome as well — it is a working tool, and the serif
+belongs to the shop window.
 
 ### Scale
 
 Fluid via `clamp()` between 360px and 1440px.
 
-| Token | Size | Line-height | Weight | Use |
-|---|---|---|---|---|
-| `--text-display` | clamp(1.75rem, 1.2rem + 2.2vw, 2.75rem) | 1.08 | 700 | Page hero |
-| `--text-h1` | clamp(1.5rem, 1.15rem + 1.4vw, 2.125rem) | 1.15 | 700 | Page title |
-| `--text-h2` | clamp(1.25rem, 1.05rem + 0.8vw, 1.5rem) | 1.2 | 600 | Section |
-| `--text-h3` | 1.125rem | 1.3 | 600 | Card/blocks |
-| `--text-body` | 0.9375rem | 1.55 | 400 | Default |
-| `--text-sm` | 0.8125rem | 1.45 | 400 | Meta, specs |
-| `--text-xs` | 0.6875rem | 1.4 | 500 | Chips, badges |
+| Token | Size | Line-height | Use |
+|---|---|---|---|
+| `--text-display` | clamp(2rem, 1.3rem + 3vw, 3.5rem) | 1.05 | Home statement |
+| `--text-h1` | clamp(1.625rem, 1.2rem + 1.8vw, 2.5rem) | 1.12 | Page and stone titles |
+| `--text-h2` | clamp(1.3rem, 1.1rem + 0.9vw, 1.75rem) | 1.2 | Section |
+| `--text-h3` | 1.1875rem | 1.3 | Card and block titles |
+| `--text-body` | 0.9375rem | 1.6 | Default |
+| `--text-sm` | 0.8125rem | 1.5 | Meta |
+| `--text-xs` | 0.6875rem | 1.4 | Chips, spec labels |
+
+**One tracked-out small-caps style exists**, `.label-caps`, and it is confined to spec-table
+row labels and section eyebrows in the admin, where it does real work separating label from
+value in a dense two-column list. It is not used decoratively above headings.
 
 ## Spacing, radius, elevation, grid
 
-**Spacing** — 4px base: `--space-1` 4, `-2` 8, `-3` 12, `-4` 16, `-5` 24, `-6` 32, `-7` 48,
-`-8` 64. Nothing off-scale.
+**Spacing** — 4px base: `--space-1` 4 … `--space-8` 64. Nothing off-scale.
 
-**Radius** — deliberately small and *differentiated*, so radius encodes what a thing is:
-`--radius-sm` 3px (chips, badges), `--radius-md` 6px (buttons, inputs, cards),
-`--radius-lg` 10px (modals, sheets), `--radius-full` 999px (avatars only).
+**Radius** — small and differentiated, so radius encodes what a thing is. A stone card is a
+plate, not a pill. `--radius-sm` 2px (chips), `--radius-md` 4px (buttons, inputs, cards),
+`--radius-lg` 8px (modals), `--radius-full` (avatars only).
 
-**Elevation** — shadow is reserved for things that genuinely float. Everything else
-separates with `--line`.
-- Level 0 — cards, panels, the product grid: **no shadow**, 1px `--line` border.
-- Level 1 — dropdowns, popovers: `0 2px 8px -2px rgb(11 26 36 / 0.14)`.
-- Level 2 — modals, mobile filter sheet: `0 12px 32px -8px rgb(11 26 36 / 0.24)`.
+**Elevation** — shadow is reserved for things that genuinely float; everything else separates
+with `--line`.
+- Level 0 — cards, panels, the gem grid: no shadow, 1px border.
+- Level 1 — dropdowns, popovers.
+- Level 2 — modals.
 
-**Product grid** — density is the point.
+**Gem grid** — deliberately *less* dense than a marketplace. Each stone is a unique object and
+the photograph is the product, so cards get room to breathe.
 
 | Breakpoint | Columns | Gutter |
 |---|---|---|
-| 360–599px | 2 | 8px |
-| 600–899px | 3 | 12px |
-| 900–1279px | 4 | 12px |
-| 1280px+ | 5 | 16px |
+| 360–479px | 1 | 16px |
+| 480–899px | 2 | 16px |
+| 900–1279px | 3 | 24px |
+| 1280px+ | 4 | 24px |
 
-Two columns at 360px, not one: a marketplace shopper scans and compares, and a single
-full-width card per row makes a 40-product category feel like an endless scroll.
+## Self-critique — what a generic brief would have produced
 
-## Self-critique — what a generic brief would have produced, and what changed
+**Palette.** My first pass was the obvious luxury move: near-black, warm ivory, gold accent
+used generously — on headings, rules, hovers and borders. That is what any "premium" brief
+produces, and here it actively fights the product, because gold sits inside the same warm
+hue range as citrine, topaz and amber. Changed to a hard rule: the UI is achromatic and gold
+is confined to the primary action. The stones then have the colour space to themselves,
+which is the one thing this shop actually needs.
 
-Required by the brief. Each item is a thing I actually had before revising.
+**Type.** Cormorant Garamond is a common luxury pick and I am not pretending otherwise. It
+stayed because the justification is functional rather than atmospheric — high stroke
+contrast beside faceted material — and because the pairing does the real work: every
+*factual* thing on the site is set in Plex for its tabular figures. The serif never touches
+a number in a table.
 
-**Palette.** My first pass was a deep teal primary with an amber accent. That is what I
-would produce for *any* store brief — teal is the safe "not-blue blue" and it carries no
-information about what is being sold. Changed to petrol blue + brass with an explicit rule
-that each colour owns one job (structure vs. commerce), and accent is **banned outside
-price and discount**. That rule is what makes the palette specific: on a product page, the
-only warm thing on screen is the price, which is what the page is for.
+**Layout.** My first pass reused the dense marketplace grid from an earlier iteration of
+this project: five columns, tight gutters, small cards. That is right for forty phones and
+wrong for twenty-three unique stones — it makes a curated inventory look like clearance
+stock, and it shrinks the photograph, which is the product. Changed to a four-up maximum
+and one column at 360px.
 
-**Type.** My first pass was Space Grotesk for headings. In 2026 that is the default
-"technical-looking" font — it is what a generic brief produces when it wants to signal
-engineering. Changed to Archivo, chosen on a functional argument rather than a vibe: it
-holds a two-line product title at 14px in a 5-up grid without turning to mush. IBM Plex Sans
-stayed, but the justification was rewritten from "technical feel" to the actual reason —
-tabular figures for price alignment, which is a real requirement of a price-dense catalogue.
-
-**Layout.** My first pass was a 3-up product grid with generous cards. That is a boutique
-layout and it lies about the catalogue: it says "we have twelve carefully chosen things"
-when we have forty and want to sell breadth. Changed to 5-up at desktop, 2-up at 360px,
-tight gutters, no card shadows. Also cut a full-bleed hero banner — it pushed product below
-the fold on a page whose job is to show product.
-
-**Radius/elevation.** First pass gave everything the same 8px radius and the same soft
-shadow. That is the "identical rounded cards" tell. Changed so radius encodes object type
-and shadow is reserved for genuinely floating layers; flat things separate with a hairline.
+**Home page.** I had a hero banner with a large photograph. Cut: a stone photographed at
+banner size is a texture, not a stone, and it pushed actual inventory below the fold. The
+page now opens with a short plain statement and goes straight to selected stones.
 
 ## Hard constraints — how each is honoured
 
-- **No warm-cream + high-contrast serif + terracotta.** Ground is white/cool grey
-  (`#EBEFF1`), both faces are sans, and there is no terracotta in the system.
-- **No accent near `#D97757`.** The only warm colour is `#E8A200`, a saturated brass-yellow.
-  It differs from `#D97757` in hue (≈42° vs ≈16°) and in saturation; it is not a muted
-  salmon. Checked deliberately, not assumed.
-- **No Daraz orange.** `#F85606` is a red-orange; nothing in this palette is in that region.
-- **No purple/violet gradient hero.** There is no gradient anywhere in the system, and no
-  hero banner at all on the home page.
-- **No Inter-everywhere.** Neither face is Inter.
-- **No black + one acid accent.** Ground is white; the darkest ink is a blue-cast `#0B1A24`.
-- **No untouched shadcn.** No component library is installed. Radix *unstyled* primitives
-  provide behaviour only (dialog, dropdown, accordion, label); every visual property comes
-  from our tokens.
-- **No tracked-out ALL-CAPS eyebrows** above headings — there are none in the system.
+- **No warm-cream + high-contrast serif + terracotta.** There is a serif, but the ground is
+  cool white `#F1F3F4` or near-black, and there is no terracotta anywhere.
+- **No accent near `#D97757`.** The only warm colour is `#8A6D12` / `#C9A227`, a dark gold
+  at roughly 45° hue against that colour's ≈16°, and far less saturated. Checked, not assumed.
+- **No purple/violet gradient.** There are no gradients in the system at all.
+- **No Inter everywhere.** Neither face is Inter.
+- **No black with one acid accent.** The dark ground is `#14171A`, and antique gold is the
+  opposite of an acid accent.
+- **No untouched component library.** Radix supplies unstyled behaviour only (dropdown,
+  dialog); every visual property is ours.
+- **No tracked-out ALL-CAPS eyebrows above headings** — the one small-caps style is scoped
+  to data labels, as described above.
 - **No "→" glued to button text.** Button labels are plain verbs.
-- **No middle-dot meta strings.** Meta is laid out with real spacing, or a table.
-- **No identical cards with the same `rgba(0,0,0,.1)` shadow.** See elevation above.
+- **No meta strings joined with middle dots.** Meta is a real table or real spacing.
+- **No identical rounded cards with the same soft shadow.** See radius and elevation above.

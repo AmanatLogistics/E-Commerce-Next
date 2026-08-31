@@ -20,7 +20,6 @@ import type {
  * connection limit. This is the cached-connection helper the spec calls for.
  */
 declare global {
-  // eslint-disable-next-line no-var
   var __kgMongo: { client: MongoClient; promise: Promise<MongoClient> } | undefined;
 }
 
@@ -147,7 +146,12 @@ export class MongoBackedCollection<T extends BaseDoc> implements GemCollection<T
     if (options.skip) cursor = cursor.skip(options.skip);
     if (options.limit !== undefined) cursor = cursor.limit(options.limit);
     const docs = (await cursor.toArray()) as (T & { __score?: number })[];
-    return docs.map(({ __score: _score, ...rest }) => rest as unknown as T);
+    // The projected relevance score is an implementation detail of this method.
+    return docs.map((doc) => {
+      const copy = { ...doc };
+      delete copy.__score;
+      return copy as unknown as T;
+    });
   }
 
   async createIndexes(specs: IndexSpec[]): Promise<void> {

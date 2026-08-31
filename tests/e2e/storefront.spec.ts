@@ -83,6 +83,25 @@ test("a sold stone cannot be enquired on", async ({ page }) => {
   await expect(page.getByText("Enquire about this stone")).toHaveCount(0);
 });
 
+test("unknown stones and varieties return a real 404, not a soft one", async ({ page }) => {
+  /*
+   * Regression guard. A route-level loading.tsx makes a route stream, and a streamed
+   * response has already sent 200 by the time the page calls notFound(). Adding one turned
+   * every missing stone into a 200 with 404 content — invisible in a browser, wrong for
+   * search engines and for uptime monitoring. The skeleton now lives in a Suspense boundary
+   * inside the page instead.
+   */
+  const missingStone = await page.goto("/gem/no-such-stone-exists");
+  expect(missingStone?.status()).toBe(404);
+  await expect(page.getByRole("heading", { name: /could not find that page/i })).toBeVisible();
+
+  const missingVariety = await page.goto("/collection/no-such-variety");
+  expect(missingVariety?.status()).toBe(404);
+
+  const realStone = await page.goto("/gem/swat-emerald-oval-1-05ct");
+  expect(realStone?.status()).toBe(200);
+});
+
 test("the storefront is usable at 360px", async ({ page }) => {
   await page.setViewportSize({ width: 360, height: 780 });
   await page.goto("/collection");
