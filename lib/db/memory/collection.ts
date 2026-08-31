@@ -1,7 +1,7 @@
 import { ObjectId } from "mongodb";
 import type {
   BaseDoc,
-  ChowkCollection,
+  GemCollection,
   DeleteResult,
   Filter,
   FindOptions,
@@ -31,7 +31,7 @@ function clone<T>(value: T): T {
   return out as T;
 }
 
-export class MemoryCollection<T extends BaseDoc> implements ChowkCollection<T> {
+export class MemoryCollection<T extends BaseDoc> implements GemCollection<T> {
   private uniqueKeys: string[][] = [];
 
   constructor(

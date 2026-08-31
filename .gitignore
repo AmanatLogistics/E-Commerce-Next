@@ -41,6 +41,6 @@ yarn-error.log*
 next-env.d.ts
 
 # in-memory driver data (see docs/SPEC.md §9)
-/.chowk-data
+/.kg-data
 /test-results
 /playwright-report

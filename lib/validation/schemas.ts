@@ -1,10 +1,9 @@
 /**
- * Every input boundary in the app parses through one of these. Shared between client and
- * server so a field's rules cannot drift between where they are shown and where they are
- * enforced.
+ * Every input boundary parses through one of these. Shared between client and server so a
+ * field's rules cannot drift between where they are shown and where they are enforced.
  *
- * Note what is deliberately absent: no schema accepts a price, a role, or an order total
- * from the client. A tampered value has no field to arrive in.
+ * Note what is absent: no public schema accepts a price, a role, or a status. A tampered
+ * value has no field to arrive in.
  */
 import { z } from "zod";
 
@@ -24,96 +23,86 @@ export const passwordSchema = z
     message: "Include an uppercase letter, a lowercase letter and a number",
   });
 
-export const signupSchema = z.object({
-  name: z.string().trim().min(2, "Enter your name").max(80),
-  email: emailSchema,
-  password: passwordSchema,
-});
-
 export const loginSchema = z.object({
   email: emailSchema,
   password: z.string().min(1, "Enter your password").max(200),
 });
 
-export const forgotPasswordSchema = z.object({ email: emailSchema });
-
-export const resetPasswordSchema = z.object({
-  token: z.string().min(10).max(200),
-  email: emailSchema,
-  password: passwordSchema,
-});
-
-export const profileSchema = z.object({
-  name: z.string().trim().min(2, "Enter your name").max(80),
-});
-
-/** Pakistani mobile numbers, with or without the country code. */
+/** Buyers reach us from many countries, so the phone rule is permissive but bounded. */
 const phoneSchema = z
   .string()
   .trim()
-  .min(7, "Enter a contact number")
-  .max(20)
-  .regex(/^[+0-9][0-9\s-]{6,19}$/, "Enter a valid phone number");
-
-export const addressSchema = z.object({
-  fullName: z.string().trim().min(2, "Enter the recipient's full name").max(80),
-  phone: phoneSchema,
-  line1: z.string().trim().min(4, "Enter the street address").max(120),
-  line2: z.string().trim().max(120).default(""),
-  city: z.string().trim().min(2, "Enter the city").max(60),
-  province: z.string().trim().min(2, "Select a province").max(60),
-  postalCode: z
-    .string()
-    .trim()
-    .regex(/^[0-9]{5}$/, "Postal codes are five digits"),
-  country: z.literal("PK").default("PK"),
-});
-
-export const savedAddressSchema = addressSchema.extend({
-  label: z.string().trim().min(1).max(40).default("Home"),
-  isDefault: z.boolean().default(false),
-});
-
-export const cartLineSchema = z.object({
-  productId: z.string().regex(/^[0-9a-f]{24}$/, "Unknown product"),
-  qty: z.number().int().min(1, "Quantity must be at least 1").max(20, "Maximum 20 per item"),
-});
-
-export const shippingMethodSchema = z.enum(["standard", "express"]);
-export const paymentMethodSchema = z.enum(["cod", "card"]);
+  .max(24, "That phone number is too long")
+  .regex(/^$|^[+0-9][0-9\s()-]{5,23}$/, "Enter a valid phone number, or leave it blank")
+  .default("");
 
 /**
- * The checkout payload. There is no price, subtotal, shipping cost or total here by
- * design: the server recomputes all of them from the database in lib/orders/pricing.ts.
+ * The public enquiry form — the only thing an anonymous visitor can submit.
+ * `gemSlug` identifies the stone; every other detail about it is read from the database,
+ * so a forged title, reference or price cannot enter the record or the email.
  */
-export const placeOrderSchema = z.object({
-  email: emailSchema,
-  shippingAddress: addressSchema,
-  billingSameAsShipping: z.boolean().default(true),
-  billingAddress: addressSchema.optional(),
-  shippingMethod: shippingMethodSchema,
-  paymentMethod: paymentMethodSchema,
-});
-
-export const productInputSchema = z.object({
-  title: z.string().trim().min(3, "Enter a product title").max(140),
-  slug: z
+export const enquirySchema = z.object({
+  gemSlug: z
     .string()
     .trim()
     .toLowerCase()
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase words separated by hyphens")
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Unknown stone")
     .max(140),
+  name: z.string().trim().min(2, "Enter your name").max(80),
+  email: emailSchema,
+  phone: phoneSchema,
+  message: z
+    .string()
+    .trim()
+    .min(10, "Tell us a little about what you are looking for")
+    .max(2000, "Please keep the message under 2000 characters"),
+  /** Honeypot: a real person never fills this in, because it is hidden. */
+  website: z.string().max(0, "").optional().default(""),
+});
+
+export const contactSchema = enquirySchema.omit({ gemSlug: true });
+
+export const gemStatusSchema = z.enum(["available", "reserved", "sold"]);
+export const enquiryStatusSchema = z.enum(["new", "replied", "closed"]);
+
+const slugField = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase words separated by hyphens")
+  .max(140);
+
+/** Admin-only. Prices are entered in whole rupees and converted to paisa on the server. */
+export const gemInputSchema = z.object({
+  title: z.string().trim().min(3, "Enter a title").max(140),
+  slug: slugField,
+  reference: z.string().trim().min(2, "Enter a stock reference").max(40),
   description: z.string().trim().min(20, "Write at least a sentence or two").max(4000),
-  brand: z.string().trim().min(1, "Enter a brand").max(60),
-  categoryId: z.string().regex(/^[0-9a-f]{24}$/, "Choose a category"),
-  /** Admin-facing prices are entered in whole rupees and converted to paisa on the server. */
-  priceRupees: z.number().int().min(1, "Enter a price").max(100_000_000),
-  compareAtRupees: z.number().int().min(0).max(100_000_000).nullable().default(null),
-  stock: z.number().int().min(0, "Stock cannot be negative").max(1_000_000),
+  categoryId: z.string().regex(/^[0-9a-f]{24}$/, "Choose a gem variety"),
+
+  caratWeight: z.number().min(0.01, "Enter the carat weight").max(10_000),
+  shape: z.string().trim().min(1, "Enter the shape").max(40),
+  cut: z.string().trim().min(1, "Enter the cut").max(40),
+  colour: z.string().trim().min(1, "Describe the colour").max(80),
+  clarity: z.string().trim().min(1, "Enter the clarity").max(40),
+  lengthMm: z.number().min(0.1, "Enter the length").max(1000),
+  widthMm: z.number().min(0.1, "Enter the width").max(1000),
+  depthMm: z.number().min(0.1, "Enter the depth").max(1000),
+  origin: z.string().trim().min(2, "Enter the origin").max(80),
+  /** Treatment disclosure is mandatory in this trade, so the field cannot be blank. */
+  treatment: z.string().trim().min(2, "State the treatment, or 'None (unheated)'").max(120),
+  certificate: z.string().trim().max(120).default(""),
+
+  /** Blank means "price on request", which is normal for higher-value stones. */
+  priceRupees: z.number().int().min(0).max(1_000_000_000).nullable().default(null),
+
+  status: gemStatusSchema.default("available"),
+  featured: z.boolean().default(false),
+  published: z.boolean().default(false),
   images: z
     .array(
       z.object({
-        url: z.string().url("Each image needs a valid URL"),
+        url: z.string().min(1, "Each image needs a URL").max(500),
         alt: z.string().trim().min(1, "Describe the image").max(200),
         width: z.number().int().min(1).max(10_000).default(1200),
         height: z.number().int().min(1).max(10_000).default(1200),
@@ -121,51 +110,23 @@ export const productInputSchema = z.object({
     )
     .min(1, "Add at least one image")
     .max(8),
-  specs: z
-    .array(
-      z.object({
-        label: z.string().trim().min(1).max(60),
-        value: z.string().trim().min(1).max(200),
-      }),
-    )
-    .max(30)
-    .default([]),
-  published: z.boolean().default(false),
 });
 
 export const categoryInputSchema = z.object({
-  name: z.string().trim().min(2, "Enter a category name").max(60),
-  slug: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase words separated by hyphens")
-    .max(60),
+  name: z.string().trim().min(2, "Enter a name").max(60),
+  slug: slugField,
   description: z.string().trim().max(500).default(""),
-  image: z.string().trim().max(500).default(""),
   sortOrder: z.number().int().min(0).max(999).default(0),
   active: z.boolean().default(true),
 });
 
-export const orderStatusSchema = z.enum([
-  "pending",
-  "cod_confirmed",
-  "processing",
-  "shipped",
-  "delivered",
-  "cancelled",
-  "refunded",
-]);
-
-export const updateOrderStatusSchema = z.object({
-  orderId: z.string().regex(/^[0-9a-f]{24}$/),
-  to: orderStatusSchema,
-  note: z.string().trim().max(300).default(""),
+export const updateEnquirySchema = z.object({
+  enquiryId: z.string().regex(/^[0-9a-f]{24}$/),
+  status: enquiryStatusSchema,
+  adminNote: z.string().trim().max(1000).default(""),
 });
 
-export type SignupInput = z.infer<typeof signupSchema>;
 export type LoginInput = z.infer<typeof loginSchema>;
-export type AddressInput = z.infer<typeof addressSchema>;
-export type PlaceOrderInput = z.infer<typeof placeOrderSchema>;
-export type ProductInput = z.infer<typeof productInputSchema>;
+export type EnquiryInput = z.infer<typeof enquirySchema>;
+export type GemInput = z.infer<typeof gemInputSchema>;
 export type CategoryInput = z.infer<typeof categoryInputSchema>;

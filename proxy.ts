@@ -15,19 +15,19 @@ import { jwtVerify } from "jose";
  * This is Next 16's `proxy.ts` convention, which replaced `middleware.ts`.
  */
 
-const SESSION_COOKIE = "chowk_session";
+const SESSION_COOKIE = "kg_session";
 
 const secret = new TextEncoder().encode(
   process.env.AUTH_SECRET ?? "dev-only-insecure-secret-do-not-use-in-production",
 );
 
-async function roleFromRequest(request: NextRequest): Promise<"admin" | "customer" | null> {
+async function roleFromRequest(request: NextRequest): Promise<"admin" | null> {
   const token = request.cookies.get(SESSION_COOKIE)?.value;
   if (!token) return null;
   try {
     const { payload } = await jwtVerify(token, secret, { algorithms: ["HS256"] });
     const role = (payload as { role?: unknown }).role;
-    return role === "admin" || role === "customer" ? role : null;
+    return role === "admin" ? role : null;
   } catch {
     return null;
   }
@@ -37,18 +37,7 @@ export default async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const role = await roleFromRequest(request);
 
-  if (pathname.startsWith("/admin")) {
-    if (role === null) {
-      const url = new URL("/login", request.url);
-      url.searchParams.set("next", pathname + search);
-      return NextResponse.redirect(url);
-    }
-    if (role !== "admin") {
-      return NextResponse.redirect(new URL("/403", request.url));
-    }
-  }
-
-  if (pathname.startsWith("/account") && role === null) {
+  if (pathname.startsWith("/admin") && role !== "admin") {
     const url = new URL("/login", request.url);
     url.searchParams.set("next", pathname + search);
     return NextResponse.redirect(url);
@@ -58,5 +47,5 @@ export default async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/account/:path*"],
+  matcher: ["/admin/:path*"],
 };

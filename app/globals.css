@@ -2,52 +2,58 @@
 
 /*
  * Design tokens — the single source of truth for colour, type, spacing, radius and
- * elevation. Implements docs/DESIGN.md ("Blueprint & Brass"). Components never hardcode a
- * hex value or a font family; if a token is missing, it is added here first.
+ * elevation. Implements docs/DESIGN.md ("Tray and Loupe").
+ *
+ * The governing rule: the interface is achromatic. Greys, ivory and one restrained gold
+ * are all it gets, so the only saturated colour on any page comes from the stones
+ * themselves. Components never hardcode a hex value or a font family.
  */
 
 :root {
   color-scheme: light;
 
-  /* Colour — light */
+  /* Colour — light ("gallery") */
   --surface: #ffffff;
-  --surface-sunken: #ebeff1;
+  --surface-sunken: #f1f3f4;
   --surface-raised: #ffffff;
-  --ink: #0b1a24;
-  --ink-muted: #4a5b66;
-  --line: #d3dce1;
-  --primary: #0e5a74;
-  --primary-hover: #0a4457;
-  --primary-ink: #ffffff;
-  --primary-wash: #e3eef2;
-  --accent: #e8a200;
-  --accent-ink: #2a1f00;
-  --accent-wash: #fdf1d8;
-  --success: #1b7a4b;
-  --success-wash: #e2f2ea;
+  /* The plate a stone sits on. Deliberately dark in both themes: a jeweller's tray. */
+  --tray: #1a1e21;
+  --ink: #16191c;
+  --ink-muted: #5a6169;
+  --line: #dde1e4;
+  --accent: #8a6d12;
+  --accent-hover: #6f5709;
+  --accent-ink: #ffffff;
+  --accent-wash: #f6efdb;
+  --success: #1f7a4c;
+  --success-wash: #e4f2ea;
   --danger: #b3261e;
   --danger-wash: #fbe9e7;
-  --focus: #0e5a74;
+  --focus: #8a6d12;
 
   /* Type */
-  --font-heading: var(--font-archivo), "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
   --font-body: var(--font-plex), "IBM Plex Sans", "Segoe UI", Roboto, Arial, sans-serif;
 
-  --text-display: clamp(1.75rem, 1.2rem + 2.2vw, 2.75rem);
-  --text-h1: clamp(1.5rem, 1.15rem + 1.4vw, 2.125rem);
-  --text-h2: clamp(1.25rem, 1.05rem + 0.8vw, 1.5rem);
-  --text-h3: 1.125rem;
+  --text-display: clamp(2rem, 1.3rem + 3vw, 3.5rem);
+  --text-h1: clamp(1.625rem, 1.2rem + 1.8vw, 2.5rem);
+  --text-h2: clamp(1.3rem, 1.1rem + 0.9vw, 1.75rem);
+  --text-h3: 1.1875rem;
   --text-body: 0.9375rem;
   --text-sm: 0.8125rem;
   --text-xs: 0.6875rem;
 
-  --leading-display: 1.08;
-  --leading-h1: 1.15;
+  --leading-display: 1.05;
+  --leading-h1: 1.12;
   --leading-h2: 1.2;
   --leading-h3: 1.3;
-  --leading-body: 1.55;
-  --leading-sm: 1.45;
+  --leading-body: 1.6;
+  --leading-sm: 1.5;
   --leading-xs: 1.4;
+
+  /* Letterspacing: the display serif needs tightening, small caps-ish labels need opening */
+  --tracking-display: -0.015em;
+  --tracking-label: 0.08em;
 
   /* Spacing — 4px base */
   --space-1: 0.25rem;
@@ -59,60 +65,54 @@
   --space-7: 3rem;
   --space-8: 4rem;
 
-  /* Radius — encodes what a thing is, rather than one value everywhere */
-  --radius-sm: 3px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
+  /* Radius — small and differentiated; a gem card is a plate, not a pill */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
   --radius-full: 999px;
 
-  /* Elevation — shadow only for things that genuinely float */
-  --elevation-1: 0 2px 8px -2px rgb(11 26 36 / 0.14);
-  --elevation-2: 0 12px 32px -8px rgb(11 26 36 / 0.24);
-
-  --header-height: 3.5rem;
+  /* Elevation — shadow only for layers that genuinely float */
+  --elevation-1: 0 2px 10px -3px rgb(20 23 26 / 0.16);
+  --elevation-2: 0 16px 40px -12px rgb(20 23 26 / 0.3);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     color-scheme: dark;
 
-    --surface: #0b1418;
-    --surface-sunken: #111e24;
-    --surface-raised: #14232a;
-    --ink: #e6edf0;
-    --ink-muted: #9cb0ba;
-    --line: #24343c;
-    --primary: #3fa0c4;
-    --primary-hover: #5fb6d6;
-    --primary-ink: #04161d;
-    --primary-wash: #14313c;
-    --accent: #f5b93a;
-    --accent-ink: #241900;
-    --accent-wash: #35290f;
-    --success: #3fb37c;
-    --success-wash: #16302479;
-    --danger: #e4675e;
-    --danger-wash: #3a1c19;
-    --focus: #5fb6d6;
+    --surface: #14171a;
+    --surface-sunken: #0f1214;
+    --surface-raised: #1c2024;
+    --tray: #0d1012;
+    --ink: #ece7df;
+    --ink-muted: #9aa0a6;
+    --line: #2c3238;
+    --accent: #c9a227;
+    --accent-hover: #ddb63a;
+    --accent-ink: #17130a;
+    --accent-wash: #2a2312;
+    --success: #4e9a6a;
+    --success-wash: #16291f;
+    --danger: #d96a5e;
+    --danger-wash: #331b18;
+    --focus: #ddb63a;
 
-    --elevation-1: 0 2px 8px -2px rgb(0 0 0 / 0.5);
-    --elevation-2: 0 12px 32px -8px rgb(0 0 0 / 0.65);
+    --elevation-1: 0 2px 10px -3px rgb(0 0 0 / 0.6);
+    --elevation-2: 0 16px 40px -12px rgb(0 0 0 / 0.75);
   }
 }
 
-/* Expose the tokens to Tailwind as utilities: bg-surface, text-ink, border-line, ... */
+/* Expose the tokens to Tailwind: bg-surface, text-ink, border-line, … */
 @theme inline {
   --color-surface: var(--surface);
   --color-surface-sunken: var(--surface-sunken);
   --color-surface-raised: var(--surface-raised);
+  --color-tray: var(--tray);
   --color-ink: var(--ink);
   --color-ink-muted: var(--ink-muted);
   --color-line: var(--line);
-  --color-primary: var(--primary);
-  --color-primary-hover: var(--primary-hover);
-  --color-primary-ink: var(--primary-ink);
-  --color-primary-wash: var(--primary-wash);
   --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
   --color-accent-ink: var(--accent-ink);
   --color-accent-wash: var(--accent-wash);
   --color-success: var(--success);
@@ -120,7 +120,7 @@
   --color-danger: var(--danger);
   --color-danger-wash: var(--danger-wash);
 
-  --font-heading: var(--font-heading);
+  --font-display: var(--font-display);
   --font-body: var(--font-body);
 
   --radius-sm: var(--radius-sm);
@@ -146,15 +146,15 @@
     font-family: var(--font-body);
     font-size: var(--text-body);
     line-height: var(--leading-body);
-    /* Prices, quantities and totals must align on the decimal. */
+    /* Carat weights, millimetre dimensions and prices must align in a column. */
     font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-heading);
+  h1, h2, h3 {
+    font-family: var(--font-display);
     font-weight: 600;
-    letter-spacing: -0.011em;
+    letter-spacing: var(--tracking-display);
   }
 
   /* One visible focus treatment for the whole app. Never removed, only restyled. */
@@ -165,11 +165,10 @@
   }
 
   ::selection {
-    background: var(--primary-wash);
+    background: var(--accent-wash);
     color: var(--ink);
   }
 
-  /* Honour a reader's motion preference everywhere, including third-party primitives. */
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after {
       animation-duration: 0.01ms !important;
@@ -181,23 +180,42 @@
 }
 
 @layer utilities {
-  .text-display { font-size: var(--text-display); line-height: var(--leading-display); font-weight: 700; }
-  .text-h1 { font-size: var(--text-h1); line-height: var(--leading-h1); font-weight: 700; }
+  .text-display {
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+    font-weight: 600;
+  }
+  .text-h1 { font-size: var(--text-h1); line-height: var(--leading-h1); font-weight: 600; }
   .text-h2 { font-size: var(--text-h2); line-height: var(--leading-h2); font-weight: 600; }
   .text-h3 { font-size: var(--text-h3); line-height: var(--leading-h3); font-weight: 600; }
   .text-body { font-size: var(--text-body); line-height: var(--leading-body); }
   .text-sm { font-size: var(--text-sm); line-height: var(--leading-sm); }
-  .text-xs { font-size: var(--text-xs); line-height: var(--leading-xs); font-weight: 500; }
+  .text-xs { font-size: var(--text-xs); line-height: var(--leading-xs); }
 
-  /* Skip link: present for keyboard users, out of the way for everyone else. */
+  /*
+   * The one place tracked-out small capitals are allowed: the spec-table row labels, where
+   * they do the real work of separating label from value in a dense two-column list. They
+   * are not used as decorative eyebrows above headings.
+   */
+  .label-caps {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+
   .skip-link {
     position: absolute;
     left: var(--space-2);
     top: calc(var(--space-2) * -1);
     transform: translateY(-150%);
     z-index: 100;
-    background: var(--primary);
-    color: var(--primary-ink);
+    background: var(--accent);
+    color: var(--accent-ink);
     padding: var(--space-2) var(--space-4);
     border-radius: var(--radius-md);
     transition: transform 120ms ease;
@@ -206,20 +224,23 @@
     transform: translateY(calc(var(--space-2) + 150%));
   }
 
-  /* The product grid density from docs/DESIGN.md. */
-  .product-grid {
+  /*
+   * Gem grid. Far less dense than a marketplace: each stone is a unique object and the
+   * photograph is the product, so cards are given room. 1-up at 360px, 4-up at 1280px.
+   */
+  .gem-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--space-2);
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: var(--space-4);
   }
-  @media (min-width: 600px) {
-    .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-3); }
+  @media (min-width: 480px) {
+    .gem-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (min-width: 900px) {
-    .product-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .gem-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
   }
   @media (min-width: 1280px) {
-    .product-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: var(--space-4); }
+    .gem-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   }
 
   .no-scrollbar { scrollbar-width: none; }

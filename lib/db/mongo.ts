@@ -3,7 +3,7 @@ import { MongoClient, type Collection, type Db, type Document, type Sort } from 
 import { env } from "../env";
 import type {
   BaseDoc,
-  ChowkCollection,
+  GemCollection,
   DeleteResult,
   Filter,
   FindOptions,
@@ -21,19 +21,19 @@ import type {
  */
 declare global {
   // eslint-disable-next-line no-var
-  var __chowkMongo: { client: MongoClient; promise: Promise<MongoClient> } | undefined;
+  var __kgMongo: { client: MongoClient; promise: Promise<MongoClient> } | undefined;
 }
 
 function clientPromise(): Promise<MongoClient> {
   if (!env.mongodbUri) throw new Error("MONGODB_URI is not set");
-  if (!globalThis.__chowkMongo) {
+  if (!globalThis.__kgMongo) {
     const client = new MongoClient(env.mongodbUri, {
       maxPoolSize: 10,
       retryWrites: true,
     });
-    globalThis.__chowkMongo = { client, promise: client.connect() };
+    globalThis.__kgMongo = { client, promise: client.connect() };
   }
-  return globalThis.__chowkMongo.promise;
+  return globalThis.__kgMongo.promise;
 }
 
 export async function getDb(): Promise<Db> {
@@ -42,14 +42,14 @@ export async function getDb(): Promise<Db> {
 }
 
 export async function closeMongo(): Promise<void> {
-  if (globalThis.__chowkMongo) {
-    await globalThis.__chowkMongo.client.close();
-    globalThis.__chowkMongo = undefined;
+  if (globalThis.__kgMongo) {
+    await globalThis.__kgMongo.client.close();
+    globalThis.__kgMongo = undefined;
   }
 }
 
-/** Adapts the official driver to the narrow ChowkCollection surface. */
-export class MongoBackedCollection<T extends BaseDoc> implements ChowkCollection<T> {
+/** Adapts the official driver to the narrow GemCollection surface. */
+export class MongoBackedCollection<T extends BaseDoc> implements GemCollection<T> {
   constructor(private readonly name: string) {}
 
   private async col(): Promise<Collection<Document>> {

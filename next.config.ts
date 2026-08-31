@@ -20,8 +20,8 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   images: {
     /**
-     * The seeded catalogue is served by app/img/product/[slug]/[index]/route.ts, which
-     * generates a deterministic SVG per product so the demo renders with no external image
+     * The seeded catalogue is served by app/img/gem/[slug]/[index]/route.ts, which
+     * generates a deterministic SVG per stone so the demo renders with no external image
      * host and no binary blobs in the database. SVG optimisation is therefore enabled, and
      * locked down: the optimiser serves images under a sandbox CSP, and only the hosts
      * listed below may supply remote images. Real deployments point `images[].url` at a

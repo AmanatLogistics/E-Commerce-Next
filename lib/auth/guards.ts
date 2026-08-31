@@ -18,16 +18,9 @@ import type { UserDoc } from "../db/documents";
  * last place to depend on an unstable API.
  */
 
-export async function requireUser(next = "/account"): Promise<UserDoc> {
-  const user = await getCurrentUser();
-  if (!user) redirect(`/login?next=${encodeURIComponent(next)}`);
-  return user;
-}
-
 export async function requireAdmin(next = "/admin"): Promise<UserDoc> {
   const user = await getCurrentUser();
-  if (!user) redirect(`/login?next=${encodeURIComponent(next)}`);
-  if (user.role !== "admin") redirect("/403");
+  if (!user || user.role !== "admin") redirect(`/login?next=${encodeURIComponent(next)}`);
   return user;
 }
 
@@ -37,12 +30,6 @@ export async function requireAdminAction(): Promise<UserDoc> {
   if (!user || user.role !== "admin") {
     throw new Error("Forbidden: this action requires an administrator.");
   }
-  return user;
-}
-
-export async function requireUserAction(): Promise<UserDoc> {
-  const user = await getCurrentUser();
-  if (!user) throw new Error("Unauthorised: sign in to continue.");
   return user;
 }
 

@@ -29,7 +29,7 @@ Customer storefront + private admin panel. Store name lives in `lib/site-config.
 - Use the simplest approach that satisfies the requirement. No speculative abstraction.
 
 ## Data layer
-Application code talks to `ChowkCollection` (`lib/db/collections.ts`), a narrow subset of
+Application code talks to `GemCollection` (`lib/db/types.ts`), a narrow subset of
 the official MongoDB driver's Collection API. Two implementations: the real driver when
 `MONGODB_URI` is set, and `lib/db/memory/` otherwise. Adding a data feature means using the
 existing subset — extend the interface only if genuinely needed, and implement BOTH sides.
@@ -47,3 +47,13 @@ implemented as tokens in `app/globals.css` (Tailwind v4 `@theme`, there is no
 `tailwind.config.ts`). Never hardcode a hex value or font family in a component. If a token
 is missing, add it to `globals.css` first. `--accent` (brass) is reserved for price and
 discount only.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

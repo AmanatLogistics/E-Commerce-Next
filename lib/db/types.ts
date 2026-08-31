@@ -84,7 +84,7 @@ export interface IndexSpec {
  * Two implementations exist (see docs/SPEC.md §9): the real mongodb driver, and an
  * in-process store used when MONGODB_URI is absent. Application code only ever sees this.
  */
-export interface ChowkCollection<T extends BaseDoc> {
+export interface GemCollection<T extends BaseDoc> {
   findOne(filter: Filter<T>, options?: FindOptions): Promise<T | null>;
   find(filter: Filter<T>, options?: FindOptions): Promise<T[]>;
   countDocuments(filter?: Filter<T>): Promise<number>;

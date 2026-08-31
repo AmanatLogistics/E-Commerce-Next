@@ -49,12 +49,14 @@ export function rateLimit(key: string, limit: number, windowMs: number): RateLim
   return { ok: true, remaining: limit - existing.count, retryAfterSeconds: 0 };
 }
 
-/** The limits named in docs/SPEC.md §7. */
+/** The limits named in docs/SPEC.md §6. */
 export const limits = {
   login: { limit: 5, windowMs: 15 * 60_000 },
   signup: { limit: 5, windowMs: 60 * 60_000 },
   passwordReset: { limit: 3, windowMs: 60 * 60_000 },
   search: { limit: 30, windowMs: 60_000 },
+  /** Enquiries are the one public write, so they get the tightest sensible window. */
+  enquiry: { limit: 5, windowMs: 30 * 60_000 },
 } as const;
 
 /** Tests need a clean slate between cases. */

@@ -6,7 +6,7 @@ import { env } from "../env";
 import { users } from "../db/collections";
 import type { Role, UserDoc } from "../db/documents";
 
-export const SESSION_COOKIE = "chowk_session";
+export const SESSION_COOKIE = "kg_session";
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
 export interface SessionClaims {
@@ -38,7 +38,7 @@ export async function verifySessionToken(token: string): Promise<SessionClaims |
     const { payload } = await jwtVerify(token, secret, { algorithms: ["HS256"] });
     const { sub, email, role, ver } = payload as Record<string, unknown>;
     if (typeof sub !== "string" || typeof email !== "string") return null;
-    if (role !== "admin" && role !== "customer") return null;
+    if (role !== "admin") return null;
     if (typeof ver !== "number") return null;
     return { sub, email, role, ver };
   } catch {
