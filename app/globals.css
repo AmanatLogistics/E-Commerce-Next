@@ -1,26 +1,284 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+ * Design tokens — the single source of truth for colour, type, spacing, radius and
+ * elevation. Implements docs/DESIGN.md ("Emerald & Ivory").
+ *
+ * The register is a contemporary fine-jewellery storefront: a warm ivory ground, deep
+ * emerald as the brand colour, and gold used sparingly for emphasis. Product photography
+ * sits on a pale plate so the stones read as merchandise rather than as specimens.
+ * Components never hardcode a hex value or a font family.
+ */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  color-scheme: light;
+
+  /* Ground */
+  --surface: #ffffff;
+  /* Warm ivory. The page ground, and what makes the whole thing feel like a shop. */
+  --surface-sunken: #faf7f2;
+  --surface-raised: #ffffff;
+  /* The pale plate a stone photograph sits on. */
+  --plate: #f2ede4;
+
+  /* Brand */
+  --brand: #0b4f3a;
+  --brand-hover: #083d2d;
+  --brand-ink: #ffffff;
+  --brand-wash: #eaf1ee;
+
+  /* Gold — emphasis only: prices under offer, the crest rule, focus rings */
+  --gold: #b08d45;
+  --gold-hover: #96762f;
+  --gold-ink: #2a2008;
+  --gold-wash: #f7f0e2;
+
+  /* Text */
+  --ink: #1c1a17;
+  --ink-muted: #6b6459;
+  --line: #e5ded2;
+  --line-strong: #d3c9b8;
+
+  /* Semantic */
+  --success: #1f7a4c;
+  --success-wash: #e6f2eb;
+  --danger: #a32b20;
+  --danger-wash: #fbeae8;
+  --focus: #b08d45;
+
+  /* Type */
+  --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
+  --font-body: var(--font-jost), "Jost", "Helvetica Neue", Arial, sans-serif;
+
+  --text-display: clamp(2.25rem, 1.4rem + 3.6vw, 4rem);
+  --text-h1: clamp(1.75rem, 1.25rem + 2.1vw, 2.75rem);
+  --text-h2: clamp(1.375rem, 1.1rem + 1.1vw, 2rem);
+  --text-h3: 1.25rem;
+  --text-body: 0.9375rem;
+  --text-sm: 0.8125rem;
+  --text-xs: 0.6875rem;
+
+  --leading-display: 1.06;
+  --leading-h1: 1.14;
+  --leading-h2: 1.22;
+  --leading-h3: 1.35;
+  --leading-body: 1.65;
+  --leading-sm: 1.55;
+  --leading-xs: 1.4;
+
+  --tracking-display: -0.01em;
+  /* Wide tracking is the category's signature; confined to eyebrows and small labels. */
+  --tracking-label: 0.16em;
+  --tracking-nav: 0.06em;
+
+  /* Spacing — 4px base */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --space-9: 6rem;
+
+  /* Radius — soft but restrained; jewellery retail is not a pill-shaped category */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 10px;
+  --radius-full: 999px;
+
+  /* Elevation — very soft and warm, never a hard grey drop */
+  --elevation-1: 0 1px 3px rgb(28 26 23 / 0.06), 0 6px 20px -8px rgb(28 26 23 / 0.10);
+  --elevation-2: 0 18px 48px -16px rgb(28 26 23 / 0.22);
+
+  --header-height: 4.25rem;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    color-scheme: dark;
+
+    --surface: #14171a;
+    --surface-sunken: #101315;
+    --surface-raised: #1a1e21;
+    --plate: #1e2326;
+
+    --brand: #4fae8b;
+    --brand-hover: #6cc4a3;
+    --brand-ink: #06211a;
+    --brand-wash: #14302a;
+
+    --gold: #d3ad5f;
+    --gold-hover: #e3c176;
+    --gold-ink: #241a06;
+    --gold-wash: #2c2413;
+
+    --ink: #efe9de;
+    --ink-muted: #a49c8f;
+    --line: #2b3033;
+    --line-strong: #3c4347;
+
+    --success: #4e9a6a;
+    --success-wash: #16291f;
+    --danger: #d97066;
+    --danger-wash: #331b18;
+    --focus: #d3ad5f;
+
+    --elevation-1: 0 1px 3px rgb(0 0 0 / 0.4), 0 6px 20px -8px rgb(0 0 0 / 0.5);
+    --elevation-2: 0 18px 48px -16px rgb(0 0 0 / 0.7);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Expose the tokens to Tailwind: bg-surface, text-ink, border-line, … */
+@theme inline {
+  --color-surface: var(--surface);
+  --color-surface-sunken: var(--surface-sunken);
+  --color-surface-raised: var(--surface-raised);
+  --color-plate: var(--plate);
+  --color-brand: var(--brand);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-ink: var(--brand-ink);
+  --color-brand-wash: var(--brand-wash);
+  --color-gold: var(--gold);
+  --color-gold-hover: var(--gold-hover);
+  --color-gold-ink: var(--gold-ink);
+  --color-gold-wash: var(--gold-wash);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-success: var(--success);
+  --color-success-wash: var(--success-wash);
+  --color-danger: var(--danger);
+  --color-danger-wash: var(--danger-wash);
+
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+
+  --shadow-e1: var(--elevation-1);
+  --shadow-e2: var(--elevation-2);
+}
+
+@layer base {
+  * {
+    border-color: var(--line);
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background: var(--surface-sunken);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    /* Carat weights, millimetre dimensions and prices must align in a column. */
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: var(--tracking-display);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--focus);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+
+  ::selection {
+    background: var(--gold-wash);
+    color: var(--ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  .text-display {
+    font-family: var(--font-display);
+    font-size: var(--text-display);
+    line-height: var(--leading-display);
+    letter-spacing: var(--tracking-display);
+    font-weight: 500;
+  }
+  .text-h1 { font-size: var(--text-h1); line-height: var(--leading-h1); font-weight: 500; }
+  .text-h2 { font-size: var(--text-h2); line-height: var(--leading-h2); font-weight: 500; }
+  .text-h3 { font-size: var(--text-h3); line-height: var(--leading-h3); font-weight: 500; }
+  .text-body { font-size: var(--text-body); line-height: var(--leading-body); }
+  .text-sm { font-size: var(--text-sm); line-height: var(--leading-sm); }
+  .text-xs { font-size: var(--text-xs); line-height: var(--leading-xs); }
+
+  /* The category's signature small label. Used for eyebrows, spec labels and nav. */
+  .label-caps {
+    font-family: var(--font-body);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+
+  /* A short gold rule under a section heading — the "crest" motif, used sparingly. */
+  .crest-rule::after {
+    content: "";
+    display: block;
+    width: 2.5rem;
+    height: 1px;
+    margin-top: var(--space-3);
+    background: var(--gold);
+  }
+  .crest-rule-center::after {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .skip-link {
+    position: absolute;
+    left: var(--space-2);
+    top: calc(var(--space-2) * -1);
+    transform: translateY(-150%);
+    z-index: 100;
+    background: var(--brand);
+    color: var(--brand-ink);
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-md);
+    transition: transform 120ms ease;
+  }
+  .skip-link:focus {
+    transform: translateY(calc(var(--space-2) + 150%));
+  }
+
+  /* Product grid: 2-up on a phone, as jewellery retail does, then up to 4. */
+  .gem-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+  @media (min-width: 640px) {
+    .gem-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
+  }
+  @media (min-width: 1100px) {
+    .gem-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-6); }
+  }
+
+  .no-scrollbar { scrollbar-width: none; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
 }

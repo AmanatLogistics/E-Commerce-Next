@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# in-memory driver data (see docs/SPEC.md §9)
+/.rec-data
+/test-results
+/playwright-report
+/playwright/.auth
