@@ -59,9 +59,12 @@ async function CollectionResults({ params }: { params: BrowseParams }) {
       categories={categories}
       origins={origins}
       heading={
-        <div className="max-w-2xl">
-          <h1 className="text-h1">{params.q ? <>Results for “{params.q}”</> : "All stones"}</h1>
-          <p className="mt-2 text-ink-muted">
+        <div className="mx-auto max-w-2xl text-center">
+          <p className="label-caps">The collection</p>
+          <h1 className="text-h1 mt-2">
+            {params.q ? <>Results for “{params.q}”</> : "All stones"}
+          </h1>
+          <p className="mt-3 text-ink-muted">
             {params.q
               ? "Matching on stone name, reference, origin and colour."
               : "The full collection. Every listing states its treatment, and every stone can be enquired on."}
@@ -74,7 +77,7 @@ async function CollectionResults({ params }: { params: BrowseParams }) {
             title={params.q ? `Nothing matches “${params.q}”` : "Nothing matches these filters"}
             body={
               params.q
-                ? "Try a shorter word — a variety like “emerald”, a locality like “Hunza”, or a stock reference such as “KG-EM-0101”."
+                ? "Try a shorter word — a variety like “emerald”, a locality like “Hunza”, or a stock reference such as “REC-EM-0101”."
                 : "No stone in the collection matches every filter you have applied. Removing the origin filter usually helps."
             }
           >
@@ -93,7 +96,7 @@ async function CollectionResults({ params }: { params: BrowseParams }) {
                 <li key={category.slug}>
                   <Link
                     href={`/collection/${category.slug}`}
-                    className="block rounded-[var(--radius-md)] border bg-surface p-3 text-sm font-medium transition-colors hover:border-accent"
+                    className="block rounded-[var(--radius-md)] border bg-surface p-3 text-sm font-medium transition-colors hover:border-brand"
                   >
                     {category.name}
                   </Link>

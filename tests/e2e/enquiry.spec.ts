@@ -24,7 +24,7 @@ test("a buyer can send an enquiry and the dealer receives it", async ({ page, br
   const confirmation = page.getByRole("status");
   await expect(confirmation).toContainText("Enquiry sent");
   const reference = (await confirmation.locator("strong").textContent())?.trim() ?? "";
-  expect(reference).toMatch(/^KG-[A-Z0-9]{6}$/);
+  expect(reference).toMatch(/^REC-[A-Z0-9]{6}$/);
 
   // The dealer's side, in a separate signed-in context.
   const admin = await browser.newPage({ storageState: "playwright/.auth/admin.json" });
@@ -33,7 +33,7 @@ test("a buyer can send an enquiry and the dealer receives it", async ({ page, br
 
   await expect(admin.getByText("ayesha@example.com")).toBeVisible();
   // The stone's identity comes from the database, not from the submitted form.
-  await expect(admin.getByText("KG-EM-0102")).toBeVisible();
+  await expect(admin.getByText("REC-EM-0102")).toBeVisible();
   await expect(admin.getByText(/lab report is available/)).toBeVisible();
   await admin.close();
 });

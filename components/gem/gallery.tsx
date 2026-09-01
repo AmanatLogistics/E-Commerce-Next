@@ -43,7 +43,7 @@ export function GemGallery({ images, title }: { images: GemImage[]; title: strin
       }}
     >
       <div
-        className="group relative aspect-square overflow-hidden rounded-[var(--radius-md)] border bg-tray"
+        className="group relative aspect-square overflow-hidden rounded-[var(--radius-lg)] bg-plate"
         onTouchStart={(event) => {
           touchStartX.current = event.touches[0].clientX;
         }}
@@ -89,7 +89,7 @@ export function GemGallery({ images, title }: { images: GemImage[]; title: strin
               type="button"
               onClick={() => go(index - 1)}
               aria-label="Previous view"
-              className="absolute left-2 top-1/2 hidden size-10 -translate-y-1/2 items-center justify-center rounded-[var(--radius-full)] border bg-surface/90 text-ink shadow-e1 hover:bg-surface sm:flex"
+              className="absolute left-2 top-1/2 hidden size-10 -translate-y-1/2 items-center justify-center rounded-[var(--radius-full)] border-0 bg-surface/95 text-ink shadow-e1 hover:bg-surface sm:flex"
             >
               <span aria-hidden="true">‹</span>
             </button>
@@ -97,14 +97,14 @@ export function GemGallery({ images, title }: { images: GemImage[]; title: strin
               type="button"
               onClick={() => go(index + 1)}
               aria-label="Next view"
-              className="absolute right-2 top-1/2 hidden size-10 -translate-y-1/2 items-center justify-center rounded-[var(--radius-full)] border bg-surface/90 text-ink shadow-e1 hover:bg-surface sm:flex"
+              className="absolute right-2 top-1/2 hidden size-10 -translate-y-1/2 items-center justify-center rounded-[var(--radius-full)] border-0 bg-surface/95 text-ink shadow-e1 hover:bg-surface sm:flex"
             >
               <span aria-hidden="true">›</span>
             </button>
           </>
         )}
 
-        <p className="pointer-events-none absolute bottom-2 right-2 rounded-[var(--radius-sm)] bg-black/60 px-2 py-0.5 text-xs text-white">
+        <p className="pointer-events-none absolute bottom-3 right-3 rounded-[var(--radius-sm)] bg-ink/70 px-2 py-0.5 text-xs text-white">
           {index + 1} / {count}
         </p>
       </div>
@@ -119,8 +119,8 @@ export function GemGallery({ images, title }: { images: GemImage[]; title: strin
                 aria-label={`Show view ${i + 1}`}
                 aria-current={i === index ? "true" : undefined}
                 className={cn(
-                  "block size-16 overflow-hidden rounded-[var(--radius-md)] border bg-tray transition-colors sm:size-20",
-                  i === index ? "border-accent" : "hover:border-ink-muted",
+                  "block size-16 overflow-hidden rounded-[var(--radius-md)] border bg-plate transition-colors sm:size-20",
+                  i === index ? "border-brand" : "hover:border-ink-muted",
                 )}
               >
                 <Image

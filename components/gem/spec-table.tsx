@@ -31,10 +31,10 @@ export function GemSpecTable({ gem }: { gem: GemDoc }) {
       <tbody>
         {rows.map((row) => (
           <tr key={row.label} className="border-b last:border-0">
-            <th scope="row" className="label-caps w-40 py-2.5 pr-4 align-top font-medium">
+            <th scope="row" className="label-caps w-44 py-3 pr-4 align-top font-medium">
               {row.label}
             </th>
-            <td className="py-2.5 align-top text-body">{row.value}</td>
+            <td className="py-3 align-top text-body">{row.value}</td>
           </tr>
         ))}
       </tbody>

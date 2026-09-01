@@ -53,9 +53,9 @@ export function SearchBox({ initialQuery = "" }: { initialQuery?: string }) {
         type="search"
         value={value}
         onChange={(event) => setValue(event.target.value)}
-        placeholder="Search by name, reference or origin…"
+        placeholder="Search stones…"
         autoComplete="off"
-        className="h-9 w-full rounded-[var(--radius-md)] border bg-surface px-3 text-sm text-ink placeholder:text-ink-muted hover:border-ink-muted focus:border-accent"
+        className="h-10 w-full rounded-[var(--radius-md)] border border-line-strong bg-surface px-3.5 text-sm text-ink placeholder:text-ink-muted transition-colors hover:border-ink focus:border-brand"
       />
     </form>
   );

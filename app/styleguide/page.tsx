@@ -23,38 +23,41 @@ export const metadata: Metadata = {
 
 const LIGHT = {
   surface: "#ffffff",
-  "surface-sunken": "#f1f3f4",
-  tray: "#1a1e21",
-  ink: "#16191c",
-  "ink-muted": "#5a6169",
-  line: "#dde1e4",
-  accent: "#8a6d12",
+  "surface-sunken": "#faf7f2",
+  plate: "#f2ede4",
+  brand: "#0b4f3a",
+  gold: "#b08d45",
+  ink: "#1c1a17",
+  "ink-muted": "#6b6459",
+  line: "#e5ded2",
   success: "#1f7a4c",
-  danger: "#b3261e",
+  danger: "#a32b20",
 } as const;
 
 const DARK = {
   surface: "#14171a",
-  "surface-sunken": "#0f1214",
-  tray: "#0d1012",
-  ink: "#ece7df",
-  "ink-muted": "#9aa0a6",
-  line: "#2c3238",
-  accent: "#c9a227",
+  "surface-sunken": "#101315",
+  plate: "#1e2326",
+  brand: "#4fae8b",
+  gold: "#d3ad5f",
+  ink: "#efe9de",
+  "ink-muted": "#a49c8f",
+  line: "#2b3033",
   success: "#4e9a6a",
-  danger: "#d96a5e",
+  danger: "#d97066",
 } as const;
 
 const CONTRAST_PAIRS = [
   { label: "ink on surface", fg: LIGHT.ink, bg: LIGHT.surface, min: 4.5 },
   { label: "ink-muted on surface", fg: LIGHT["ink-muted"], bg: LIGHT.surface, min: 4.5 },
-  { label: "white on accent (button)", fg: "#ffffff", bg: LIGHT.accent, min: 4.5 },
+  { label: "white on brand (button)", fg: "#ffffff", bg: LIGHT.brand, min: 4.5 },
+  { label: "gold on surface", fg: LIGHT.gold, bg: LIGHT.surface, min: 3 },
   { label: "ink on surface-sunken", fg: LIGHT.ink, bg: LIGHT["surface-sunken"], min: 4.5 },
-  { label: "success on success-wash", fg: LIGHT.success, bg: "#e4f2ea", min: 4.5 },
-  { label: "danger on danger-wash", fg: LIGHT.danger, bg: "#fbe9e7", min: 4.5 },
+  { label: "success on success-wash", fg: LIGHT.success, bg: "#e6f2eb", min: 4.5 },
+  { label: "danger on danger-wash", fg: LIGHT.danger, bg: "#fbeae8", min: 4.5 },
   { label: "dark: ink on surface", fg: DARK.ink, bg: DARK.surface, min: 4.5 },
   { label: "dark: ink-muted on surface", fg: DARK["ink-muted"], bg: DARK.surface, min: 4.5 },
-  { label: "dark: accent on surface", fg: DARK.accent, bg: DARK.surface, min: 4.5 },
+  { label: "dark: brand on surface", fg: DARK.brand, bg: DARK.surface, min: 4.5 },
 ];
 
 function Section({
@@ -104,15 +107,14 @@ export default function StyleguidePage() {
         <p className="mt-3 max-w-prose text-ink-muted">
           Every token and component state in one place. Implements{" "}
           <code className="rounded-[var(--radius-sm)] bg-surface-sunken px-1">docs/DESIGN.md</code>.
-          The governing rule: the interface is achromatic so the stones are the only
-          saturated colour on any page. Switch your system to dark mode to review the dark
-          palette.
+A warm ivory ground, deep emerald as the brand colour, and gold reserved for
+          emphasis. Switch your system to dark mode to review the dark palette.
         </p>
       </header>
 
       <Section
         title="Colour"
-        note="Greys, ivory and one restrained gold. --tray is the dark plate a stone photograph sits on, and stays dark in both themes."
+        note="A warm ivory ground, deep emerald as the brand, gold for emphasis only. --plate is the pale panel a stone photograph sits on."
       >
         <Swatches title="Light" tokens={LIGHT} />
         <Swatches title="Dark" tokens={DARK} />
@@ -154,7 +156,7 @@ export default function StyleguidePage() {
 
       <Section
         title="Type scale"
-        note="Cormorant Garamond for stone names and headings; IBM Plex Sans for everything factual, because it has true tabular figures."
+        note="Cormorant Garamond for the wordmark, stone names and headings; Jost for everything factual."
       >
         <div className="flex flex-col gap-3">
           <p className="text-display">Display — Fine loose gemstones</p>
@@ -180,7 +182,7 @@ export default function StyleguidePage() {
         </div>
       </Section>
 
-      <Section title="Buttons" note="Gold marks the primary action and appears nowhere beside a photograph.">
+      <Section title="Buttons" note="Emerald carries the primary action; the secondary is an outline, as the category expects.">
         <div className="flex flex-col gap-4">
           {(["primary", "secondary", "ghost", "danger"] as const).map((variant) => (
             <div key={variant} className="flex flex-wrap items-center gap-3">
@@ -246,13 +248,19 @@ export default function StyleguidePage() {
         </div>
       </Section>
 
-      <Section title="The tray" note="Every stone photograph sits on --tray, dark in both themes, as on a jeweller's bench.">
+      <Section title="The plate" note="Every stone photograph sits on --plate, a pale warm panel that lets a saturated stone read as merchandise.">
         <div className="flex flex-wrap gap-4">
           {["#2f7d5e", "#a33244", "#3f6ea8", "#c9a227"].map((colour) => (
-            <div key={colour} className="size-32 rounded-[var(--radius-md)] border bg-tray p-5">
+            <div key={colour} className="size-32 rounded-[var(--radius-lg)] bg-plate p-6">
               <div className="size-full rounded-[var(--radius-sm)]" style={{ background: colour }} />
             </div>
           ))}
+        </div>
+      </Section>
+
+      <Section title="Crest rule" note="A short gold rule under a section heading. The one ornament in the system, used sparingly.">
+        <div className="text-center">
+          <h3 className="text-h2 crest-rule crest-rule-center">Shop by variety</h3>
         </div>
       </Section>
 

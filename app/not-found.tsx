@@ -24,7 +24,7 @@ export default function NotFound() {
         </Button>
       </div>
       <p className="mt-10 text-sm text-ink-muted">
-        <Link href="/" className="hover:text-accent">
+        <Link href="/" className="hover:text-brand">
           {siteConfig.name}
         </Link>
       </p>

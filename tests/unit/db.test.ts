@@ -38,7 +38,7 @@ function makeCollection() {
 function stone(over: Partial<Stone> = {}): Omit<Stone, "_id"> {
   return {
     title: "Swat Emerald",
-    reference: "KG-EM-0101",
+    reference: "REC-EM-0101",
     origin: "Swat Valley, Pakistan",
     description: "A green beryl",
     carat: 2.14,
@@ -55,8 +55,8 @@ describe("in-memory driver: filtering", () => {
     const c = makeCollection();
     await c.insertMany([
       stone({ title: "A", carat: 1, published: true }),
-      stone({ title: "B", reference: "KG-RB-0201", carat: 3, published: true }),
-      stone({ title: "C", reference: "KG-SP-0301", carat: 5, published: false }),
+      stone({ title: "B", reference: "REC-RB-0201", carat: 3, published: true }),
+      stone({ title: "C", reference: "REC-SP-0301", carat: 5, published: false }),
     ]);
 
     assert.equal((await c.find({ title: "B" })).length, 1);
@@ -73,7 +73,7 @@ describe("in-memory driver: filtering", () => {
     const c = makeCollection();
     await c.insertMany([
       stone({ origin: "Hunza Valley, Pakistan" }),
-      stone({ reference: "KG-2", origin: "Swat Valley, Pakistan" }),
+      stone({ reference: "REC-2", origin: "Swat Valley, Pakistan" }),
     ]);
     assert.equal((await c.find({ origin: { $regex: "^hunza", $options: "i" } })).length, 1);
     assert.equal((await c.find({ origin: { $regex: "^valley", $options: "i" } })).length, 0);
@@ -90,8 +90,8 @@ describe("in-memory driver: filtering", () => {
     const c = makeCollection();
     await c.insertMany([
       stone({ title: "A", carat: 1 }),
-      stone({ title: "B", reference: "KG-2", carat: 3 }),
-      stone({ title: "C", reference: "KG-3", carat: 5 }),
+      stone({ title: "B", reference: "REC-2", carat: 3 }),
+      stone({ title: "C", reference: "REC-3", carat: 5 }),
     ]);
     const hits = await c.find({
       $and: [{ carat: { $gte: 1 } }, { $or: [{ title: "A" }, { title: "C" }] }],
@@ -122,9 +122,9 @@ describe("in-memory driver: sort, paginate, project", () => {
   it("sorts, skips and limits", async () => {
     const c = makeCollection();
     await c.insertMany([
-      stone({ title: "A", reference: "KG-1", carat: 3 }),
-      stone({ title: "B", reference: "KG-2", carat: 1 }),
-      stone({ title: "C", reference: "KG-3", carat: 2 }),
+      stone({ title: "A", reference: "REC-1", carat: 3 }),
+      stone({ title: "B", reference: "REC-2", carat: 1 }),
+      stone({ title: "C", reference: "REC-3", carat: 2 }),
     ]);
     const asc = await c.find({}, { sort: { carat: 1 } });
     assert.deepEqual(asc.map((d) => d.title), ["B", "C", "A"]);
@@ -178,14 +178,14 @@ describe("in-memory driver: updates", () => {
     const c = makeCollection();
     const res = await c.updateOne(
       { title: "Ruby" },
-      { $set: { carat: 4 }, $setOnInsert: { reference: "KG-RB-9999" } },
+      { $set: { carat: 4 }, $setOnInsert: { reference: "REC-RB-9999" } },
       { upsert: true },
     );
     assert.ok(res.upsertedId);
 
     const created = await c.findOne({ title: "Ruby" });
     assert.equal(created!.carat, 4);
-    assert.equal(created!.reference, "KG-RB-9999");
+    assert.equal(created!.reference, "REC-RB-9999");
 
     await c.updateOne(
       { title: "Ruby" },
@@ -194,15 +194,15 @@ describe("in-memory driver: updates", () => {
     );
     const updated = await c.findOne({ title: "Ruby" });
     assert.equal(updated!.carat, 7);
-    assert.equal(updated!.reference, "KG-RB-9999", "$setOnInsert must not apply on an update");
+    assert.equal(updated!.reference, "REC-RB-9999", "$setOnInsert must not apply on an update");
   });
 
   it("updateMany reports matched and modified separately", async () => {
     const c = makeCollection();
     await c.insertMany([
-      stone({ reference: "KG-1", carat: 1 }),
-      stone({ reference: "KG-2", carat: 2 }),
-      stone({ reference: "KG-3", carat: 3 }),
+      stone({ reference: "REC-1", carat: 1 }),
+      stone({ reference: "REC-2", carat: 2 }),
+      stone({ reference: "REC-3", carat: 3 }),
     ]);
     const res = await c.updateMany({ carat: { $lte: 2 } }, { $inc: { carat: 10 } });
     assert.equal(res.matchedCount, 2);
@@ -214,9 +214,9 @@ describe("in-memory driver: unique indexes", () => {
   it("rejects a duplicate with code 11000, as the real driver does", async () => {
     const c = makeCollection();
     await c.createIndexes([{ key: { reference: 1 }, unique: true }]);
-    await c.insertOne(stone({ reference: "KG-EM-0101" }));
+    await c.insertOne(stone({ reference: "REC-EM-0101" }));
     await assert.rejects(
-      () => c.insertOne(stone({ reference: "KG-EM-0101" })),
+      () => c.insertOne(stone({ reference: "REC-EM-0101" })),
       (err: Error & { code?: number }) => err.code === 11000,
     );
   });
@@ -225,7 +225,7 @@ describe("in-memory driver: unique indexes", () => {
     const c = makeCollection();
     await c.createIndexes([{ key: { certificate: 1 }, unique: true, sparse: true }]);
     await c.insertOne({ ...stone(), certificate: null } as never);
-    await c.insertOne({ ...stone({ reference: "KG-2" }), certificate: null } as never);
+    await c.insertOne({ ...stone({ reference: "REC-2" }), certificate: null } as never);
     assert.equal(await c.countDocuments({}), 2);
   });
 });
@@ -236,8 +236,8 @@ describe("in-memory driver: weighted text search", () => {
   it("ranks a title match above a description match", async () => {
     const c = makeCollection();
     await c.insertMany([
-      stone({ title: "Swat Emerald", reference: "KG-1", description: "Green beryl" }),
-      stone({ title: "Hunza Ruby", reference: "KG-2", description: "Sits beside an emerald" }),
+      stone({ title: "Swat Emerald", reference: "REC-1", description: "Green beryl" }),
+      stone({ title: "Hunza Ruby", reference: "REC-2", description: "Sits beside an emerald" }),
     ]);
     const hits = await c.textSearch("emerald", {}, { weights });
     assert.equal(hits[0].title, "Swat Emerald");
@@ -247,8 +247,8 @@ describe("in-memory driver: weighted text search", () => {
   it("ranks a document matching more query terms higher", async () => {
     const c = makeCollection();
     await c.insertMany([
-      stone({ title: "Untreated Hunza Ruby", reference: "KG-1", description: "Corundum" }),
-      stone({ title: "Hunza Spinel", reference: "KG-2", description: "Not corundum" }),
+      stone({ title: "Untreated Hunza Ruby", reference: "REC-1", description: "Corundum" }),
+      stone({ title: "Hunza Spinel", reference: "REC-2", description: "Not corundum" }),
     ]);
     const hits = await c.textSearch("untreated ruby", {}, { weights });
     assert.equal(hits[0].title, "Untreated Hunza Ruby");
@@ -257,8 +257,8 @@ describe("in-memory driver: weighted text search", () => {
   it("respects the filter, so unpublished stones stay out of results", async () => {
     const c = makeCollection();
     await c.insertMany([
-      stone({ title: "Emerald One", reference: "KG-1", published: true }),
-      stone({ title: "Emerald Two", reference: "KG-2", published: false }),
+      stone({ title: "Emerald One", reference: "REC-1", published: true }),
+      stone({ title: "Emerald Two", reference: "REC-2", published: false }),
     ]);
     const hits = await c.textSearch("emerald", { published: true }, { weights });
     assert.deepEqual(hits.map((h) => h.title), ["Emerald One"]);

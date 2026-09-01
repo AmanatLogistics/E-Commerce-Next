@@ -6,7 +6,7 @@ import { env } from "../env";
 import { users } from "../db/collections";
 import type { Role, UserDoc } from "../db/documents";
 
-export const SESSION_COOKIE = "kg_session";
+export const SESSION_COOKIE = "rec_session";
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 days
 
 export interface SessionClaims {

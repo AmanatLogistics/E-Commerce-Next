@@ -1,4 +1,4 @@
-# Karakoram Gems
+# Royal Emerald Crest
 
 A loose-gemstone dealer's website: a public catalogue of individual stones, and a private
 admin panel to manage them. Buyers **send an enquiry about a stone**; there is no cart, no
@@ -20,7 +20,7 @@ npm run dev                    # http://localhost:3000
 Sign in to the admin panel at **/login**:
 
 ```
-admin@karakoramgems.example
+admin@royalemeraldcrest.example
 AdminPass123!
 ```
 
@@ -28,7 +28,7 @@ Change `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` in `.env.local` before deplo
 anywhere, then re-run `npm run seed`.
 
 **It runs with no database installed.** When `MONGODB_URI` is absent the app uses a
-file-backed in-process store at `.kg-data/db.json`. Set `MONGODB_URI` and it uses the real
+file-backed in-process store at `.rec-data/db.json`. Set `MONGODB_URI` and it uses the real
 MongoDB driver instead, with no other change. See [Data layer](#data-layer).
 
 ## What it does
@@ -58,7 +58,7 @@ MongoDB driver instead, with no other change. See [Data layer](#data-layer).
    about the stone can be forged through the form.
 4. **The enquiry is saved first.**
 5. The notification email is attempted, and the outcome is written back onto the record.
-6. The buyer gets a quotable reference such as `KG-7Q2M4X`.
+6. The buyer gets a quotable reference such as `REC-7Q2M4X`.
 
 A mail failure never loses a lead: the admin inbox is the record, the email is a notification
 on top of it, and failures are flagged on the dashboard and on the row.
@@ -71,8 +71,8 @@ except `AUTH_SECRET` in production.
 | Variable | Required | Purpose |
 |---|---|---|
 | `MONGODB_URI` | Production | Use the real MongoDB driver. Absent = in-memory store |
-| `MONGODB_DB` | No | Database name (default `karakoram_gems`) |
-| `KG_MEMORY_DB` | No | Where the in-memory driver persists |
+| `MONGODB_DB` | No | Database name (default `royal_emerald_crest`) |
+| `REC_MEMORY_DB` | No | Where the in-memory driver persists |
 | `AUTH_SECRET` | **Yes in production** | Session signing key. `openssl rand -base64 32` |
 | `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` | No | The admin `npm run seed` creates |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` | For real email | nodemailer transport |
@@ -81,7 +81,7 @@ except `AUTH_SECRET` in production.
 | `MAIL_OUTBOX` | No | Where `.eml` files land when SMTP is unset |
 | `NEXT_PUBLIC_SITE_URL` | Production | Used in metadata and enquiry emails |
 
-Without SMTP configured, notifications are written to `.kg-data/outbox/*.eml` and the
+Without SMTP configured, notifications are written to `.rec-data/outbox/*.eml` and the
 dashboard says so plainly. That is a deliberate fallback, not a silent failure.
 
 ## Data layer
@@ -160,7 +160,7 @@ Stated plainly, because these are the things that will bite.
 ## Documentation
 
 - `docs/RESEARCH.md` — how gem dealers actually sell, the attributes that matter, sources.
-- `docs/DESIGN.md` — the "Tray and Loupe" design system and its self-critique.
+- `docs/DESIGN.md` — the "Emerald & Ivory" design system and its self-critique.
 - `docs/SPEC.md` — architecture, data model with every index, security, acceptance criteria.
 - `CLAUDE.md` — working rules for anyone (or any agent) editing this repo.
 - `/styleguide` — every token and component state, with measured contrast ratios.

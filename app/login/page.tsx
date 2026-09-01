@@ -42,7 +42,7 @@ export default async function LoginPage({
       </div>
 
       <p className="mt-8 text-sm text-ink-muted">
-        <Link href="/" className="hover:text-accent">
+        <Link href="/" className="hover:text-brand">
           ← Back to the collection
         </Link>
       </p>

@@ -116,7 +116,7 @@ export default async function AdminGemsPage({
                             alt=""
                             width={40}
                             height={40}
-                            className="size-10 shrink-0 rounded-[var(--radius-sm)] bg-tray object-cover"
+                            className="size-10 shrink-0 rounded-[var(--radius-sm)] bg-plate object-cover"
                           />
                         )}
                         <div>

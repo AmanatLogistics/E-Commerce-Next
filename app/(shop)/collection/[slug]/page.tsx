@@ -44,7 +44,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
       origins={origins}
       lockedCategory
       heading={
-        <div className="max-w-2xl">
+        <div className="mx-auto max-w-2xl text-center">
           <nav aria-label="Breadcrumb" className="text-sm text-ink-muted">
             <Link href="/collection" className="hover:text-accent">
               All stones
@@ -57,7 +57,7 @@ export default async function CategoryPage({ params, searchParams }: Props) {
             </span>
           </nav>
           <h1 className="text-h1 mt-3">{category.name}</h1>
-          <p className="mt-2 text-ink-muted">{category.description}</p>
+          <p className="mt-3 text-ink-muted">{category.description}</p>
         </div>
       }
       emptyState={

@@ -6,17 +6,18 @@ type Variant = "primary" | "secondary" | "ghost" | "danger";
 type Size = "sm" | "md" | "lg";
 
 const VARIANTS: Record<Variant, string> = {
-  // Gold is the only non-neutral in the interface, and it marks the primary action.
-  primary: "bg-accent text-accent-ink hover:bg-accent-hover disabled:bg-ink-muted",
-  secondary: "bg-surface text-ink border border-line hover:bg-surface-sunken",
-  ghost: "bg-transparent text-ink hover:bg-surface-sunken",
+  // Emerald is the brand and carries the primary action.
+  primary: "bg-brand text-brand-ink hover:bg-brand-hover disabled:bg-ink-muted",
+  // The outline button jewellery retail uses for a secondary call.
+  secondary: "bg-transparent text-ink border border-line-strong hover:border-ink hover:bg-surface",
+  ghost: "bg-transparent text-ink hover:bg-surface",
   danger: "bg-danger text-white hover:brightness-110",
 };
 
 const SIZES: Record<Size, string> = {
-  sm: "h-8 px-3 text-sm gap-1.5",
-  md: "h-10 px-4 text-body gap-2",
-  lg: "h-12 px-6 text-body gap-2",
+  sm: "h-9 px-4 text-xs gap-1.5",
+  md: "h-11 px-6 text-sm gap-2",
+  lg: "h-13 px-8 text-sm gap-2",
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -40,7 +41,9 @@ export function Button({
     <Comp
       className={cn(
         "inline-flex items-center justify-center rounded-[var(--radius-md)] font-medium",
-        "transition-colors duration-150",
+        // Wide tracking on a small uppercase label is the category's button signature.
+        "uppercase tracking-[var(--tracking-label)]",
+        "transition-colors duration-200",
         "disabled:cursor-not-allowed disabled:opacity-60",
         VARIANTS[variant],
         SIZES[size],

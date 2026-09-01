@@ -15,19 +15,21 @@ export function GemPrice({
   className?: string;
 }) {
   const sizes = {
-    sm: "text-body font-semibold",
+    sm: "text-body",
     md: "text-h3",
-    lg: "text-h2",
+    lg: "text-h2 font-display",
   } as const;
 
   if (priceMinor === null) {
     return (
-      <span className={cn("text-ink-muted", sizes[size], className)}>Price on request</span>
+      <span className={cn("italic text-ink-muted", sizes[size], className)}>
+        Price on request
+      </span>
     );
   }
 
   return (
-    <span className={cn("font-semibold text-ink", sizes[size], className)}>
+    <span className={cn("font-medium text-ink", sizes[size], className)}>
       {formatMoney(priceMinor)}
     </span>
   );

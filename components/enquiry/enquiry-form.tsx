@@ -38,7 +38,7 @@ export function EnquiryForm({
   if (state.ok) {
     return (
       <div
-        className="rounded-[var(--radius-md)] border border-success bg-success-wash p-4"
+        className="rounded-[var(--radius-lg)] border border-success bg-success-wash p-5"
         role="status"
       >
         <h3 className="text-h3 text-ink">Enquiry sent</h3>
@@ -61,7 +61,7 @@ export function EnquiryForm({
       <input type="hidden" name="gemSlug" value={gemSlug} />
 
       <div>
-        <h3 className="text-h3">Enquire about this stone</h3>
+        <h3 className="text-h2">Enquire about this stone</h3>
         <p className="mt-1 text-sm text-ink-muted">
           Ask about price, certification, video, or a viewing. We reply to every enquiry
           about {gemReference} personally — there is no automated quote.

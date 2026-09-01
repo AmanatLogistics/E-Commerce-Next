@@ -14,8 +14,8 @@ export function EmptyState({
   children?: ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center gap-3 rounded-[var(--radius-md)] border border-dashed bg-surface-sunken px-6 py-12 text-center">
-      <h2 className="text-h3 text-ink">{title}</h2>
+    <div className="flex flex-col items-center gap-3 rounded-[var(--radius-lg)] border bg-surface px-6 py-16 text-center">
+      <h2 className="text-h2 text-ink">{title}</h2>
       <p className="max-w-prose text-body text-ink-muted">{body}</p>
       {children && <div className="mt-2 flex flex-wrap justify-center gap-2">{children}</div>}
     </div>

@@ -1,27 +1,28 @@
 import Link from "next/link";
 import { siteConfig } from "@/lib/site-config";
 import { getActiveCategories } from "@/lib/gems/queries";
+import { Crest } from "./wordmark";
 
 export async function SiteFooter() {
   const cats = await getActiveCategories();
 
   return (
-    <footer className="mt-16 border-t bg-surface-sunken">
-      <div className="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 lg:grid-cols-3">
-        <div>
-          <p className="font-display text-h3 font-semibold text-ink">{siteConfig.name}</p>
-          <p className="mt-2 max-w-xs text-sm text-ink-muted">{siteConfig.description}</p>
+    <footer className="bg-brand text-brand-ink">
+      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-16 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="lg:col-span-1">
+          <Crest className="text-gold" />
+          <p className="mt-3 font-display text-[1.35rem] leading-none tracking-[0.14em]">
+            {siteConfig.name.toUpperCase()}
+          </p>
+          <p className="mt-4 max-w-xs text-sm opacity-80">{siteConfig.description}</p>
         </div>
 
         <nav aria-label="Gem varieties">
-          <h2 className="label-caps">Stones</h2>
-          <ul className="mt-3 grid grid-cols-2 gap-2">
+          <h2 className="label-caps !text-brand-ink opacity-70">Stones</h2>
+          <ul className="mt-4 grid grid-cols-2 gap-2 lg:grid-cols-1">
             {cats.map((category) => (
               <li key={category.slug}>
-                <Link
-                  href={`/collection/${category.slug}`}
-                  className="text-sm text-ink-muted hover:text-accent"
-                >
+                <Link href={`/collection/${category.slug}`} className="text-sm opacity-85 hover:opacity-100 hover:underline">
                   {category.name}
                 </Link>
               </li>
@@ -30,26 +31,40 @@ export async function SiteFooter() {
         </nav>
 
         <div>
-          <h2 className="label-caps">Get in touch</h2>
-          <ul className="mt-3 flex flex-col gap-2 text-sm text-ink-muted">
+          <h2 className="label-caps !text-brand-ink opacity-70">Buying with us</h2>
+          <ul className="mt-4 flex flex-col gap-2 text-sm opacity-85">
+            {siteConfig.promises.map((promise) => (
+              <li key={promise.title}>{promise.title}</li>
+            ))}
             <li>
-              <a href={`mailto:${siteConfig.contactEmail}`} className="hover:text-accent">
+              <Link href="/collection" className="hover:underline">
+                Browse the collection
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <h2 className="label-caps !text-brand-ink opacity-70">Get in touch</h2>
+          <ul className="mt-4 flex flex-col gap-2 text-sm opacity-85">
+            <li>
+              <a href={`mailto:${siteConfig.contactEmail}`} className="hover:underline">
                 {siteConfig.contactEmail}
               </a>
             </li>
             <li>{siteConfig.contactPhone}</li>
             <li>{siteConfig.address}</li>
             <li>
-              <Link href="/contact" className="hover:text-accent">
-                Send a general enquiry
+              <Link href="/contact" className="hover:underline">
+                Send an enquiry
               </Link>
             </li>
           </ul>
         </div>
       </div>
 
-      <div className="border-t px-4 py-5">
-        <p className="mx-auto max-w-6xl text-sm text-ink-muted">
+      <div className="border-t border-white/15 px-4 py-5">
+        <p className="mx-auto max-w-7xl text-xs opacity-70">
           © {new Date().getFullYear()} {siteConfig.name}. Every stone is sold by enquiry —
           nothing is charged through this website. Treatments are disclosed on every listing.
         </p>

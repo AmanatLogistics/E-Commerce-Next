@@ -20,7 +20,7 @@ export function Pagination({
   const visible = [...pages].filter((p) => p >= 1 && p <= totalPages).sort((a, b) => a - b);
 
   const linkClass =
-    "inline-flex h-9 min-w-9 items-center justify-center rounded-[var(--radius-md)] border px-3 text-sm transition-colors hover:bg-surface-sunken";
+    "inline-flex h-10 min-w-10 items-center justify-center rounded-[var(--radius-md)] border border-line-strong bg-surface px-3 text-sm transition-colors hover:border-ink";
 
   return (
     <nav aria-label="Pagination" className="flex flex-wrap items-center justify-center gap-1.5">
@@ -45,7 +45,7 @@ export function Pagination({
               aria-current={p === page ? "page" : undefined}
               className={cn(
                 linkClass,
-                p === page && "border-accent bg-accent text-accent-ink hover:bg-accent-hover",
+                p === page && "border-brand bg-brand text-brand-ink hover:bg-brand-hover",
               )}
             >
               {p}

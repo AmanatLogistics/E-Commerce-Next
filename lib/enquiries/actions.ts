@@ -10,7 +10,7 @@ import { siteConfig } from "../site-config";
 import { enquirySchema } from "../validation/schemas";
 import { fieldErrorsFrom, type EnquiryFormState } from "../forms/state";
 
-/** KG-7Q2M4X — short enough to read down a phone, random enough not to collide. */
+/** REC-7Q2M4X — short enough to read down a phone, random enough not to collide. */
 function makeReference(): string {
   const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"; // no I/O/0/1
   const bytes = randomBytes(6);

@@ -18,7 +18,7 @@ export function SortSelect({ basePath, params }: { basePath: string; params: Bro
         onChange={(event) =>
           router.push(buildBrowseHref(basePath, params, { sort: event.target.value as Sort, page: 1 }))
         }
-        className="h-9 rounded-[var(--radius-md)] border bg-surface px-2 text-sm text-ink hover:border-ink-muted focus:border-accent"
+        className="h-10 rounded-[var(--radius-md)] border border-line-strong bg-surface px-3 text-sm text-ink transition-colors hover:border-ink focus:border-brand"
       >
         {SORTS.map((sort) => (
           <option key={sort} value={sort}>

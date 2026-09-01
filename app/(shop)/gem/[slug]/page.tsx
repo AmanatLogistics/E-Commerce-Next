@@ -89,7 +89,7 @@ export default async function GemPage({ params }: Props) {
   };
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8">
+    <div className="mx-auto max-w-7xl px-4 py-8">
       <script
         type="application/ld+json"
         // Serialised from our own database record, never from user input.
@@ -108,7 +108,7 @@ export default async function GemPage({ params }: Props) {
         <span aria-current="page" className="text-ink">{gem.reference}</span>
       </nav>
 
-      <div className="mt-6 grid items-start gap-10 lg:grid-cols-2 lg:gap-14">
+      <div className="mt-8 grid items-start gap-10 lg:grid-cols-2 lg:gap-16">
         {/*
           * Sticky on desktop: the specification and the enquiry form run long, and a buyer
           * reading "vivid red, eye clean, 7.80 × 6.05 mm" wants the stone still in view.
@@ -119,17 +119,18 @@ export default async function GemPage({ params }: Props) {
 
         <div className="flex flex-col gap-6">
           <div>
-            <div className="flex flex-wrap items-center gap-2">
+            <p className="label-caps">{category?.name ?? gem.categorySlug}</p>
+            <h1 className="text-h1 mt-2">{gem.title}</h1>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
               <GemStatusBadge status={gem.status} />
               {untreated && <Badge tone="accent">Untreated</Badge>}
+              <span className="label-caps">{gem.reference}</span>
             </div>
-            <h1 className="text-h1 mt-3">{gem.title}</h1>
-            <p className="label-caps mt-2">{gem.reference}</p>
           </div>
 
-          <div className="border-y py-4">
+          <div className="border-y py-5">
             <GemPrice priceMinor={gem.priceMinor} size="lg" />
-            <p className="mt-1 text-sm text-ink-muted">
+            <p className="mt-2 text-sm text-ink-muted">
               {gem.priceMinor === null
                 ? "Send an enquiry and we will quote for this stone directly."
                 : `Excludes shipping and any duties. Quoted in ${siteConfig.currency}.`}
@@ -137,18 +138,17 @@ export default async function GemPage({ params }: Props) {
           </div>
 
           <div>
-            <h2 className="text-h3">About this stone</h2>
-            <p className="mt-2 whitespace-pre-line text-body text-ink-muted">{gem.description}</p>
+            <p className="whitespace-pre-line text-body text-ink-muted">{gem.description}</p>
           </div>
 
           <div>
-            <h2 className="text-h3 border-b pb-2">Specification</h2>
-            <div className="mt-1">
+            <h2 className="text-h3 crest-rule">Specification</h2>
+            <div className="mt-4">
               <GemSpecTable gem={gem} />
             </div>
           </div>
 
-          <div id="enquire" className="rounded-[var(--radius-md)] border bg-surface-sunken p-5">
+          <div id="enquire" className="rounded-[var(--radius-lg)] border bg-surface p-6">
             {isEnquirable(gem.status) ? (
               <EnquiryForm
                 gemSlug={gem.slug}
@@ -174,11 +174,13 @@ export default async function GemPage({ params }: Props) {
       </div>
 
       {related.length > 0 && (
-        <section aria-labelledby="related-heading" className="mt-16">
-          <h2 id="related-heading" className="text-h2 border-b pb-3">
-            Other {category?.name.toLowerCase() ?? "stones"}
-          </h2>
-          <div className="mt-6">
+        <section aria-labelledby="related-heading" className="mt-20">
+          <div className="text-center">
+            <h2 id="related-heading" className="text-h2 crest-rule crest-rule-center">
+              More {category?.name.toLowerCase() ?? "stones"}
+            </h2>
+          </div>
+          <div className="mt-10">
             <GemGrid gems={related} />
           </div>
         </section>

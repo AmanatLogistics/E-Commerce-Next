@@ -1,8 +1,7 @@
-# Research — Karakoram Gems
+# Research — Royal Emerald Crest
 
-> Working store name is **Karakoram Gems**, after the range that most of these stones come
-> out of. It is defined in exactly one place, `lib/site-config.ts`, so renaming the business
-> is a one-line change.
+> The business is **Royal Emerald Crest**. It is defined in exactly one place,
+> `lib/site-config.ts`, so renaming it is a one-line change.
 
 ## A. How loose-gemstone dealers actually sell
 
@@ -78,6 +77,25 @@ several of its findings survive the translation:
 | Search and filter state in the URL, so a result is shareable and survives Back. | `lib/browse-params.ts` |
 | An empty result is a useful screen with real next actions, never a dead end. | `/collection` empty state |
 
+## C2. Visual reference
+
+The client pointed at a direct-to-consumer jewellery storefront (vibella.com) as the look
+they wanted. **That page could not be fetched from this environment — it is blocked by the
+egress proxy, as was angara.com** — so the direction in `docs/DESIGN.md` is built from the
+category conventions that could be verified in published write-ups plus general knowledge of
+how these storefronts are put together, not from reading that specific site. The patterns
+adopted are the ones these write-ups agree on:
+
+- Elegant serif headings against generous white space, with a neutral palette of ivory,
+  black, gold and one brand colour.
+- A promise/announcement bar above the header.
+- Large product photography on a pale ground, with a second view on hover.
+- Clean category navigation and a product grid that goes 2-up on a phone.
+- Product zoom to inspect a stone, and macro imagery showing clarity.
+
+If any of this misses what the client actually liked about that site, it is worth a look at
+it together — the direction is one file of tokens and would not be expensive to shift.
+
 ## D. Stack decision
 
 **Next.js 16.3.3 (App Router), not Astro.** Verified with `npm view next version`.
@@ -103,5 +121,8 @@ hydration boundaries, which trades away the thing Astro is good at.
 - [Province-by-province mining guide — Orah Jewels](https://orahjewels.com/blogs/journals/where-are-pakistans-gemstones-found-a-province-by-province-mining-location-guide)
 - [Pakistan's gemstones and minerals — Gandhara Gems](https://gandharagems.com/blogs/blog/pakistan-s-gemstones-minerals-an-overview)
 - [Baymard Institute — cart & checkout usability research](https://baymard.com/research/checkout-usability)
+- [Best jewelry website design examples — Colorlib](https://colorlib.com/wp/jewelry-website-design/)
+- [Jewelry website design examples — Muffin Group](https://muffingroup.com/blog/jewelry-website-designs/)
+- [Why jewelry brands need luxury website design — Wings](https://wings.design/insights/why-every-jewelry-brand-needs-a-luxury-website-design)
 
 Version facts came from `npm view <pkg> version` run in this repo, not from memory.

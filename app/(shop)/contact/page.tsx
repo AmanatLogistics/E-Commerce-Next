@@ -9,10 +9,11 @@ export const metadata: Metadata = {
 
 export default function ContactPage() {
   return (
-    <div className="mx-auto max-w-6xl px-4 py-12">
+    <div className="mx-auto max-w-7xl px-4 py-16">
       <div className="grid gap-12 lg:grid-cols-[1fr_20rem]">
         <div>
-          <h1 className="text-h1">Get in touch</h1>
+          <p className="label-caps">Enquiries</p>
+          <h1 className="text-h1 mt-2 crest-rule">Get in touch</h1>
           <p className="mt-3 max-w-xl text-ink-muted">
             If a stone in the collection interests you, the enquiry form on its own page is the
             quickest route — it tells us which stone you mean. Use this form for anything else:
@@ -29,7 +30,7 @@ export default function ContactPage() {
           <h2 className="label-caps">Direct</h2>
           <ul className="mt-3 flex flex-col gap-3 text-body">
             <li>
-              <a href={`mailto:${siteConfig.contactEmail}`} className="hover:text-accent">
+              <a href={`mailto:${siteConfig.contactEmail}`} className="hover:text-brand">
                 {siteConfig.contactEmail}
               </a>
             </li>

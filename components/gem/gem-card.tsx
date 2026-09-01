@@ -2,64 +2,86 @@ import Image from "next/image";
 import Link from "next/link";
 import type { GemCardView } from "@/lib/gems/queries";
 import { GemPrice } from "./price";
-import { GemStatusBadge } from "./status-badge";
 import { cn } from "@/lib/cn";
 
 /**
- * The photograph is the product, so it gets the room. The image sits on the dark tray
- * colour in both themes — a jeweller shows a stone on a dark tray for the same reason.
+ * The catalogue card. Follows the conventions of the category: a large square image on a
+ * pale plate, a second view revealed on hover, a corner badge for anything the buyer
+ * should notice, then variety, name, the attributes they compare on, and the price.
  */
-export function GemCard({ gem, priority = false }: { gem: GemCardView; priority?: boolean }) {
+export function GemCard({
+  gem,
+  priority = false,
+  secondImage,
+}: {
+  gem: GemCardView;
+  priority?: boolean;
+  /** The second view, swapped in on hover. Absent for a stone with a single image. */
+  secondImage?: string;
+}) {
   const untreated = /^none/i.test(gem.treatment);
+  const sold = gem.status === "sold";
 
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-[var(--radius-md)] border bg-surface transition-colors hover:border-accent">
-      <div className="relative aspect-square overflow-hidden bg-tray">
+    <article className="group relative flex flex-col">
+      <div className="relative aspect-square overflow-hidden rounded-[var(--radius-lg)] bg-plate">
         <Image
           src={gem.image}
           alt={gem.imageAlt}
           width={600}
           height={600}
           priority={priority}
-          sizes="(min-width: 1280px) 22vw, (min-width: 900px) 30vw, (min-width: 480px) 46vw, 92vw"
+          sizes="(min-width: 1100px) 23vw, (min-width: 640px) 31vw, 46vw"
           className={cn(
-            "size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]",
-            gem.status === "sold" && "opacity-50",
+            "size-full object-cover transition-opacity duration-500",
+            secondImage && "group-hover:opacity-0",
+            sold && "opacity-60",
           )}
         />
-        <div className="absolute left-2 top-2 flex flex-wrap gap-1">
-          <GemStatusBadge status={gem.status} />
-          {untreated && <span className="sr-only">Untreated</span>}
-        </div>
+        {secondImage && (
+          <Image
+            src={secondImage}
+            alt=""
+            aria-hidden="true"
+            width={600}
+            height={600}
+            sizes="(min-width: 1100px) 23vw, (min-width: 640px) 31vw, 46vw"
+            className="absolute inset-0 size-full object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+          />
+        )}
+
+        {/* One badge only. Stacking three of them is how a grid starts to look like a sale bin. */}
+        {sold ? (
+          <span className="absolute left-3 top-3 rounded-[var(--radius-sm)] bg-ink/85 px-2.5 py-1 text-xs uppercase tracking-[var(--tracking-nav)] text-white">
+            Sold
+          </span>
+        ) : gem.status === "reserved" ? (
+          <span className="absolute left-3 top-3 rounded-[var(--radius-sm)] bg-gold px-2.5 py-1 text-xs uppercase tracking-[var(--tracking-nav)] text-gold-ink">
+            Reserved
+          </span>
+        ) : untreated ? (
+          <span className="absolute left-3 top-3 rounded-[var(--radius-sm)] bg-surface/95 px-2.5 py-1 text-xs uppercase tracking-[var(--tracking-nav)] text-brand">
+            Untreated
+          </span>
+        ) : null}
       </div>
 
-      <div className="flex flex-1 flex-col gap-2 p-3 sm:p-4">
-        <p className="label-caps">{gem.reference}</p>
-        <h3 className="text-h3">
+      <div className="flex flex-1 flex-col items-center gap-1.5 px-1 pt-4 text-center">
+        <p className="label-caps">{gem.categorySlug.replace(/-/g, " ")}</p>
+
+        <h3 className="font-display text-h3 leading-snug text-ink">
           {/* Stretched link: the whole card is the target, only the name is announced. */}
           <Link href={`/gem/${gem.slug}`} className="after:absolute after:inset-0">
             {gem.title}
           </Link>
         </h3>
 
-        <dl className="flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-ink-muted">
-          <div className="flex gap-1">
-            <dt className="sr-only">Carat weight</dt>
-            <dd>{gem.caratWeight.toFixed(2)} ct</dd>
-          </div>
-          <div className="flex gap-1">
-            <dt className="sr-only">Shape</dt>
-            <dd>{gem.shape}</dd>
-          </div>
-          <div className="flex gap-1">
-            <dt className="sr-only">Origin</dt>
-            <dd>{gem.origin.split(",")[0]}</dd>
-          </div>
-        </dl>
+        <p className="text-sm text-ink-muted">
+          {gem.caratWeight.toFixed(2)} ct · {gem.shape} · {gem.origin.split(",")[0]}
+        </p>
 
-        <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-2">
+        <div className="mt-1.5">
           <GemPrice priceMinor={gem.priceMinor} size="sm" />
-          {untreated && <span className="label-caps">Untreated</span>}
         </div>
       </div>
     </article>
@@ -76,7 +98,12 @@ export function GemGrid({
   return (
     <div className="gem-grid">
       {gems.map((gem, index) => (
-        <GemCard key={gem.id} gem={gem} priority={index < priorityCount} />
+        <GemCard
+          key={gem.id}
+          gem={gem}
+          priority={index < priorityCount}
+          secondImage={gem.secondImage}
+        />
       ))}
     </div>
   );

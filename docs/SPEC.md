@@ -1,4 +1,4 @@
-# Architecture spec — Karakoram Gems
+# Architecture spec — Royal Emerald Crest
 
 A loose-gemstone dealer's site: a public catalogue, and a private admin panel. Buyers
 **enquire**; they do not check out, and they do not have accounts.
@@ -116,13 +116,13 @@ Indexes and the query each serves:
   `{ title: 10, reference: 8, origin: 4, colour: 3, description: 1 }`.
   A collection may hold only one text index, which is why all five share it.
 
-> **Stock references bypass the text index.** `KG-EM-0101` tokenises to `kg`, `em`, `0101`,
+> **Stock references bypass the text index.** `REC-EM-0101` tokenises to `kg`, `em`, `0101`,
 > and `kg` matches every stone in the shop. A query matching the reference pattern is looked
 > up exactly instead, and returns nothing when it misses rather than falling through to the
 > tokenised search. Found by testing; see `lib/gems/queries.ts`.
 
 ### `enquiries`
-`reference` (e.g. `KG-7Q2M4X`), `gemId`, `gemSlug`, `gemTitle`, `gemReference`, `name`,
+`reference` (e.g. `REC-7Q2M4X`), `gemId`, `gemSlug`, `gemTitle`, `gemReference`, `name`,
 `email`, `phone`, `message`, `status: new|replied|closed`, `emailSent`, `emailError`,
 `adminNote`, timestamps.
 Indexes: `{ reference: 1 }` unique; `{ status: 1, createdAt: -1 }` (the inbox);
@@ -153,7 +153,7 @@ deliveries are surfaced on the dashboard and flagged on the row.
 Two transports behind one `sendMail()`:
 
 - **SMTP** via nodemailer when `SMTP_HOST`, `ENQUIRY_RECIPIENT` and `MAIL_FROM` are all set.
-- **Local outbox** otherwise: each message is written to `.kg-data/outbox/*.eml`.
+- **Local outbox** otherwise: each message is written to `.rec-data/outbox/*.eml`.
 
 The outbox is not a stub. It exists so the flow is observable end to end with nothing
 configured, and it is what the tests exercise. `Reply-To` is set to the buyer, so hitting

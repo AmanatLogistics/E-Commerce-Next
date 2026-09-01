@@ -27,7 +27,7 @@ export function AdminNav() {
                 className={cn(
                   "inline-flex h-11 items-center border-b-2 px-3 text-sm",
                   active
-                    ? "border-accent font-medium text-ink"
+                    ? "border-brand font-medium text-ink"
                     : "border-transparent text-ink-muted hover:text-ink",
                 )}
               >

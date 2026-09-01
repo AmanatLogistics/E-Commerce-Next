@@ -1,4 +1,4 @@
-# Project: Karakoram Gems
+# Project: Royal Emerald Crest
 
 A loose-gemstone dealer's site: public catalogue + private admin panel. PKR / en-PK.
 Business name lives in `lib/site-config.ts` only.
@@ -55,10 +55,12 @@ Palette, typefaces, spacing, radii and elevation are in `docs/DESIGN.md` and imp
 tokens in `app/globals.css` (Tailwind v4 `@theme`, there is no `tailwind.config.ts`). Never
 hardcode a hex value or font family in a component; if a token is missing, add it first.
 
-The governing rule: **the interface is achromatic so the stones are the only saturated
-colour on screen.** Gold (`--accent`) marks the primary action and nothing else. `--tray` is
-the dark plate every stone photograph sits on, in both themes. `/styleguide` renders every
-token with measured contrast ratios.
+The register is a fine-jewellery storefront: a warm ivory ground (`--surface-sunken`), deep
+emerald as the brand (`--brand`) carrying every primary action, and gold (`--gold`) reserved
+for the crest, the `.crest-rule` under a section heading, and the focus ring — never as small
+text. Stone photography sits on `--plate`, a pale warm panel. The serif (Cormorant) sets
+names and headings; Jost sets everything factual, and **never** let the serif set a number in
+a table. `/styleguide` renders every token with measured contrast ratios.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

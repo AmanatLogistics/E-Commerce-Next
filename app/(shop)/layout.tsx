@@ -1,4 +1,5 @@
 import { SiteFooter } from "@/components/layout/site-footer";
+import { TrustStrip } from "@/components/layout/trust-strip";
 import { SiteHeader } from "@/components/layout/site-header";
 
 export default function ShopLayout({ children }: { children: React.ReactNode }) {
@@ -11,6 +12,7 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
       <main id="main" className="flex-1">
         {children}
       </main>
+      <TrustStrip />
       <SiteFooter />
     </div>
   );

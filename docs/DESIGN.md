@@ -1,143 +1,126 @@
-# Design direction — Karakoram Gems
+# Design direction — Royal Emerald Crest
 
-**Direction name: "Tray and Loupe".**
+**Direction name: "Emerald & Ivory".**
 
-One rule governs the whole system: **the interface is achromatic, so the stones are the
-only saturated colour on any page.** Greys, warm ivory and a single restrained gold are all
-the UI gets. A gem shop that puts a brand colour next to a vivid red spinel is competing
-with its own product; a jeweller puts the stone on a plain dark tray for exactly this
-reason, and the image plate here is that tray, in both light and dark themes.
+The register is a contemporary fine-jewellery storefront. That is a deliberate change from
+this project's first design, which was austere and achromatic; the client saw it and wanted
+the warmer, more commercial language that direct-to-consumer jewellery brands use, and they
+were right — an austere grid reads as a mineral archive, not as a shop where someone is
+about to spend a large sum on something they cannot hold.
 
-Everything else follows from it. Cards are quiet. Badges are washes, not blocks. Gold
-appears on the primary action and nowhere it would sit beside a photograph.
+The name sets the palette. **Deep emerald** is the brand and carries every primary action.
+**Warm ivory** is the ground, because a cool grey makes gemstones look like specimens under
+lab light and a warm one makes them look like merchandise. **Gold** appears only as
+emphasis: the crest, the short rule under a section heading, the focus ring. Photography
+sits on a **pale plate** rather than a dark tray — the reverse of the earlier design, and the
+single change that does most to move the page from museum to shop.
 
 ## Palette
 
-### Light — "gallery"
+### Light — the primary look
 
 | Token | Hex | Role |
 |---|---|---|
-| `--surface` | `#FFFFFF` | Page and card ground |
-| `--surface-sunken` | `#F1F3F4` | Recessed panels, table zebra. A cool grey, deliberately not a warm cream |
-| `--tray` | `#1A1E21` | The plate every stone photograph sits on — dark in **both** themes |
-| `--ink` | `#16191C` | Primary text |
-| `--ink-muted` | `#5A6169` | Secondary text, spec labels |
-| `--line` | `#DDE1E4` | Hairline borders — the main separation device |
-| `--accent` | `#8A6D12` | Antique gold. Primary action, active state, links on hover |
+| `--surface-sunken` | `#FAF7F2` | Warm ivory. The page ground |
+| `--surface` | `#FFFFFF` | Cards, panels, raised sections |
+| `--plate` | `#F2EDE4` | The pale panel every stone photograph sits on |
+| `--brand` | `#0B4F3A` | Deep emerald. Primary action, header bar, footer, active state |
+| `--gold` | `#B08D45` | Emphasis only: crest, section rule, focus ring |
+| `--ink` | `#1C1A17` | Primary text, warm near-black |
+| `--ink-muted` | `#6B6459` | Secondary text, spec labels |
+| `--line` / `--line-strong` | `#E5DED2` / `#D3C9B8` | Hairlines; the stronger one for form controls |
 | `--success` | `#1F7A4C` | Available |
-| `--danger` | `#B3261E` | Errors, destructive, failed delivery |
+| `--danger` | `#A32B20` | Errors, destructive |
 
-### Dark — the design's home ground
+### Dark
 
-| Token | Hex |
-|---|---|
-| `--surface` | `#14171A` |
-| `--surface-sunken` | `#0F1214` |
-| `--tray` | `#0D1012` |
-| `--ink` | `#ECE7DF` (warm ivory on a cool ground — the candlelit-case effect) |
-| `--ink-muted` | `#9AA0A6` |
-| `--line` | `#2C3238` |
-| `--accent` | `#C9A227` |
-| `--success` | `#4E9A6A` |
-| `--danger` | `#D96A5E` |
+The dark theme keeps the same structure with the emerald and gold lifted for contrast:
+`--surface #14171A`, `--plate #1E2326`, `--brand #4FAE8B`, `--gold #D3AD5F`,
+`--ink #EFE9DE`, `--ink-muted #A49C8F`, `--line #2B3033`.
 
-Contrast: white on `--accent` `#8A6D12` ≈ 5.2:1 and `--ink` on `--surface` ≈ 16:1, both past
-WCAG AA. Gold is never used as small text on white — it is a button ground or a hover state.
+Contrast: white on `--brand` ≈ 9.6:1 and `--ink` on `--surface-sunken` ≈ 15:1, both well past
+WCAG AA. Gold is never small text on ivory — it is the crest, a 1px rule, and a focus ring.
+`/styleguide` prints every measured ratio.
 
 ## Typography
 
-- **Cormorant Garamond** — stone names, headings, the display line. A high-contrast old-style
-  serif: fine hairlines against heavy stems, which is the same visual event as light through
-  a faceted stone. Used 500/600.
-- **IBM Plex Sans** — body, spec tables, forms, the entire admin panel. It is here for one
-  functional reason: **true tabular figures**. This catalogue is columns of carat weights and
-  millimetre dimensions, and `2.14` must sit under `12.60` on the decimal. Used 400/500/600.
+- **Cormorant Garamond** — the wordmark, stone names, headings. A high-contrast old-style
+  serif is the register fine jewellery is sold in, and its fine hairlines sit naturally
+  beside faceted material. 400/500/600.
+- **Jost** — body, spec tables, navigation, buttons, the entire admin panel. A geometric
+  sans keeps a data-dense table readable under an ornate heading, and it holds the wide
+  letter-spacing the category uses for small labels without falling apart. 300–600.
 
-The two are unalike in skeleton, not just in weight, so a heading never reads as bolded body
-text. The admin panel uses Plex for its chrome as well — it is a working tool, and the serif
-belongs to the shop window.
+The pairing has a rule: **the serif never sets a number in a table.** Carat weights,
+millimetre dimensions and prices are all Jost with `tabular-nums`, so columns align.
 
 ### Scale
 
-Fluid via `clamp()` between 360px and 1440px.
+| Token | Size | Use |
+|---|---|---|
+| `--text-display` | clamp(2.25rem → 4rem) | Home hero |
+| `--text-h1` | clamp(1.75rem → 2.75rem) | Page and stone titles |
+| `--text-h2` | clamp(1.375rem → 2rem) | Section headings |
+| `--text-h3` | 1.25rem | Card titles, blocks |
+| `--text-body` | 0.9375rem | Default |
+| `--text-sm` / `--text-xs` | 0.8125 / 0.6875rem | Meta; labels |
 
-| Token | Size | Line-height | Use |
-|---|---|---|---|
-| `--text-display` | clamp(2rem, 1.3rem + 3vw, 3.5rem) | 1.05 | Home statement |
-| `--text-h1` | clamp(1.625rem, 1.2rem + 1.8vw, 2.5rem) | 1.12 | Page and stone titles |
-| `--text-h2` | clamp(1.3rem, 1.1rem + 0.9vw, 1.75rem) | 1.2 | Section |
-| `--text-h3` | 1.1875rem | 1.3 | Card and block titles |
-| `--text-body` | 0.9375rem | 1.6 | Default |
-| `--text-sm` | 0.8125rem | 1.5 | Meta |
-| `--text-xs` | 0.6875rem | 1.4 | Chips, spec labels |
+**`.label-caps`** — uppercase, `0.16em` tracking. The category's signature small label, used
+for eyebrows, spec-table labels, navigation and buttons. This is the one place wide tracked
+capitals belong, and it is deliberate rather than decorative.
 
-**One tracked-out small-caps style exists**, `.label-caps`, and it is confined to spec-table
-row labels and section eyebrows in the admin, where it does real work separating label from
-value in a dense two-column list. It is not used decoratively above headings.
+**`.crest-rule`** — a 2.5rem gold hairline under a section heading. The only ornament in the
+system. Used on section headings and nowhere else.
 
 ## Spacing, radius, elevation, grid
 
-**Spacing** — 4px base: `--space-1` 4 … `--space-8` 64. Nothing off-scale.
+**Spacing** — 4px base, `--space-1` 4 … `--space-9` 96.
 
-**Radius** — small and differentiated, so radius encodes what a thing is. A stone card is a
-plate, not a pill. `--radius-sm` 2px (chips), `--radius-md` 4px (buttons, inputs, cards),
-`--radius-lg` 8px (modals), `--radius-full` (avatars only).
+**Radius** — `--radius-sm` 2px (badges), `--radius-md` 4px (buttons, inputs),
+`--radius-lg` 10px (cards, image plates, panels). Jewellery retail is not a pill-shaped
+category; nothing is fully rounded except an avatar.
 
-**Elevation** — shadow is reserved for things that genuinely float; everything else separates
-with `--line`.
-- Level 0 — cards, panels, the gem grid: no shadow, 1px border.
-- Level 1 — dropdowns, popovers.
-- Level 2 — modals.
+**Elevation** — warm and very soft, never a hard grey drop. Level 1 for floating layers,
+level 2 for modals. Cards use a hairline border, not a shadow.
 
-**Gem grid** — deliberately *less* dense than a marketplace. Each stone is a unique object and
-the photograph is the product, so cards get room to breathe.
+**Product grid** — 2-up on a phone, as the category does, then 3 and 4.
 
 | Breakpoint | Columns | Gutter |
 |---|---|---|
-| 360–479px | 1 | 16px |
-| 480–899px | 2 | 16px |
-| 900–1279px | 3 | 24px |
-| 1280px+ | 4 | 24px |
+| 360–639px | 2 | 12px |
+| 640–1099px | 3 | 24px |
+| 1100px+ | 4 | 32px |
 
-## Self-critique — what a generic brief would have produced
+## Patterns taken from the category
 
-**Palette.** My first pass was the obvious luxury move: near-black, warm ivory, gold accent
-used generously — on headings, rules, hovers and borders. That is what any "premium" brief
-produces, and here it actively fights the product, because gold sits inside the same warm
-hue range as citrine, topaz and amber. Changed to a hard rule: the UI is achromatic and gold
-is confined to the primary action. The stones then have the colour space to themselves,
-which is the one thing this shop actually needs.
+Conventions this build adopts deliberately, having looked at how jewellery storefronts are
+structured (see `docs/RESEARCH.md` for what was and was not reachable):
 
-**Type.** Cormorant Garamond is a common luxury pick and I am not pretending otherwise. It
-stayed because the justification is functional rather than atmospheric — high stroke
-contrast beside faceted material — and because the pairing does the real work: every
-*factual* thing on the site is set in Plex for its tabular figures. The serif never touches
-a number in a table.
+- **An announcement bar** of promises above the header — the things a buyer needs to believe
+  before enquiring on a stone they cannot hold.
+- **A centred wordmark** over a variety rail, so the brand reads before the navigation.
+- **A hero that is one stone**, not a banner collage, with the type against a wide margin.
+- **Cards that swap to a second view on hover**, with one corner badge at most. Stacking
+  three badges is how a grid starts to look like a sale bin.
+- **Centred section headings** with an eyebrow and a crest rule.
+- **A trust strip** above the footer, and an emerald footer that closes the page.
 
-**Layout.** My first pass reused the dense marketplace grid from an earlier iteration of
-this project: five columns, tight gutters, small cards. That is right for forty phones and
-wrong for twenty-three unique stones — it makes a curated inventory look like clearance
-stock, and it shrinks the photograph, which is the product. Changed to a four-up maximum
-and one column at 360px.
+## Self-critique
 
-**Home page.** I had a hero banner with a large photograph. Cut: a stone photographed at
-banner size is a texture, not a stone, and it pushed actual inventory below the fold. The
-page now opens with a short plain statement and goes straight to selected stones.
+**What the first design got wrong.** It was internally consistent and I still think the
+argument was sound — an achromatic UI so the stones are the only colour. But it optimised
+for a photographer's judgement of the stone and ignored what the page is for, which is to
+make someone confident enough to start a conversation about money. Dark grey and hairlines
+do not do that. The lesson is not "the palette was wrong", it is that I picked a rule and
+followed it past the point where it served the buyer.
 
-## Hard constraints — how each is honoured
+**What I would still guard against here.** The obvious failure mode of this direction is
+generic luxury: cream, a serif, gold everywhere, and nothing that says which shop this is.
+Three rules hold it back from that — gold is confined to the crest, the rule and the focus
+ring; the serif never sets a number; and the emerald is a real brand colour doing real work
+on buttons and the footer rather than an accent sprinkled around. The category cards, the
+spec table and the enquiry panel are all plain by design so the stones carry the page.
 
-- **No warm-cream + high-contrast serif + terracotta.** There is a serif, but the ground is
-  cool white `#F1F3F4` or near-black, and there is no terracotta anywhere.
-- **No accent near `#D97757`.** The only warm colour is `#8A6D12` / `#C9A227`, a dark gold
-  at roughly 45° hue against that colour's ≈16°, and far less saturated. Checked, not assumed.
-- **No purple/violet gradient.** There are no gradients in the system at all.
-- **No Inter everywhere.** Neither face is Inter.
-- **No black with one acid accent.** The dark ground is `#14171A`, and antique gold is the
-  opposite of an acid accent.
-- **No untouched component library.** Radix supplies unstyled behaviour only (dropdown,
-  dialog); every visual property is ours.
-- **No tracked-out ALL-CAPS eyebrows above headings** — the one small-caps style is scoped
-  to data labels, as described above.
-- **No "→" glued to button text.** Button labels are plain verbs.
-- **No meta strings joined with middle dots.** Meta is a real table or real spacing.
-- **No identical rounded cards with the same soft shadow.** See radius and elevation above.
+**Still deliberately absent.** No gradient hero, no ALL-CAPS eyebrow above *every* heading
+(only where a section needs one), no "→" glued to button text, no meta strings joined with
+middle dots, and no identical drop shadow on every card regardless of hierarchy.

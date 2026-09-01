@@ -11,7 +11,7 @@ function stoneFixture() {
   const suffix = unique("t");
   return {
     title: `Test Spinel ${suffix}`,
-    reference: `KG-TEST-${suffix}`.toUpperCase(),
+    reference: `REC-TEST-${suffix}`.toUpperCase(),
     slug: `test-spinel-${suffix}`,
     description:
       "A stone created by the test suite to verify that the admin create path reaches the site.",
@@ -83,7 +83,7 @@ test("an admin can publish a stone, change its status, and remove it", async ({ 
 test("a duplicate stock reference is refused", async ({ page }) => {
   const stone = stoneFixture();
   await page.goto("/admin/gems/new");
-  await fillStone(page, { ...stone, reference: "KG-EM-0101" }); // already in the seed
+  await fillStone(page, { ...stone, reference: "REC-EM-0101" }); // already in the seed
   await page.getByRole("button", { name: "Add stone" }).click();
 
   await expect(page.getByText("Another stone already uses this value.")).toBeVisible();

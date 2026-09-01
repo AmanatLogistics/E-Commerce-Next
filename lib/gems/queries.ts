@@ -14,6 +14,8 @@ export interface GemCardView {
   categorySlug: string;
   image: string;
   imageAlt: string;
+  /** The second view, used for the card's hover swap. Absent when there is only one. */
+  secondImage?: string;
   caratWeight: number;
   shape: string;
   origin: string;
@@ -31,6 +33,7 @@ export function toCardView(gem: GemDoc): GemCardView {
     categorySlug: gem.categorySlug,
     image: gem.images[0]?.url ?? "",
     imageAlt: gem.images[0]?.alt ?? gem.title,
+    secondImage: gem.images[1]?.url,
     caratWeight: gem.caratWeight,
     shape: gem.shape,
     origin: gem.origin,
@@ -68,7 +71,7 @@ function browseFilter(params: BrowseParams, categorySlug?: string): Filter<GemDo
   return filter;
 }
 
-/** Stock references look like KG-EM-0101: letters, hyphens and digits, no spaces. */
+/** Stock references look like REC-EM-0101: letters, hyphens and digits, no spaces. */
 const REFERENCE_PATTERN = /^[a-z]{1,4}-[a-z]{1,4}-\d{2,8}$/i;
 
 function escapeRegex(value: string): string {
@@ -95,7 +98,7 @@ export async function browseGems(
 
   if (params.q) {
     /*
-     * A stock reference is looked up exactly, not tokenised. "KG-EM-0101" splits into
+     * A stock reference is looked up exactly, not tokenised. "REC-EM-0101" splits into
      * "kg", "em" and "0101", and "kg" alone matches every reference in the catalogue —
      * so a dealer typing a stock number would get the whole shop back. Anyone entering
      * something of this shape wants that one stone.
@@ -107,7 +110,7 @@ export async function browseGems(
       });
       /*
        * Returned whether or not it matched. Falling through to the tokenised search on a
-       * miss would answer "KG-ZZ-9999" with the entire catalogue, for the same reason as
+       * miss would answer "REC-ZZ-9999" with the entire catalogue, for the same reason as
        * above; an unknown stock number should show the empty state.
        */
       return {

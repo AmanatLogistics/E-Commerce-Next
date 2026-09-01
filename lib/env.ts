@@ -19,13 +19,13 @@ export const env = {
 
   /** When set, the real MongoDB driver is used. When absent, the in-memory driver is. */
   mongodbUri: process.env.MONGODB_URI ?? null,
-  mongodbDb: process.env.MONGODB_DB ?? "karakoram_gems",
+  mongodbDb: process.env.MONGODB_DB ?? "royal_emerald_crest",
 
   /**
    * Where the in-memory driver persists, so `npm run seed`, `next dev` and Playwright
    * (three separate processes) see the same data. Ignored when MONGODB_URI is set.
    */
-  memoryDbFile: process.env.KG_MEMORY_DB ?? ".kg-data/db.json",
+  memoryDbFile: process.env.REC_MEMORY_DB ?? ".rec-data/db.json",
 
   /**
    * In production this must be set explicitly; a fixed dev fallback keeps sessions stable
@@ -45,7 +45,7 @@ export const env = {
     );
   },
 
-  seedAdminEmail: process.env.SEED_ADMIN_EMAIL ?? "admin@karakoramgems.example",
+  seedAdminEmail: process.env.SEED_ADMIN_EMAIL ?? "admin@royalemeraldcrest.example",
   seedAdminPassword: process.env.SEED_ADMIN_PASSWORD ?? "AdminPass123!",
 
   /**
@@ -63,6 +63,6 @@ export const env = {
   enquiryRecipient: process.env.ENQUIRY_RECIPIENT ?? "",
   mailFrom: process.env.MAIL_FROM ?? "",
   /** Outbox directory used when SMTP is not configured. */
-  mailOutbox: process.env.MAIL_OUTBOX ?? ".kg-data/outbox",
+  mailOutbox: process.env.MAIL_OUTBOX ?? ".rec-data/outbox",
 } as const;
 

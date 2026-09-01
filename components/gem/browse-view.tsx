@@ -77,10 +77,10 @@ export function BrowseView({
   });
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
+    <div className="mx-auto max-w-7xl px-4 py-12">
       {heading}
 
-      <div className="mt-8 flex flex-col gap-8 lg:flex-row lg:gap-12">
+      <div className="mt-10 flex flex-col gap-8 lg:flex-row lg:gap-14">
         <aside className="w-full shrink-0 lg:w-56" aria-label="Filters">
           <GemFilters
             basePath={basePath}
@@ -93,7 +93,7 @@ export function BrowseView({
         </aside>
 
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b pb-4">
             <p className="text-sm text-ink-muted" aria-live="polite">
               {result.total === 0
                 ? "No stones"
@@ -112,14 +112,14 @@ export function BrowseView({
                 <Link
                   key={chip.key}
                   href={chip.href}
-                  className="inline-flex items-center gap-1.5 rounded-[var(--radius-full)] border px-2.5 py-1 text-sm text-ink hover:border-danger hover:text-danger"
+                  className="inline-flex items-center gap-1.5 rounded-[var(--radius-full)] border border-line-strong bg-surface px-3 py-1 text-sm text-ink transition-colors hover:border-danger hover:text-danger"
                 >
                   {chip.label}
                   <span aria-hidden="true">✕</span>
                   <span className="sr-only">Remove this filter</span>
                 </Link>
               ))}
-              <Link href={clearAllHref} className="text-sm font-medium text-accent hover:underline">
+              <Link href={clearAllHref} className="text-sm font-medium text-brand hover:underline">
                 Clear all
               </Link>
             </div>
@@ -129,7 +129,7 @@ export function BrowseView({
             <div className="mt-8">{emptyState}</div>
           ) : (
             <>
-              <div className="mt-6">
+              <div className="mt-8">
                 <GemGrid gems={result.items} priorityCount={4} />
               </div>
               <div className="mt-10">

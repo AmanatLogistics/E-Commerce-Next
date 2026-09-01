@@ -15,7 +15,7 @@ import { jwtVerify } from "jose";
  * This is Next 16's `proxy.ts` convention, which replaced `middleware.ts`.
  */
 
-const SESSION_COOKIE = "kg_session";
+const SESSION_COOKIE = "rec_session";
 
 const secret = new TextEncoder().encode(
   process.env.AUTH_SECRET ?? "dev-only-insecure-secret-do-not-use-in-production",

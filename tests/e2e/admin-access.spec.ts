@@ -29,7 +29,7 @@ test.describe("as a logged-out visitor", () => {
     // Posting straight at the endpoint, bypassing the UI entirely.
     const response = await request.post("/admin/gems/new", {
       headers: { "Next-Action": "0000000000000000000000000000000000000000" },
-      form: { title: "Injected stone", slug: "injected-stone", reference: "KG-HACK-1" },
+      form: { title: "Injected stone", slug: "injected-stone", reference: "REC-HACK-1" },
       maxRedirects: 0,
     });
 
@@ -42,7 +42,7 @@ test.describe("as a logged-out visitor", () => {
     // A syntactically plausible but unsigned token. The signature check must reject it.
     await context.addCookies([
       {
-        name: "kg_session",
+        name: "rec_session",
         value:
           "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI2NmE1NzdmNzNhY2E2ZWY4YWFkYWY1NjEiLCJlbWFpbCI6" +
           "ImF0dGFja2VyQGV4YW1wbGUuY29tIiwicm9sZSI6ImFkbWluIiwidmVyIjowfQ.not-a-valid-signature",

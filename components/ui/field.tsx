@@ -25,7 +25,7 @@ function FieldShell({ label, error, hint, required, children }: FieldShellProps)
 
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-sm font-medium text-ink">
+      <label htmlFor={id} className="label-caps !text-ink">
         {label}
         {required && (
           <span className="text-danger ml-0.5" aria-hidden="true">
@@ -49,9 +49,9 @@ function FieldShell({ label, error, hint, required, children }: FieldShellProps)
 }
 
 const CONTROL =
-  "h-10 w-full rounded-[var(--radius-md)] border bg-surface px-3 text-body text-ink " +
+  "h-11 w-full rounded-[var(--radius-md)] border border-line-strong bg-surface px-3.5 text-body text-ink " +
   "placeholder:text-ink-muted transition-colors " +
-  "hover:border-ink-muted focus:border-accent disabled:bg-surface-sunken disabled:cursor-not-allowed";
+  "hover:border-ink-muted focus:border-brand disabled:bg-surface-sunken disabled:cursor-not-allowed";
 
 export interface TextFieldProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "id"> {
   label: string;
@@ -139,7 +139,7 @@ export function TextAreaField({
           required={required}
           className={cn(
             CONTROL,
-            "h-auto min-h-24 py-2 leading-[var(--leading-body)]",
+            "h-auto min-h-28 py-2.5 leading-[var(--leading-body)]",
             error && "border-danger",
             className,
           )}
@@ -162,7 +162,7 @@ export function Checkbox({
         id={id}
         type="checkbox"
         className={cn(
-          "mt-0.5 size-4 shrink-0 rounded-[var(--radius-sm)] border accent-[var(--accent)]",
+          "mt-0.5 size-4 shrink-0 rounded-[var(--radius-sm)] border accent-[var(--brand)]",
           className,
         )}
         {...props}

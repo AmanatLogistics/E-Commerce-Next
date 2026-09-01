@@ -43,7 +43,7 @@ export type GemStatus = "available" | "reserved" | "sold";
 
 export interface GemDoc extends BaseDoc {
   slug: string;
-  /** Reference the dealer uses on the stone's packet, e.g. "KG-EM-0112". */
+  /** Reference the dealer uses on the stone's packet, e.g. "REC-EM-0112". */
   reference: string;
   title: string;
   description: string;
