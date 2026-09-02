@@ -24,8 +24,29 @@ admin@royalemeraldcrest.example
 AdminPass123!
 ```
 
-Change `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` in `.env.local` before deploying
-anywhere, then re-run `npm run seed`.
+### Setting your own admin
+
+```bash
+npm run admin -- --email you@example.com --password 'YourPassword123'
+```
+
+That creates the admin, or updates the existing one's password — **without touching your
+catalogue or your enquiries**. Use it rather than re-running the seed, which clears
+everything.
+
+You can also put `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` in `.env.local` and run
+`npm run admin` with no arguments. **Quote the values.** An unquoted `#` starts a comment
+in a `.env` file, so `SEED_ADMIN_PASSWORD=MySecret#Pass123` is read as `MySecret` — the
+tooling now detects this and refuses rather than creating an account you cannot sign in to.
+
+If a sign-in is being refused and you cannot see why:
+
+```bash
+npm run admin -- --check
+```
+
+It lists the accounts that actually exist, says which address your environment is
+configured with, and flags any `.env` value being cut short.
 
 **It runs with no database installed.** When `MONGODB_URI` is absent the app uses a
 file-backed in-process store at `.rec-data/db.json`. Set `MONGODB_URI` and it uses the real

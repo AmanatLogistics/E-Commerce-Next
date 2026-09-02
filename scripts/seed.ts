@@ -17,9 +17,37 @@ async function main() {
   const { categories, gems, users, enquiries, ensureIndexes, usingMemoryDriver } = await import(
     "../lib/db/collections"
   );
-  const { hashPassword } = await import("../lib/auth/password");
+  const { upsertAdmin } = await import("../lib/auth/admin-account");
   const { env } = await import("../lib/env");
   const { rupees } = await import("../lib/money");
+  const { looksTruncated, quotingAdvice, readRawEnvValue } = await import("../lib/env-file");
+  const { passwordSchema } = await import("../lib/validation/schemas");
+
+  /*
+   * Checked before anything is written. dotenv cuts an unquoted value at the first `#`, so
+   * a password like `MySecret#Pass123` silently becomes `MySecret` and the account is
+   * created with something nobody typed — the only symptom being a login that will not
+   * work. Refuse rather than seed an account that cannot be signed in to.
+   */
+  for (const file of [".env.local", ".env"]) {
+    if (looksTruncated(file, "SEED_ADMIN_PASSWORD", process.env.SEED_ADMIN_PASSWORD)) {
+      const raw = readRawEnvValue(file, "SEED_ADMIN_PASSWORD")!;
+      console.error(`\n✗ SEED_ADMIN_PASSWORD in ${file} is being cut short.\n`);
+      console.error(`  In the file  : ${raw.raw}`);
+      console.error(`  Actually read: ${process.env.SEED_ADMIN_PASSWORD}\n`);
+      console.error("  An unquoted # starts a comment in a .env file. Quote it:\n");
+      console.error(`${quotingAdvice("SEED_ADMIN_PASSWORD", raw.raw)}\n`);
+      process.exit(1);
+    }
+  }
+
+  const seedPassword = passwordSchema.safeParse(env.seedAdminPassword);
+  if (!seedPassword.success) {
+    console.error("\n✗ SEED_ADMIN_PASSWORD will not do:\n");
+    for (const issue of seedPassword.error.issues) console.error(`  · ${issue.message}`);
+    console.error("\n  Fix it in .env.local (quoted), then run the seed again.\n");
+    process.exit(1);
+  }
 
   console.log(
     usingMemoryDriver
@@ -103,22 +131,12 @@ async function main() {
   }
   console.log(`  ${GEMS.length} stones (${imageCount} images)`);
 
-  await users().insertOne({
-    email: env.seedAdminEmail.toLowerCase(),
-    name: "Store Admin",
-    passwordHash: await hashPassword(env.seedAdminPassword),
-    role: "admin",
-    tokenVersion: 0,
-    disabled: false,
-    resetTokenHash: null,
-    resetTokenExpiresAt: null,
-    createdAt: now,
-    updatedAt: now,
-  });
+  const admin = await upsertAdmin(env.seedAdminEmail, seedPassword.data);
 
   console.log("\n✓ Seed complete.");
-  console.log(`  Admin sign-in: ${env.seedAdminEmail} / ${env.seedAdminPassword}`);
-  console.log("  Change SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD in .env.local before deploying.\n");
+  console.log(`  Admin sign-in: ${admin.email} / ${env.seedAdminPassword}`);
+  console.log("  Change SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD in .env.local before deploying,");
+  console.log("  or set them later with `npm run admin` — which keeps your enquiries.\n");
 
   if (!usingMemoryDriver) {
     const { closeMongo } = await import("../lib/db/mongo");
