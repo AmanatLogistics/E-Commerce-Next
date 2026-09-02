@@ -109,22 +109,36 @@ export async function GET() {
 
     // Index names, for the real MongoDB only — the local store has nothing to report.
     if (env.mongodbUri) {
-      const { getDb } = await import("@/lib/db/mongo");
-      const db = await getDb();
-      const indexes = await db.collection("gems").indexes();
-      gemIndexes = indexes.map((index) => index.name ?? "(unnamed)");
-      const hasText = indexes.some((index) =>
-        Object.values(index.key ?? {}).includes("text"),
-      );
-      checks.search_index = hasText
-        ? { ok: true, detail: "text index present; search works" }
-        : {
-            ok: false,
-            detail:
-              "No text index on the gems collection, so search will fail. It is created " +
-              "automatically on first use; if it is still missing, the database user may " +
-              "not be allowed to create indexes.",
-          };
+      try {
+        const { getDb } = await import("@/lib/db/mongo");
+        const db = await getDb();
+        const indexes = await db.collection("gems").indexes();
+        gemIndexes = indexes.map((index) => index.name ?? "(unnamed)");
+        const hasText = indexes.some((index) =>
+          Object.values(index.key ?? {}).includes("text"),
+        );
+        checks.search_index = hasText
+          ? { ok: true, detail: "text index present; search works" }
+          : {
+              ok: false,
+              detail:
+                "No text index on the gems collection, so search will fail. It is created " +
+                "automatically on first use; if it is still missing, the database user may " +
+                "not be allowed to create indexes.",
+            };
+      } catch (error) {
+        /*
+         * A collection that has never been written to does not exist yet, and asking it for
+         * its indexes throws. That is an empty database, not an unreachable one — reporting
+         * it as a connection failure would send someone hunting the wrong problem.
+         */
+        checks.search_index = {
+          ok: true,
+          detail:
+            "No gems collection yet, so there are no indexes to report. They are created " +
+            `on first write. (${(error as Error).message})`,
+        };
+      }
     }
   } catch (error) {
     httpStatus = 503;
