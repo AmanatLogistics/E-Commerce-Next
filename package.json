@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "seed": "tsx --conditions=react-server scripts/seed.ts",
     "test:unit": "tsx --conditions=react-server --test tests/unit/*.test.ts",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "admin": "tsx --conditions=react-server scripts/admin.ts"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.20",

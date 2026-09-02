@@ -12,7 +12,9 @@ the sale starts as a conversation. Do not add e-commerce machinery back without 
 - `npm run build` — production build (MUST pass before any commit)
 - `npm run typecheck` — tsc --noEmit
 - `npm run lint`
-- `npm run seed` — reset + seed the catalogue and the admin user
+- `npm run seed` — reset + seed the catalogue and the admin user (clears everything)
+- `npm run admin` — create/update the admin without touching the catalogue or enquiries;
+  `-- --check` diagnoses a refused sign-in
 - `npm run test:unit` — node:test unit tests
 - `npm run test:e2e` — Playwright (set `CHROMIUM_PATH` if a browser is pre-installed)
 
@@ -26,7 +28,10 @@ the sale starts as a conversation. Do not add e-commerce machinery back without 
   line of defence, never the only one — a Server Action re-runs neither. A hidden UI element
   is not security.
 - There is no code path that creates or promotes an account. The only admin comes from
-  `npm run seed`. `role` is not a field in any schema.
+  `lib/auth/admin-account.ts`, used by `npm run seed` and `npm run admin` and imported by
+  nothing the app serves. `role` is not a field in any schema.
+- Env values must be quoted in `.env.local`: dotenv cuts an unquoted value at the first
+  `#`. Both scripts refuse a truncated `SEED_ADMIN_PASSWORD` rather than storing it.
 - Prices are integers in paisa (1 PKR = 100 paisa). Never floats. `priceMinor: null` means
   "price on request" and must render as that, never as a blank or a zero.
 - `treatment` is required on every stone, including when it is "None (untreated)".
