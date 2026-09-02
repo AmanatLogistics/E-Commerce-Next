@@ -9,16 +9,29 @@ import {
   getLatestGems,
 } from "@/lib/gems/queries";
 import { siteConfig } from "@/lib/site-config";
+import { readDuringBuild } from "@/lib/db/build-safe";
 
 export const revalidate = 300;
 
 export default async function HomePage() {
-  const [featured, latest, cats, counts] = await Promise.all([
-    getFeaturedGems(8),
-    getLatestGems(4),
-    getActiveCategories(),
-    getCategoryCounts(),
-  ]);
+  type HomeData = [
+    Awaited<ReturnType<typeof getFeaturedGems>>,
+    Awaited<ReturnType<typeof getLatestGems>>,
+    Awaited<ReturnType<typeof getActiveCategories>>,
+    Awaited<ReturnType<typeof getCategoryCounts>>,
+  ];
+
+  const [featured, latest, cats, counts] = await readDuringBuild<HomeData>(
+    "home page catalogue",
+    () =>
+      Promise.all([
+        getFeaturedGems(8),
+        getLatestGems(4),
+        getActiveCategories(),
+        getCategoryCounts(),
+      ]),
+    [[], [], [], new Map()],
+  );
 
   const total = [...counts.values()].reduce((sum, n) => sum + n, 0);
   const hero = featured[0];

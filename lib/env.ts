@@ -4,14 +4,6 @@
  */
 import "server-only";
 
-function required(name: string, value: string | undefined, fallback?: string): string {
-  if (value && value.length > 0) return value;
-  if (fallback !== undefined) return fallback;
-  throw new Error(
-    `Missing required environment variable ${name}. Copy .env.example to .env.local.`,
-  );
-}
-
 const isProd = process.env.NODE_ENV === "production";
 
 /**
@@ -35,24 +27,6 @@ export const env = {
    */
   get memoryDbFile(): string {
     return process.env.REC_MEMORY_DB ?? ".rec-data/db.json";
-  },
-
-  /**
-   * In production this must be set explicitly; a fixed dev fallback keeps sessions stable
-   * across restarts locally without ever shipping a real secret.
-   *
-   * A getter, not a value: a production *build* runs with NODE_ENV=production but has no
-   * runtime secret, so validating this at module-evaluation time would make `next build`
-   * fail on a machine that is merely compiling. Resolving it on first use moves the error
-   * to the first request that actually needs to sign or verify a session, which is where
-   * a missing secret genuinely matters.
-   */
-  get authSecret(): string {
-    return required(
-      "AUTH_SECRET",
-      process.env.AUTH_SECRET,
-      isProd ? undefined : "dev-only-insecure-secret-do-not-use-in-production",
-    );
   },
 
   /*

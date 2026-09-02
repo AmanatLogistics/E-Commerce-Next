@@ -91,16 +91,16 @@ except `AUTH_SECRET` in production.
 
 | Variable | Required | Purpose |
 |---|---|---|
-| `MONGODB_URI` | Production | Use the real MongoDB driver. Absent = in-memory store |
+| `MONGODB_URI` | Production | Use the real MongoDB driver. Absent = local file store (development only) |
 | `MONGODB_DB` | No | Database name (default `royal_emerald_crest`) |
 | `REC_MEMORY_DB` | No | Where the in-memory driver persists |
-| `AUTH_SECRET` | **Yes in production** | Session signing key. `openssl rand -base64 32` |
+| `AUTH_SECRET` | No | Session signing key. Derived from `MONGODB_URI` when unset |
 | `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` | No | The admin `npm run seed` creates |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASSWORD` | For real email | nodemailer transport |
 | `ENQUIRY_RECIPIENT` | For real email | Where enquiry notifications go |
 | `MAIL_FROM` | For real email | From address |
 | `MAIL_OUTBOX` | No | Where `.eml` files land when SMTP is unset |
-| `NEXT_PUBLIC_SITE_URL` | Production | Used in metadata and enquiry emails |
+| `NEXT_PUBLIC_SITE_URL` | No | Metadata and enquiry emails. Taken from Vercel's own variables when unset |
 
 Without SMTP configured, notifications are written to `.rec-data/outbox/*.eml` and the
 dashboard says so plainly. That is a deliberate fallback, not a silent failure.
@@ -141,32 +141,48 @@ visitor; a direct server-action POST without a session is refused; a forged sess
 rejected; login does not reveal whether an account exists; an admin can publish a stone, see
 it live, mark it sold and soft-delete it.
 
-## Deploying to Vercel (or any hosted platform)
+## Deploying to Vercel
 
-There is no shell on a hosted platform, so `npm run seed` cannot be run against the
-production database. **Set the environment variables and the administrator is created on
-the first sign-in.** Nothing else to do.
+Set **three** environment variables in the Vercel dashboard, deploy, and sign in. That is
+the whole setup — there is no shell to run a seed script in, so the administrator account
+is created on your first sign-in.
 
-### 1. Set these in the Vercel dashboard (Settings → Environment Variables)
+| Variable | What to put |
+|---|---|
+| `MONGODB_URI` | Your MongoDB Atlas connection string (the free tier is enough) |
+| `SEED_ADMIN_EMAIL` | The address you want to sign in with |
+| `SEED_ADMIN_PASSWORD` | The password you want, 10+ characters with an uppercase letter, a lowercase letter and a digit |
 
-| Variable | Value | Why |
-|---|---|---|
-| `MONGODB_URI` | your Atlas connection string | **Required.** Without it the app falls back to a local file, and Vercel's filesystem is read-only |
-| `AUTH_SECRET` | `openssl rand -base64 32` | **Required in production.** Signs the session cookie |
-| `SEED_ADMIN_EMAIL` | the address you will sign in with | Creates the admin on first sign-in |
-| `SEED_ADMIN_PASSWORD` | a real password, 10+ chars with upper, lower and a digit | Same |
-| `NEXT_PUBLIC_SITE_URL` | `https://your-domain.com` | Used in metadata and enquiry emails |
-| `SEED_DEMO_CATALOGUE` | `true` (optional) | Fills the shop with the 23 demo stones so it is not empty on day one. Leave unset to start with a blank catalogue |
-| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `ENQUIRY_RECIPIENT`, `MAIL_FROM` | your mail provider | Without these, enquiries are still recorded but no email is sent |
+Then go to `/login` and sign in. If anything is missing, that page tells you what.
 
-Vercel's dashboard stores values literally, so the `#` quoting problem does not apply
-there — paste the password exactly as you want it. In a local `.env.local` file, quote it.
+### Optional
 
-### 2. Deploy, then go to `/login` and sign in
+| Variable | What it does |
+|---|---|
+| `SEED_DEMO_CATALOGUE` | Set to `true` to fill a new deployment with the 23 demo stones, so the shop is not empty on day one |
+| `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `ENQUIRY_RECIPIENT`, `MAIL_FROM` | Your mail provider. Without these, enquiries are still recorded in the admin inbox — no email is sent |
+| `AUTH_SECRET` | Only if you want to control the session signing key yourself. See below |
+| `NEXT_PUBLIC_SITE_URL` | Only if you use a custom domain and want it in emails and metadata before Vercel knows about it |
 
-The first sign-in creates the administrator from those variables. If something is missing,
-the sign-in page says exactly what — it will not leave you guessing at "email and password
-do not match".
+### What is `AUTH_SECRET`, and why is it not in the required list?
+
+It is the key that signs your login cookie, so that nobody can forge an admin session. It is
+not something you obtain from anywhere — it is just a long random string.
+
+**You do not need to set it.** When it is absent, the key is derived from `MONGODB_URI`,
+which is already a secret, already required, and already identical on every instance of
+your deployment — which is exactly what a signing key has to be. Generating a random one
+per instance would be worse than not having one: each serverless instance would reject the
+cookies issued by the others, and you would be signed out at random.
+
+Set it explicitly if you want to rotate the signing key without changing your database
+password:
+
+```bash
+openssl rand -base64 32
+```
+
+Changing either value signs everyone out. Nothing else breaks.
 
 ### What first-run provisioning will and will not do
 
@@ -182,13 +198,14 @@ narrow:
   influence on the account created.
 
 To change the password afterwards, run `npm run admin` locally against the same
-`MONGODB_URI`, which updates it in place and leaves your enquiries alone.
+`MONGODB_URI` — it updates in place and leaves your enquiries alone.
 
 ## Deploying
 
 1. Create a MongoDB Atlas cluster and set `MONGODB_URI`.
-2. Set `AUTH_SECRET` (`openssl rand -base64 32`), `NEXT_PUBLIC_SITE_URL`, and the SMTP block.
-3. Set `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` to real values.
+2. Set `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` to real values, and the SMTP block if you
+   want enquiry emails sent.
+3. Optionally set `AUTH_SECRET`; it is derived from `MONGODB_URI` when unset.
 4. Deploy and sign in at `/login` — the admin and the indexes are created on first use.
    Or, if you have shell access, run `npm run seed` once for the demo catalogue as well.
 5. `npm run build && npm start`, or deploy to any Node host.
