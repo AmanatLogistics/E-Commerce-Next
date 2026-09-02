@@ -3,6 +3,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/layout/login-form";
 import { getCurrentUser } from "@/lib/auth/session";
+import { ensureAdminBootstrapped } from "@/lib/auth/bootstrap";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
@@ -26,6 +27,16 @@ export default async function LoginPage({
   const user = await getCurrentUser();
   if (user?.role === "admin") redirect(safeNext);
 
+  /*
+   * Surfaces first-run setup state on a fresh deployment: whether the administrator is
+   * about to be created from the environment, or what is still missing. It describes the
+   * deployment's configuration, never whether a particular account exists, and the state
+   * ends the moment the first sign-in succeeds.
+   */
+  const setup = await ensureAdminBootstrapped();
+  const needsSetup =
+    setup.status !== "created" && setup.status !== "already-provisioned";
+
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-12">
       <Link href="/" className="font-display text-h2 font-semibold text-ink">
@@ -36,6 +47,29 @@ export default async function LoginPage({
         This is the private side of the site. Buyers do not need an account — enquiries are
         sent straight from a stone&rsquo;s page.
       </p>
+
+      {needsSetup && (
+        <div
+          role="status"
+          className="mt-6 rounded-[var(--radius-lg)] border border-gold bg-gold-wash p-4"
+        >
+          <h2 className="text-h3 text-ink">Setup is not finished</h2>
+          <p className="mt-1 text-sm text-ink">{setup.message}</p>
+        </div>
+      )}
+
+      {setup.status === "created" && (
+        <div
+          role="status"
+          className="mt-6 rounded-[var(--radius-lg)] border border-success bg-success-wash p-4"
+        >
+          <h2 className="text-h3 text-ink">Administrator account ready</h2>
+          <p className="mt-1 text-sm text-ink">
+            Created from your environment variables. Sign in with the email and password you
+            configured.
+          </p>
+        </div>
+      )}
 
       <div className="mt-8">
         <LoginForm next={safeNext} />

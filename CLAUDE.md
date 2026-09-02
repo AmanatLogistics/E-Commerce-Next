@@ -27,9 +27,12 @@ the sale starts as a conversation. Do not add e-commerce machinery back without 
   `lib/auth/guards.ts` as its first statement. `proxy.ts` and the admin layout are a first
   line of defence, never the only one — a Server Action re-runs neither. A hidden UI element
   is not security.
-- There is no code path that creates or promotes an account. The only admin comes from
-  `lib/auth/admin-account.ts`, used by `npm run seed` and `npm run admin` and imported by
-  nothing the app serves. `role` is not a field in any schema.
+- Account creation lives only in `lib/auth/admin-account.ts`. Two callers: the `seed` and
+  `admin` scripts, and `lib/auth/bootstrap.ts`, which provisions the admin from the
+  environment on first sign-in so hosted deployments work without a shell. Bootstrap runs
+  ONLY when the database holds no users, refuses the public default password, and can never
+  alter an existing account — do not loosen any of those. `role` is not a field in any
+  schema, and nothing a request carries influences the account created.
 - Env values must be quoted in `.env.local`: dotenv cuts an unquoted value at the first
   `#`. Both scripts refuse a truncated `SEED_ADMIN_PASSWORD` rather than storing it.
 - Prices are integers in paisa (1 PKR = 100 paisa). Never floats. `priceMinor: null` means

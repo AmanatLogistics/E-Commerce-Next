@@ -7,6 +7,7 @@ import { loginSchema } from "../validation/schemas";
 import { verifyPassword } from "./password";
 import { limits, rateLimit } from "./rate-limit";
 import { clearSessionCookie, setSessionCookie } from "./session";
+import { ensureAdminBootstrapped } from "./bootstrap";
 import { fieldErrorsFrom, type FormState } from "../forms/state";
 
 /**
@@ -46,6 +47,19 @@ export async function loginAction(_prev: FormState, formData: FormData): Promise
       ok: false,
       message: `Too many attempts. Try again in ${Math.ceil(gate.retryAfterSeconds / 60)} minutes.`,
     };
+  }
+
+  /*
+   * On a hosted deployment there is no shell to run the seed in, so the administrator is
+   * provisioned here from the environment — but only when the database holds no users at
+   * all. It cannot touch an existing account, so this is not a way back in for someone who
+   * has forgotten a password. See lib/auth/bootstrap.ts.
+   */
+  const bootstrap = await ensureAdminBootstrapped();
+  if (bootstrap.status !== "created" && bootstrap.status !== "already-provisioned") {
+    // Setup is incomplete: say so plainly. This describes the deployment, not an account,
+    // so it reveals nothing about who does or does not have one.
+    return { ok: false, message: bootstrap.message };
   }
 
   const user = await users().findOne({ email });

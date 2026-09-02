@@ -14,6 +14,14 @@ function required(name: string, value: string | undefined, fallback?: string): s
 
 const isProd = process.env.NODE_ENV === "production";
 
+/**
+ * The documented defaults. They are published in the README, so an account must never be
+ * created with them on a hosted deployment — bootstrap refuses, rather than standing up an
+ * admin whose password anyone can read.
+ */
+export const DEFAULT_ADMIN_EMAIL = "admin@royalemeraldcrest.example";
+export const DEFAULT_ADMIN_PASSWORD = "AdminPass123!";
+
 export const env = {
   isProd,
 
@@ -25,7 +33,9 @@ export const env = {
    * Where the in-memory driver persists, so `npm run seed`, `next dev` and Playwright
    * (three separate processes) see the same data. Ignored when MONGODB_URI is set.
    */
-  memoryDbFile: process.env.REC_MEMORY_DB ?? ".rec-data/db.json",
+  get memoryDbFile(): string {
+    return process.env.REC_MEMORY_DB ?? ".rec-data/db.json";
+  },
 
   /**
    * In production this must be set explicitly; a fixed dev fallback keeps sessions stable
@@ -45,8 +55,40 @@ export const env = {
     );
   },
 
-  seedAdminEmail: process.env.SEED_ADMIN_EMAIL ?? "admin@royalemeraldcrest.example",
-  seedAdminPassword: process.env.SEED_ADMIN_PASSWORD ?? "AdminPass123!",
+  /*
+   * Getters rather than values. A hosted platform sets the environment before the process
+   * starts, so this makes no difference there — but reading at use rather than at import
+   * keeps the behaviour observable from a test, and these are the values that decide
+   * whether an account gets created.
+   */
+  get seedAdminEmail(): string {
+    return process.env.SEED_ADMIN_EMAIL ?? DEFAULT_ADMIN_EMAIL;
+  },
+  get seedAdminPassword(): string {
+    return process.env.SEED_ADMIN_PASSWORD ?? DEFAULT_ADMIN_PASSWORD;
+  },
+
+  /**
+   * Whether the admin credentials were actually supplied, rather than falling back to the
+   * documented defaults. On a hosted deployment there is no shell to run a seed script in,
+   * so the first sign-in provisions the admin from these — but only when they were really
+   * set. See lib/auth/bootstrap.ts.
+   */
+  get adminCredentialsConfigured(): boolean {
+    return (
+      (process.env.SEED_ADMIN_EMAIL ?? "").length > 0 &&
+      (process.env.SEED_ADMIN_PASSWORD ?? "").length > 0
+    );
+  },
+
+  /**
+   * Optional: populate the demo catalogue on first boot when the shop is empty. Useful for
+   * a first deployment, so the storefront has something to show before any stone has been
+   * entered by hand. Never overwrites anything.
+   */
+  get seedDemoCatalogue(): boolean {
+    return process.env.SEED_DEMO_CATALOGUE === "true";
+  },
 
   /**
    * SMTP. When SMTP_HOST is absent, enquiry emails are written to a local outbox instead

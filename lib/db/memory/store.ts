@@ -91,11 +91,34 @@ export class MemoryStore {
     for (const [name, docs] of Object.entries(this.data)) {
       encoded[name] = docs.map((d) => encode(d) as Doc);
     }
-    mkdirSync(dirname(this.file), { recursive: true });
-    const tmp = `${this.file}.${process.pid}.tmp`;
-    writeFileSync(tmp, JSON.stringify(encoded), "utf8");
-    renameSync(tmp, this.file);
-    this.loadedMtimeMs = statSync(this.file).mtimeMs;
+
+    try {
+      mkdirSync(dirname(this.file), { recursive: true });
+      const tmp = `${this.file}.${process.pid}.tmp`;
+      writeFileSync(tmp, JSON.stringify(encoded), "utf8");
+      renameSync(tmp, this.file);
+      this.loadedMtimeMs = statSync(this.file).mtimeMs;
+    } catch (error) {
+      const code = (error as NodeJS.ErrnoException).code;
+      /*
+       * A serverless platform (Vercel, Netlify, most container images) gives the app a
+       * read-only filesystem, so this driver cannot work there at all. Without this the
+       * failure surfaces as a bare EROFS from deep inside a write, which says nothing
+       * about the actual problem — which is that no database is configured.
+       */
+      if (code === "EROFS" || code === "EACCES" || code === "EPERM") {
+        throw new Error(
+          "Cannot write the local database file: this environment's filesystem is " +
+            "read-only.\n\n" +
+            "This happens on Vercel and other serverless hosts, which have no persistent " +
+            "disk. Set MONGODB_URI to a MongoDB connection string (MongoDB Atlas has a " +
+            "free tier) and redeploy. The file-backed driver is for local development " +
+            "only.\n\n" +
+            `Tried to write: ${this.file}`,
+        );
+      }
+      throw error;
+    }
   }
 
   collection(name: string): Doc[] {
@@ -119,4 +142,9 @@ let singleton: MemoryStore | null = null;
 export function getMemoryStore(file: string): MemoryStore {
   singleton ??= new MemoryStore(file);
   return singleton;
+}
+
+/** Tests need a fresh database per case; the singleton captures its path at creation. */
+export function resetMemoryStoreForTests(): void {
+  singleton = null;
 }
