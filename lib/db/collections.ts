@@ -12,6 +12,22 @@ import type { BaseDoc, GemCollection, IndexSpec } from "./types";
  */
 export const usingMemoryDriver = env.mongodbUri === null;
 
+/*
+ * The file-backed driver is a development convenience, not a deployment target: it needs a
+ * persistent writable disk, which serverless hosting does not have, and it holds state per
+ * instance rather than centrally. Warn once at startup so this is noticed before the first
+ * write fails rather than after.
+ */
+if (usingMemoryDriver && env.isProd && !process.env.NEXT_PHASE) {
+  console.warn(
+    "\n⚠  MONGODB_URI is not set, so the local file-backed database is being used in a " +
+      "production build.\n" +
+      "   That will fail on any host without a persistent writable disk (Vercel, Netlify, " +
+      "most containers)\n" +
+      "   and does not share state between instances. Set MONGODB_URI before deploying.\n",
+  );
+}
+
 const cache = new Map<string, GemCollection<BaseDoc>>();
 
 function collection<T extends BaseDoc>(name: string): GemCollection<T> {
@@ -93,6 +109,11 @@ export const indexPlan: { name: string; specs: IndexSpec[] }[] = [
     ],
   },
 ];
+
+/** Tests need the driver instances rebuilt after pointing at a different database file. */
+export function resetCollectionCacheForTests(): void {
+  cache.clear();
+}
 
 export async function ensureIndexes(): Promise<void> {
   for (const { name, specs } of indexPlan) {
