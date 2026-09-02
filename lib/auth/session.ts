@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
 import { ObjectId } from "mongodb";
 import { env } from "../env";
+import { resolveSessionKey } from "./secret";
 import { users } from "../db/collections";
 import type { Role, UserDoc } from "../db/documents";
 
@@ -18,15 +19,9 @@ export interface SessionClaims {
 }
 
 /**
- * Resolved on first use rather than at import time, so a production build without a
- * runtime AUTH_SECRET still compiles; the error then surfaces on the first request that
- * needs to sign or verify a session.
+ * The signing key comes from lib/auth/secret.ts, which proxy.ts uses too — the edge check
+ * and this one must never resolve different keys.
  */
-let cachedSecret: Uint8Array | null = null;
-function secretKey(): Uint8Array {
-  cachedSecret ??= new TextEncoder().encode(env.authSecret);
-  return cachedSecret;
-}
 
 export async function createSessionToken(claims: SessionClaims): Promise<string> {
   return new SignJWT({ email: claims.email, role: claims.role, ver: claims.ver })
@@ -34,7 +29,7 @@ export async function createSessionToken(claims: SessionClaims): Promise<string>
     .setSubject(claims.sub)
     .setIssuedAt()
     .setExpirationTime(`${MAX_AGE_SECONDS}s`)
-    .sign(secretKey());
+    .sign(await resolveSessionKey());
 }
 
 /**
@@ -44,7 +39,7 @@ export async function createSessionToken(claims: SessionClaims): Promise<string>
  */
 export async function verifySessionToken(token: string): Promise<SessionClaims | null> {
   try {
-    const { payload } = await jwtVerify(token, secretKey(), { algorithms: ["HS256"] });
+    const { payload } = await jwtVerify(token, await resolveSessionKey(), { algorithms: ["HS256"] });
     const { sub, email, role, ver } = payload as Record<string, unknown>;
     if (typeof sub !== "string" || typeof email !== "string") return null;
     if (role !== "admin") return null;

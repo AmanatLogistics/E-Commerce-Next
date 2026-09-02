@@ -1,3 +1,15 @@
+function resolveSiteUrl(): string {
+  const explicit = process.env.NEXT_PUBLIC_SITE_URL;
+  if (explicit) return explicit.replace(/\/$/, "");
+
+  // Set by Vercel on every deployment; the production domain, even in a preview build.
+  const vercelDomain =
+    process.env.VERCEL_PROJECT_PRODUCTION_URL ?? process.env.VERCEL_URL;
+  if (vercelDomain) return `https://${vercelDomain}`;
+
+  return "http://localhost:3000";
+}
+
 /**
  * Every user-visible mention of the business's identity comes from here.
  * Renaming the business is a change to this file and nothing else.
@@ -19,7 +31,14 @@ export const siteConfig = {
   contactEmail: "enquiries@royalemeraldcrest.example",
   contactPhone: "+92 51 000 0000",
   address: "Blue Area, Islamabad, Pakistan",
-  url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  /**
+   * Used for metadata, structured data and the links in enquiry emails.
+   *
+   * VERCEL_PROJECT_PRODUCTION_URL and VERCEL_URL are set automatically by Vercel, so a
+   * deployment there needs no configuration for this. Only read on the server (metadata,
+   * JSON-LD, email), so the non-public Vercel variables are never wanted in a browser.
+   */
+  url: resolveSiteUrl(),
   /** The promises shown in the announcement bar and the trust strip. */
   promises: [
     { title: "Every treatment disclosed", body: "On every listing, including when there is none." },

@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { jwtVerify } from "jose";
+import { resolveSessionKey } from "@/lib/auth/secret";
 
 /**
  * First line of defence only.
@@ -17,15 +18,13 @@ import { jwtVerify } from "jose";
 
 const SESSION_COOKIE = "rec_session";
 
-const secret = new TextEncoder().encode(
-  process.env.AUTH_SECRET ?? "dev-only-insecure-secret-do-not-use-in-production",
-);
-
 async function roleFromRequest(request: NextRequest): Promise<"admin" | null> {
   const token = request.cookies.get(SESSION_COOKIE)?.value;
   if (!token) return null;
   try {
-    const { payload } = await jwtVerify(token, secret, { algorithms: ["HS256"] });
+    const { payload } = await jwtVerify(token, await resolveSessionKey(), {
+      algorithms: ["HS256"],
+    });
     const role = (payload as { role?: unknown }).role;
     return role === "admin" ? role : null;
   } catch {

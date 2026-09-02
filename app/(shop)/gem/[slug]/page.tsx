@@ -10,6 +10,7 @@ import { EnquiryForm } from "@/components/enquiry/enquiry-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { getAllGemSlugs, getCategoryBySlug, getGemBySlug, getRelatedGems } from "@/lib/gems/queries";
+import { readDuringBuild } from "@/lib/db/build-safe";
 import { siteConfig } from "@/lib/site-config";
 
 interface Props {
@@ -18,9 +19,14 @@ interface Props {
 
 export const revalidate = 300;
 
-/** Pre-render the catalogue; stock changes revalidate within five minutes. */
+/**
+ * Pre-render the catalogue when the database is reachable from the build machine, and
+ * simply do not when it is not — the pages are then rendered on first request and cached
+ * by the same `revalidate` above, which is what a cache miss does anyway. A deploy must
+ * never fail because a build host cannot reach a database.
+ */
 export async function generateStaticParams() {
-  const slugs = await getAllGemSlugs();
+  const slugs = await readDuringBuild("stone slugs", getAllGemSlugs, []);
   return slugs.map((slug) => ({ slug }));
 }
 
