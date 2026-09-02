@@ -155,6 +155,32 @@ is created on your first sign-in.
 
 Then go to `/login` and sign in. If anything is missing, that page tells you what.
 
+### If something is wrong, open `/api/health`
+
+It answers "why is the site not working" in one request: whether the database is reachable,
+what is in it, whether the search index exists, and which configuration is set. Everything
+it reports is a boolean, a count or a name — no connection string, no credential, no secret
+— so it is safe to open in a browser and paste to whoever is helping you.
+
+```json
+{
+  "status": "needs attention",
+  "problems": ["database_reachable"],
+  "checks": {
+    "database_reachable": {
+      "ok": false,
+      "detail": "Could not reach the database: ... The usual cause on a hosted deployment
+                 is MongoDB Atlas's IP access list ..."
+    }
+  }
+}
+```
+
+**By far the most common cause of a working local site and a broken deployed one is
+MongoDB Atlas's IP access list.** A hosted app connects from an address you cannot predict,
+so Atlas must be set to allow access from anywhere (`0.0.0.0/0`) under **Network Access**.
+Setting `MONGODB_URI` correctly is not enough on its own.
+
 ### Optional
 
 | Variable | What it does |

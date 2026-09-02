@@ -27,6 +27,13 @@ export default function GlobalError({
         This is our fault, not yours. Trying again often works; if it does not, the
         collection and the contact page are still available.
       </p>
+      <p className="mt-3 text-sm text-ink-muted">
+        Running this site yourself? Open{" "}
+        <a href="/api/health" className="underline hover:text-brand">
+          /api/health
+        </a>{" "}
+        — it reports whether the database is reachable and what configuration is missing.
+      </p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Button onClick={reset}>Try again</Button>
         <Button variant="secondary" asChild>
