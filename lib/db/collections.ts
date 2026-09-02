@@ -33,9 +33,12 @@ const cache = new Map<string, GemCollection<BaseDoc>>();
 function collection<T extends BaseDoc>(name: string): GemCollection<T> {
   const existing = cache.get(name);
   if (existing) return existing as GemCollection<T>;
+  // The specs travel with the collection so the driver can create them on first use,
+  // rather than relying on a setup script having been run.
+  const specs = indexPlan.find((entry) => entry.name === name)?.specs ?? [];
   const created: GemCollection<BaseDoc> = usingMemoryDriver
     ? new MemoryCollection<BaseDoc>(getMemoryStore(env.memoryDbFile), name)
-    : new MongoBackedCollection<BaseDoc>(name);
+    : new MongoBackedCollection<BaseDoc>(name, specs);
   cache.set(name, created);
   return created as GemCollection<T>;
 }

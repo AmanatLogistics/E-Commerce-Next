@@ -49,10 +49,56 @@ export async function closeMongo(): Promise<void> {
 
 /** Adapts the official driver to the narrow GemCollection surface. */
 export class MongoBackedCollection<T extends BaseDoc> implements GemCollection<T> {
-  constructor(private readonly name: string) {}
+  /** Runs at most once per collection per process; see col() below. */
+  private indexesReady: Promise<void> | null = null;
+
+  constructor(
+    private readonly name: string,
+    private readonly indexSpecs: IndexSpec[] = [],
+  ) {}
+
+  /**
+   * Creates this collection's indexes on first use.
+   *
+   * They used to be created only by `npm run seed`, `npm run admin`, or first-run
+   * provisioning. On a hosted deployment none of those need ever have run before a visitor
+   * arrives, and a search then failed outright — MongoDB rejects a $text query when there
+   * is no text index, so the storefront 500'd on a database that was otherwise perfectly
+   * healthy. createIndex is idempotent and cheap, so doing it here removes that whole class
+   * of failure.
+   *
+   * A failure to create them is logged but not fatal: a read-only database user cannot
+   * create indexes, and queries should still work (more slowly) rather than the site going
+   * down over it.
+   */
+  private ensureIndexesOnce(): Promise<void> {
+    this.indexesReady ??= (async () => {
+      if (this.indexSpecs.length === 0) return;
+      try {
+        const db = await getDb();
+        const col = db.collection(this.name);
+        for (const spec of this.indexSpecs) {
+          await col.createIndex(spec.key as Document, {
+            unique: spec.unique,
+            sparse: spec.sparse,
+            name: spec.name,
+            weights: spec.weights,
+            expireAfterSeconds: spec.expireAfterSeconds,
+          });
+        }
+      } catch (error) {
+        console.warn(
+          `Could not create indexes on "${this.name}": ${(error as Error).message}. ` +
+            "Queries will still run, but more slowly, and text search will not work.",
+        );
+      }
+    })();
+    return this.indexesReady;
+  }
 
   private async col(): Promise<Collection<Document>> {
     const db = await getDb();
+    await this.ensureIndexesOnce();
     return db.collection(this.name);
   }
 
