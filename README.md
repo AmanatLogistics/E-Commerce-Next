@@ -227,6 +227,16 @@ narrow:
 To change the password afterwards, run `npm run admin` locally against the same
 `MONGODB_URI` — it updates in place and leaves your enquiries alone.
 
+### Adding colleagues, and changing your own password
+
+Once you are signed in, **Accounts** in the admin panel does both — no redeploy, no shell,
+no environment variables. Everyone there can manage the whole shop; there is no lesser level
+of access, so only add people you would hand the keys to.
+
+Changing your own password there replaces whatever `SEED_ADMIN_PASSWORD` set, and signs you
+out on every other device. Two things are deliberately impossible: suspending or deleting
+the account you are signed in with, and removing the last account that can still sign in.
+
 ### "That email and password do not match", using the values I set
 
 Two ordinary mistakes produce this, and neither is visible by looking at the dashboard:
