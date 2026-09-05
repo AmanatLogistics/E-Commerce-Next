@@ -41,11 +41,11 @@ export function Wordmark({
     >
       <Crest className="h-4 text-gold sm:h-5" />
       {/*
-        * The name is nineteen tracked-out characters. At 390px it wraps and drags the crest
+        * The name is twenty-two tracked-out characters. At 390px it wraps and drags the crest
         * off centre, so both the size and the tracking step down on small screens rather
         * than the name being truncated — a wordmark that wraps stops reading as a wordmark.
         */}
-      <span className="whitespace-nowrap font-display text-[0.9rem] leading-none tracking-[0.1em] text-ink sm:text-[1.35rem] sm:tracking-[0.14em]">
+      <span className="whitespace-nowrap font-display text-[0.8rem] leading-none tracking-[0.08em] text-ink sm:text-[1.35rem] sm:tracking-[0.14em]">
         {siteConfig.name.toUpperCase()}
       </span>
     </span>

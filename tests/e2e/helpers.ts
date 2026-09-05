@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 
-export const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL ?? "admin@royalemeraldcrest.example";
+export const ADMIN_EMAIL = process.env.SEED_ADMIN_EMAIL ?? "admin@panjshiremeraldcrest.example";
 export const ADMIN_PASSWORD = process.env.SEED_ADMIN_PASSWORD ?? "AdminPass123!";
 
 /** No cookies at all — for tests that must observe what an anonymous visitor sees. */

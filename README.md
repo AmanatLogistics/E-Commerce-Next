@@ -1,4 +1,4 @@
-# Royal Emerald Crest
+# Panjshir Emerald Crest
 
 A loose-gemstone dealer's website: a public catalogue of individual stones, and a private
 admin panel to manage them. Buyers **send an enquiry about a stone**; there is no cart, no
@@ -20,7 +20,7 @@ npm run dev                    # http://localhost:3000
 Sign in to the admin panel at **/login**:
 
 ```
-admin@royalemeraldcrest.example
+admin@panjshiremeraldcrest.example
 AdminPass123!
 ```
 
@@ -92,7 +92,7 @@ except `AUTH_SECRET` in production.
 | Variable | Required | Purpose |
 |---|---|---|
 | `MONGODB_URI` | Production | Use the real MongoDB driver. Absent = local file store (development only) |
-| `MONGODB_DB` | No | Database name (default `royal_emerald_crest`) |
+| `MONGODB_DB` | No | Database name (default `royal_emerald_crest` — the original name, kept because it is where existing data physically lives; changing it points the app at an empty database) |
 | `REC_MEMORY_DB` | No | Where the in-memory driver persists |
 | `AUTH_SECRET` | No | Session signing key. Derived from `MONGODB_URI` when unset |
 | `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` | No | The admin `npm run seed` creates |

@@ -1,4 +1,4 @@
-# Design direction — Royal Emerald Crest
+# Design direction — Panjshir Emerald Crest
 
 **Direction name: "Emerald & Ivory".**
 
