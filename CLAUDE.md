@@ -1,7 +1,13 @@
-# Project: Panjshir Emerald Crest
+# Project: Afghan Emerald Crest
 
-A loose-gemstone dealer's site: public catalogue + private admin panel. PKR / en-PK.
-Business name lives in `lib/site-config.ts` only.
+A loose-gemstone dealer's site: public catalogue + private admin panel. Based in Afghanistan; AFN, English.
+Identity has two halves. `lib/site-config.ts` holds the DEFAULTS and the fields that stay
+in code (`currency`, `formatLocale`, `locale`, `enquiryPrefix`, `url`). The editable half —
+name, shortName, initials, tagline, description, contact details, promises — is stored in
+the `settings` collection and read through `getSiteSettings()` in `lib/settings.ts`, which
+merges overrides over the defaults and falls back to them if the database is unreachable.
+Anything user-visible reads `await getSiteSettings()`, never `siteConfig` directly; a blank
+stored value is treated as "not set" so a half-filled form cannot blank the site.
 
 **Buyers enquire; they do not check out.** There is no cart, no checkout, no payment, no
 order and no customer account. A stone is one of a kind and is often priced on request, so
@@ -42,8 +48,13 @@ the sale starts as a conversation. Do not add e-commerce machinery back without 
   never suspend or delete yourself, nor the last account that can still sign in.
 - Env values must be quoted in `.env.local`: dotenv cuts an unquoted value at the first
   `#`. Both scripts refuse a truncated `SEED_ADMIN_PASSWORD` rather than storing it.
-- Prices are integers in paisa (1 PKR = 100 paisa). Never floats. `priceMinor: null` means
-  "price on request" and must render as that, never as a blank or a zero.
+- Prices are integers in MINOR units — pul, 100 to the afghani. Never floats. The helpers
+  in `lib/money.ts` are `toMinor`/`toMajor`, named for the unit's role and not the currency,
+  because the shop has changed currency once already. `priceMinor: null` means "price on
+  request" and must render as that, never as a blank or a zero.
+- `siteConfig.locale` ("en-AF") is identity, for the html lang attribute. `formatLocale`
+  ("en-GB") is what Intl formats with, because ICU has no en-AF data and silently falls back
+  to "en", which writes dates American month-first. Never pass a locale literal to Intl.
 - `treatment` is required on every stone, including when it is "None (untreated)".
   Disclosure is a trade obligation, not a nicety.
 - An enquiry is written to the database BEFORE the notification email is attempted, and a

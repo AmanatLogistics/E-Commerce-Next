@@ -43,7 +43,7 @@ export type GemStatus = "available" | "reserved" | "sold";
 
 export interface GemDoc extends BaseDoc {
   slug: string;
-  /** Reference the dealer uses on the stone's packet, e.g. "PEC-EM-0112". */
+  /** Reference the dealer uses on the stone's packet, e.g. "AEC-EM-0112". */
   reference: string;
   title: string;
   description: string;
@@ -66,7 +66,7 @@ export interface GemDoc extends BaseDoc {
   certificate: string;
 
   /**
-   * Price in paisa, or null for "price on request" — normal for higher-value stones.
+   * Price in pul, or null for "price on request" — normal for higher-value stones.
    * Never a float, and never accepted from the client.
    */
   priceMinor: number | null;
@@ -99,5 +99,31 @@ export interface EnquiryDoc extends BaseDoc {
   emailError: string | null;
   adminNote: string;
   createdAt: Date;
+  updatedAt: Date;
+}
+
+/**
+ * The editable half of the site's identity, stored as one document.
+ *
+ * Everything here has a default in lib/site-config.ts. This overrides it, so a dealer can
+ * rename the business or fix a phone number without a deploy, and a database that has never
+ * been written to still renders a complete site.
+ *
+ * `key` is always "site". A single-row collection addressed by a constant is duller than a
+ * table of key/value pairs and much harder to get wrong: one read, one write, no partial
+ * states where half the identity is stored and half is not.
+ */
+export interface SettingsDoc extends BaseDoc {
+  key: "site";
+  name: string;
+  shortName: string;
+  initials: string;
+  tagline: string;
+  description: string;
+  contactEmail: string;
+  contactPhone: string;
+  address: string;
+  /** The four claims in the announcement bar and the trust strip. */
+  promises: { title: string; body: string }[];
   updatedAt: Date;
 }

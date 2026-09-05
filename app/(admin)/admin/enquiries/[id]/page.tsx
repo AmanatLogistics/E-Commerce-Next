@@ -6,6 +6,7 @@ import { getEnquiry } from "@/lib/admin/queries";
 import { EnquiryStatusForm } from "@/components/admin/enquiry-status-form";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = { title: "Enquiry", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -89,7 +90,7 @@ export default async function EnquiryDetailPage({
               </div>
               <div>
                 <dt className="text-ink-muted">Received</dt>
-                <dd>{enquiry.createdAt.toLocaleString("en-PK")}</dd>
+                <dd>{enquiry.createdAt.toLocaleString(siteConfig.formatLocale)}</dd>
               </div>
             </dl>
             <div className="mt-4">

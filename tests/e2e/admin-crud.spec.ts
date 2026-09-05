@@ -1,17 +1,20 @@
 import { expect, test } from "@playwright/test";
 import { ANONYMOUS, field, unique } from "./helpers";
+import { formatMoney, toMinor } from "../../lib/money";
 
 /**
  * The dealer's path: list a stone, see it live, mark it sold, take it down.
  * These run with the session saved by the setup project.
  */
 
+const EXPECTED_PRICE = formatMoney(toMinor(125_000));
+
 function stoneFixture() {
   // Unique per run so the suite can be run repeatedly against the same database.
   const suffix = unique("t");
   return {
     title: `Test Spinel ${suffix}`,
-    reference: `PEC-TEST-${suffix}`.toUpperCase(),
+    reference: `AEC-TEST-${suffix}`.toUpperCase(),
     slug: `test-spinel-${suffix}`,
     description:
       "A stone created by the test suite to verify that the admin create path reaches the site.",
@@ -23,7 +26,7 @@ function stoneFixture() {
     lengthMm: "7.10",
     widthMm: "6.40",
     depthMm: "4.20",
-    origin: "Hunza Valley, Pakistan",
+    origin: "Jegdalek, Kabul Province, Afghanistan",
     treatment: "None (untreated)",
     priceRupees: "125000",
     imageUrl: "/img/gem/test-spinel/1",
@@ -51,7 +54,12 @@ test("an admin can publish a stone, change its status, and remove it", async ({ 
   // Visible to a buyer, at the price the admin entered.
   await page.goto(`/gem/${stone.slug}`);
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Test Spinel");
-  await expect(page.getByText("Rs 125,000")).toBeVisible();
+  /*
+   * Formatted through the app's own formatter rather than a literal. The shop has changed
+   * currency once already, and a hard-coded "Rs 125,000" here fails for a reason that has
+   * nothing to do with what this test is about.
+   */
+  await expect(page.getByText(EXPECTED_PRICE)).toBeVisible();
   await expect(page.getByText("Enquire about this stone")).toBeVisible();
 
   // Mark it sold.
@@ -83,7 +91,7 @@ test("an admin can publish a stone, change its status, and remove it", async ({ 
 test("a duplicate stock reference is refused", async ({ page }) => {
   const stone = stoneFixture();
   await page.goto("/admin/gems/new");
-  await fillStone(page, { ...stone, reference: "PEC-EM-0101" }); // already in the seed
+  await fillStone(page, { ...stone, reference: "AEC-EM-0101" }); // already in the seed
   await page.getByRole("button", { name: "Add stone" }).click();
 
   await expect(page.getByText("Another stone already uses this value.")).toBeVisible();
@@ -129,7 +137,7 @@ test("an admin can add a variety and it appears in navigation", async ({ page })
 test("an admin can work an enquiry through to replied", async ({ page, browser }) => {
   // Sent as a buyer first, so this test does not depend on another test's leftovers.
   const buyer = await browser.newPage({ storageState: ANONYMOUS });
-  await buyer.goto("/gem/sapat-peridot-round-2-05ct");
+  await buyer.goto("/gem/pech-peridot-round-2-05ct");
   await field(buyer, "name").fill("Sara Iqbal");
   await field(buyer, "email").fill("sara@example.com");
   await field(buyer, "message").fill("Is this peridot still available, and what is the price?");
@@ -141,7 +149,7 @@ test("an admin can work an enquiry through to replied", async ({ page, browser }
   await page.locator("tbody tr a").first().click();
 
   await field(page, "status").selectOption("replied");
-  await field(page, "adminNote").fill("Quoted Rs 21,000 by email.");
+  await field(page, "adminNote").fill("Quoted 21,000 by email.");
   await page.getByRole("button", { name: "Save" }).click();
   await expect(page.getByText("Enquiry updated.")).toBeVisible();
 

@@ -3,7 +3,7 @@ import { env } from "../env";
 import { MemoryCollection } from "./memory/collection";
 import { getMemoryStore } from "./memory/store";
 import { MongoBackedCollection } from "./mongo";
-import type { CategoryDoc, EnquiryDoc, GemDoc, UserDoc } from "./documents";
+import type { CategoryDoc, EnquiryDoc, GemDoc, SettingsDoc, UserDoc } from "./documents";
 import type { BaseDoc, GemCollection, IndexSpec } from "./types";
 
 /**
@@ -47,6 +47,7 @@ export const users = () => collection<UserDoc>("users");
 export const categories = () => collection<CategoryDoc>("categories");
 export const gems = () => collection<GemDoc>("gems");
 export const enquiries = () => collection<EnquiryDoc>("enquiries");
+export const settings = () => collection<SettingsDoc>("settings");
 
 /** Weights for the gems text index, used by both drivers so ranking intent matches. */
 export const GEM_TEXT_WEIGHTS = {
@@ -100,6 +101,11 @@ export const indexPlan: { name: string; specs: IndexSpec[] }[] = [
         name: "gem_text",
       },
     ],
+  },
+  {
+    name: "settings",
+    // One document, addressed by a constant key. Unique so a race cannot make two.
+    specs: [{ key: { key: 1 }, unique: true, name: "key_unique" }],
   },
   {
     name: "enquiries",

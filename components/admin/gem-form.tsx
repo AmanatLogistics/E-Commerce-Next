@@ -62,7 +62,7 @@ export function GemForm({
           defaultValue={gem?.reference}
           required
           error={state.fieldErrors?.reference}
-          hint="Your own packet reference, e.g. PEC-EM-0101."
+          hint="Your own packet reference, e.g. AEC-EM-0101."
         />
         <TextField
           label="URL slug"
@@ -173,7 +173,7 @@ export function GemForm({
           defaultValue={gem?.origin}
           required
           error={state.fieldErrors?.origin}
-          hint="e.g. Swat Valley, Pakistan"
+          hint="e.g. Panjshir Valley, Afghanistan"
         />
         <div className="sm:col-span-2">
           <TextField
@@ -198,7 +198,7 @@ export function GemForm({
 
       <Section title="Price and availability">
         <TextField
-          label="Price (whole rupees)"
+          label="Price (whole afghanis)"
           name="priceRupees"
           type="number"
           inputMode="numeric"

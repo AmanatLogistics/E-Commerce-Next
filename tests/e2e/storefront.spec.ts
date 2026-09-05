@@ -26,8 +26,13 @@ test("collection filters, sorts and paginates from the URL", async ({ page }) =>
   await page.goto("/collection?available=1");
   await expect(counter).toContainText("21 stones");
 
-  await page.goto("/collection?origin=Hunza");
-  await expect(counter).toContainText("6 stones");
+  /*
+   * Three, not six: the old Hunza filter caught the rubies and the spinels together,
+   * because both came from the same valley. Jegdalek is the rubies; the spinels are
+   * Badakhshan now.
+   */
+  await page.goto("/collection?origin=Jegdalek");
+  await expect(counter).toContainText("3 stones");
 });
 
 test("search matches names and looks up a stock reference exactly", async ({ page }) => {
@@ -35,10 +40,10 @@ test("search matches names and looks up a stock reference exactly", async ({ pag
   await expect(page.locator("[aria-live=polite]").first()).toContainText("4 stones");
 
   // A reference must not be tokenised: "KG" alone would otherwise match every stone.
-  await page.goto("/collection?q=PEC-EM-0101");
+  await page.goto("/collection?q=AEC-EM-0101");
   await expect(page.locator("[aria-live=polite]").first()).toContainText("1 stone");
 
-  await page.goto("/collection?q=PEC-ZZ-9999");
+  await page.goto("/collection?q=AEC-ZZ-9999");
   await expect(page.getByText(/Nothing matches/)).toBeVisible();
 });
 
@@ -50,10 +55,11 @@ test("an empty result offers a way forward rather than a dead end", async ({ pag
 });
 
 test("a stone page shows the full specification with treatment disclosed", async ({ page }) => {
-  await page.goto("/gem/swat-emerald-emerald-cut-2-14ct");
+  await page.goto("/gem/panjshir-emerald-emerald-cut-2-14ct");
 
-  await expect(page.getByRole("heading", { level: 1 })).toContainText("Swat Emerald");
-  await expect(page.getByText("PEC-EM-0101").first()).toBeVisible();
+  // "Panjshir" here is the deposit the stone came from, not the shop's name.
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Panjshir Emerald");
+  await expect(page.getByText("AEC-EM-0101").first()).toBeVisible();
   await expect(page.getByRole("row", { name: /Carat weight/ })).toContainText("2.14 ct");
   await expect(page.getByRole("row", { name: /Dimensions/ })).toContainText(
     "8.42 × 6.18 × 4.55 mm",
@@ -64,7 +70,7 @@ test("a stone page shows the full specification with treatment disclosed", async
 });
 
 test("the gallery navigates between views", async ({ page }) => {
-  await page.goto("/gem/swat-emerald-emerald-cut-2-14ct");
+  await page.goto("/gem/panjshir-emerald-emerald-cut-2-14ct");
 
   // Stones carry 3 or 4 views, so the counter is matched by shape rather than a fixed total.
   const counter = page.getByText(/^\d+ \/ \d+$/);
@@ -78,7 +84,7 @@ test("the gallery navigates between views", async ({ page }) => {
 });
 
 test("a sold stone cannot be enquired on", async ({ page }) => {
-  await page.goto("/gem/hunza-ruby-cabochon-3-05ct");
+  await page.goto("/gem/jegdalek-ruby-cabochon-3-05ct");
   await expect(page.getByText("This stone has sold")).toBeVisible();
   await expect(page.getByText("Enquire about this stone")).toHaveCount(0);
 });
@@ -98,7 +104,7 @@ test("unknown stones and varieties return a real 404, not a soft one", async ({ 
   const missingVariety = await page.goto("/collection/no-such-variety");
   expect(missingVariety?.status()).toBe(404);
 
-  const realStone = await page.goto("/gem/swat-emerald-oval-1-05ct");
+  const realStone = await page.goto("/gem/panjshir-emerald-oval-1-05ct");
   expect(realStone?.status()).toBe(200);
 });
 

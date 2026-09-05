@@ -77,7 +77,7 @@ async function CollectionResults({ params }: { params: BrowseParams }) {
             title={params.q ? `Nothing matches “${params.q}”` : "Nothing matches these filters"}
             body={
               params.q
-                ? "Try a shorter word — a variety like “emerald”, a locality like “Hunza”, or a stock reference such as “PEC-EM-0101”."
+                ? "Try a shorter word — a variety like “emerald”, a locality like “Nuristan”, or a stock reference such as “AEC-EM-0101”."
                 : "No stone in the collection matches every filter you have applied. Removing the origin filter usually helps."
             }
           >

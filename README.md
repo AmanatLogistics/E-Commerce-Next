@@ -1,4 +1,4 @@
-# Panjshir Emerald Crest
+# Afghan Emerald Crest
 
 A loose-gemstone dealer's website: a public catalogue of individual stones, and a private
 admin panel to manage them. Buyers **send an enquiry about a stone**; there is no cart, no
@@ -20,7 +20,7 @@ npm run dev                    # http://localhost:3000
 Sign in to the admin panel at **/login**:
 
 ```
-admin@panjshiremeraldcrest.example
+admin@afghanemeraldcrest.example
 AdminPass123!
 ```
 
@@ -227,6 +227,18 @@ narrow:
 To change the password afterwards, run `npm run admin` locally against the same
 `MONGODB_URI` — it updates in place and leaves your enquiries alone.
 
+### Changing the name and contact details
+
+**Site details** in the admin panel edits the business name, short name, initials, tagline,
+description, contact email, phone, address, and the four promises shown at the top of every
+page. Saving updates the whole site immediately, including pages served from cache.
+**Restore the original details** puts back what the site shipped with.
+
+Four things stay in code, and the page says so: the currency (every stored price is an
+integer in its minor unit, so changing it re-reads existing prices rather than converting
+them), the stock reference prefix (already printed on references buyers are quoting back to
+you), the web address (it comes from the host), and the language.
+
 ### Adding colleagues, and changing your own password
 
 Once you are signed in, **Accounts** in the admin panel does both — no redeploy, no shell,
@@ -298,7 +310,7 @@ Stated plainly, because these are the things that will bite.
   means re-running it. With one administrator this is deliberate, and it removes a whole
   token flow from the attack surface.
 - **The seeded stones are demonstration data.** The varieties, localities and treatments are
-  drawn from published sources on Pakistani deposits, but the individual weights, dimensions,
+  drawn from published sources on Afghan deposits, but the individual weights, dimensions,
   references and prices are invented. Do not read them as real inventory or valuations.
 - **Lighthouse has not been measured.** No headless-Chrome audit was run here, so no scores
   are quoted. Run it yourself before launch rather than trusting a number nobody measured.

@@ -5,7 +5,7 @@ import { LoginForm } from "@/components/layout/login-form";
 import { getCurrentUser } from "@/lib/auth/session";
 import { ensureAdminBootstrapped } from "@/lib/auth/bootstrap";
 import { applyAdminPasswordReset } from "@/lib/auth/recovery";
-import { siteConfig } from "@/lib/site-config";
+import { getSiteSettings } from "@/lib/settings";
 
 /** The outcomes that mean the operator can now sign in, as opposed to a refusal. */
 const RECOVERY_APPLIED = new Set(["reset", "moved", "created"]);
@@ -24,6 +24,7 @@ export default async function LoginPage({
 }: {
   searchParams: Promise<{ next?: string }>;
 }) {
+  const site = await getSiteSettings();
   const { next } = await searchParams;
   const safeNext = next?.startsWith("/") && !next.startsWith("//") ? next : "/admin";
 
@@ -50,7 +51,7 @@ export default async function LoginPage({
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-12">
       <Link href="/" className="font-display text-h2 font-semibold text-ink">
-        {siteConfig.name}
+        {site.name}
       </Link>
       <h1 className="text-h1 mt-6">Staff sign-in</h1>
       <p className="mt-2 text-sm text-ink-muted">
