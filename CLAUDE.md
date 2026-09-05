@@ -27,15 +27,19 @@ the sale starts as a conversation. Do not add e-commerce machinery back without 
   `lib/auth/guards.ts` as its first statement. `proxy.ts` and the admin layout are a first
   line of defence, never the only one — a Server Action re-runs neither. A hidden UI element
   is not security.
-- Account creation lives only in `lib/auth/admin-account.ts`. Three callers: the `seed` and
-  `admin` scripts, `lib/auth/bootstrap.ts`, which provisions the admin from the environment
-  on first sign-in so hosted deployments work without a shell, and `lib/auth/recovery.ts`.
-  Bootstrap runs ONLY when the database holds no users, refuses the public default password,
-  and can never alter an existing account — do not loosen any of those. Recovery is the one
-  thing that MAY alter an existing account, and only when `ADMIN_PASSWORD_RESET=true`; it
-  applies the same password rules, runs once per process, and announces itself on `/login`.
-  `role` is not a field in any schema, and nothing a request carries influences either path
-  — both read server-side environment values only.
+- Account creation and deletion live only in `lib/auth/admin-account.ts`. Callers: the
+  `seed` and `admin` scripts; `lib/auth/bootstrap.ts`, which provisions the admin from the
+  environment on first sign-in so hosted deployments work without a shell;
+  `lib/auth/recovery.ts`; and `lib/auth/account-actions.ts`, the accounts screen at
+  `/admin/accounts`. Bootstrap runs ONLY when the database holds no users, refuses the
+  public default password, and can never alter an existing account — do not loosen any of
+  those. Recovery may alter an existing account, and only when `ADMIN_PASSWORD_RESET=true`.
+  The account actions are the only request-driven path, and every one of them calls
+  `requireAdminAction()` as its first statement. `role` is hard-coded to `"admin"` wherever
+  an account is written and appears in NO schema, so nothing a request carries can
+  influence it. `createAdminAccount` refuses a duplicate address rather than upserting —
+  never swap it for `upsertAdmin`, which would silently overwrite a colleague. You can
+  never suspend or delete yourself, nor the last account that can still sign in.
 - Env values must be quoted in `.env.local`: dotenv cuts an unquoted value at the first
   `#`. Both scripts refuse a truncated `SEED_ADMIN_PASSWORD` rather than storing it.
 - Prices are integers in paisa (1 PKR = 100 paisa). Never floats. `priceMinor: null` means

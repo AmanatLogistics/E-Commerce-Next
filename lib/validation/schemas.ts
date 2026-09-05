@@ -28,6 +28,30 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Enter your password").max(200),
 });
 
+/**
+ * A colleague's account, created from the admin panel.
+ *
+ * `role` is deliberately absent, here and everywhere else. It is hard-coded where the
+ * account is written (lib/auth/admin-account.ts), so no request can ask for one.
+ */
+export const newAccountSchema = z.object({
+  email: emailSchema,
+  name: z.string().trim().min(2, "Enter a name").max(80),
+  password: passwordSchema,
+});
+
+/**
+ * Changing your own password requires the current one.
+ *
+ * An administrator can already reset anyone's password without it, so this is not about
+ * privilege — it is about an unattended screen. Someone who walks up to a signed-in laptop
+ * should not be able to take the account over in two keystrokes.
+ */
+export const changeOwnPasswordSchema = z.object({
+  currentPassword: z.string().min(1, "Enter your current password").max(200),
+  newPassword: passwordSchema,
+});
+
 /** Buyers reach us from many countries, so the phone rule is permissive but bounded. */
 const phoneSchema = z
   .string()

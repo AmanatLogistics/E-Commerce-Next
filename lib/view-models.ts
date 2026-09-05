@@ -7,7 +7,7 @@
  * fields out of the client payload, which is a size and a privacy win as well as a
  * correctness one.
  */
-import type { CategoryDoc, GemDoc, GemStatus } from "./db/documents";
+import type { CategoryDoc, GemDoc, GemStatus, UserDoc } from "./db/documents";
 
 export interface CategoryOption {
   id: string;
@@ -90,5 +90,34 @@ export function toGemFormValues(gem: GemDoc): GemFormValues {
     featured: gem.featured,
     published: gem.published,
     images: gem.images.map((image) => ({ url: image.url, alt: image.alt })),
+  };
+}
+
+/**
+ * A staff account as the accounts screen sees it.
+ *
+ * passwordHash and the reset-token fields are absent by construction rather than by
+ * omission: this is a new object, so nothing that is not named here can leak into a client
+ * payload no matter what is added to UserDoc later.
+ */
+export interface AccountView {
+  id: string;
+  email: string;
+  name: string;
+  disabled: boolean;
+  /** Formatted server-side: a Date does not survive serialisation as a Date. */
+  createdAt: string;
+  /** True for the account viewing the page, which cannot suspend or delete itself. */
+  isSelf: boolean;
+}
+
+export function toAccountView(user: UserDoc, selfId: string): AccountView {
+  return {
+    id: user._id.toHexString(),
+    email: user.email,
+    name: user.name,
+    disabled: user.disabled,
+    createdAt: new Intl.DateTimeFormat("en-PK", { dateStyle: "medium" }).format(user.createdAt),
+    isSelf: user._id.toHexString() === selfId,
   };
 }

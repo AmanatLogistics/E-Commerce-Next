@@ -9,6 +9,7 @@ const LINKS = [
   { href: "/admin/gems", label: "Stones", exact: false },
   { href: "/admin/categories", label: "Varieties", exact: false },
   { href: "/admin/enquiries", label: "Enquiries", exact: false },
+  { href: "/admin/accounts", label: "Accounts", exact: false },
 ];
 
 export function AdminNav() {

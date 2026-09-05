@@ -12,6 +12,7 @@ const ADMIN_ROUTES = [
   "/admin/gems/new",
   "/admin/categories",
   "/admin/enquiries",
+  "/admin/accounts",
 ];
 
 test.describe("as a logged-out visitor", () => {
