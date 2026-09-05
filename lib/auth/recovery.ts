@@ -159,18 +159,53 @@ export interface CredentialDiagnosis {
   emailMatches: boolean;
   /** SEED_ADMIN_PASSWORD opens it. Null when there is no such account to try it against. */
   passwordMatches: boolean | null;
+  /**
+   * The address the sole existing account actually has, masked. Only set when the
+   * configured address matches nothing and there is exactly one account to point at.
+   */
+  existingAddressHint?: string;
 }
 
 export async function diagnoseConfiguredCredentials(): Promise<CredentialDiagnosis> {
   const email = env.seedAdminEmail.trim().toLowerCase();
   const account = await users().findOne({ email });
-  if (!account) return { emailMatches: false, passwordMatches: null };
+
+  if (!account) {
+    const all = await users().find({});
+    return {
+      emailMatches: false,
+      passwordMatches: null,
+      existingAddressHint: all.length === 1 ? maskEmail(all[0].email) : undefined,
+    };
+  }
 
   const { verifyPassword } = await import("./password");
   return {
     emailMatches: true,
     passwordMatches: await verifyPassword(env.seedAdminPassword, account.passwordHash),
   };
+}
+
+/**
+ * Enough of an address to recognise, not enough to sign in with.
+ *
+ * "Which address did I use?" is a real question with no other answer once the variable has
+ * been changed — the operator cannot see their own database. But /api/health is public, and
+ * an administrator's address is half of a credential, so the whole thing is not printable.
+ * A couple of leading characters and the domain's shape is what makes someone say "oh, the
+ * gmail one" without handing a stranger a username to attack.
+ */
+export function maskEmail(email: string): string {
+  const at = email.lastIndexOf("@");
+  if (at < 1) return "•••";
+
+  const local = email.slice(0, at);
+  const domain = email.slice(at + 1);
+  const dot = domain.lastIndexOf(".");
+  const host = dot > 0 ? domain.slice(0, dot) : domain;
+  const tld = dot > 0 ? domain.slice(dot) : "";
+
+  return `${local.slice(0, 2)}•••@${host.slice(0, 1)}•••${tld}`;
 }
 
 /**

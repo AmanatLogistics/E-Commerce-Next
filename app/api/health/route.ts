@@ -131,10 +131,14 @@ export async function GET() {
           ok: false,
           detail:
             "No account has the address in SEED_ADMIN_EMAIL, so signing in with it can " +
-            "never work. An administrator does exist under a different address — the one " +
-            "SEED_ADMIN_EMAIL held when the account was created. Either put that address " +
-            "back, or set ADMIN_PASSWORD_RESET=true, which moves the existing account to " +
-            "the address and password configured now." +
+            "never work. The administrator exists under a different address — the one " +
+            "SEED_ADMIN_EMAIL held when the account was created" +
+            (diagnosis.existingAddressHint
+              ? `, which starts ${diagnosis.existingAddressHint}`
+              : "") +
+            ". You do not need its old password: set ADMIN_PASSWORD_RESET=true, redeploy, " +
+            "open /login, and the account moves to the address and password configured " +
+            "now. Then remove that variable." +
             (mangled.length > 0 ? ` Also: ${mangled.join("; ")}.` : ""),
         };
       } else if (diagnosis.passwordMatches === false) {
