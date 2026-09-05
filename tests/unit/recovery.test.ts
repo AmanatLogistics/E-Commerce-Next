@@ -200,7 +200,39 @@ describe("diagnosing configured credentials", () => {
     assert.deepEqual(await recovery.diagnoseConfiguredCredentials(), {
       emailMatches: false,
       passwordMatches: null,
+      // Masked, so the operator can recognise the address they actually used.
+      existingAddressHint: "ow•••@e•••.com",
     });
+  });
+
+  it("points at the address in use without printing it", async () => {
+    const { recovery, bootstrap } = await withEnv({
+      SEED_ADMIN_EMAIL: "shopowner@gmail.com",
+      SEED_ADMIN_PASSWORD: "FirstPassw0rd123",
+    });
+    await bootstrap.ensureAdminBootstrapped();
+
+    // The operator changed the variable and can no longer remember what it held.
+    process.env.SEED_ADMIN_EMAIL = "new-address@example.com";
+    const diagnosis = await recovery.diagnoseConfiguredCredentials();
+
+    assert.equal(diagnosis.emailMatches, false);
+    assert.equal(diagnosis.existingAddressHint, "sh•••@g•••.com");
+    // Recognisable to whoever owns it; useless to anyone else.
+    assert.equal(diagnosis.existingAddressHint?.includes("shopowner"), false);
+    assert.equal(diagnosis.existingAddressHint?.includes("gmail"), false);
+  });
+
+  it("masks an address without inventing structure that is not there", async () => {
+    const { recovery } = await withEnv({});
+    const { maskEmail } = recovery;
+
+    assert.equal(maskEmail("owner@example.com"), "ow•••@e•••.com");
+    assert.equal(maskEmail("a@b.co"), "a•••@b•••.co");
+    assert.equal(maskEmail("someone@mail.co.uk"), "so•••@m•••.uk");
+    // Nothing to mask is not an excuse to throw on a diagnostics endpoint.
+    assert.equal(maskEmail("not-an-address"), "•••");
+    assert.equal(maskEmail(""), "•••");
   });
 
   it("spots the two ways a dashboard mangles a pasted value", async () => {
