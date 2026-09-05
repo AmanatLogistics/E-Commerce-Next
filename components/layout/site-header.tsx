@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { getActiveCategories } from "@/lib/gems/queries";
-import { readDuringBuild } from "@/lib/db/build-safe";
+import { readOptional } from "@/lib/db/build-safe";
 import { SearchBox } from "./search-box";
 import { AnnouncementBar } from "./announcement-bar";
 import { Wordmark } from "./wordmark";
@@ -12,7 +12,7 @@ import { Wordmark } from "./wordmark";
  * enquire and never sign in.
  */
 export async function SiteHeader({ query = "" }: { query?: string }) {
-  const cats = await readDuringBuild("navigation categories", getActiveCategories, []);
+  const cats = await readOptional("navigation categories", getActiveCategories, []);
 
   const searchFallback = (
     <div className="h-10 rounded-[var(--radius-md)] border border-line-strong bg-surface" />

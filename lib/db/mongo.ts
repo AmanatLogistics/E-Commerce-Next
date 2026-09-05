@@ -23,14 +23,72 @@ declare global {
   var __kgMongo: { client: MongoClient; promise: Promise<MongoClient> } | undefined;
 }
 
+/**
+ * Options the connection string already sets are left alone: an operator who tuned their
+ * URI means it, and silently overriding them makes the URI a lie.
+ */
+function uriSets(uri: string, option: string): boolean {
+  const query = uri.slice(uri.indexOf("?") + 1);
+  return uri.includes("?") && new RegExp(`(^|&)${option}=`, "i").test(query);
+}
+
 function clientPromise(): Promise<MongoClient> {
-  if (!env.mongodbUri) throw new Error("MONGODB_URI is not set");
+  const uri = env.mongodbUri;
+  if (!uri) throw new Error("MONGODB_URI is not set");
   if (!globalThis.__kgMongo) {
-    const client = new MongoClient(env.mongodbUri, {
+    /*
+     * Serverless timings, not the driver's defaults.
+     *
+     * serverSelectionTimeoutMS defaults to 30 seconds, which is longer than a Vercel
+     * function is allowed to run. A slow or refused first connection therefore killed the
+     * whole request before the driver ever gave up, and the visitor got a blank error page
+     * instead of anything that explained itself. Failing in 8 seconds leaves room for the
+     * error to be reported and for the next request to try again.
+     *
+     * maxIdleTimeMS matters for the opposite reason: a serverless instance sits idle
+     * between bursts, and releasing those sockets keeps a shared Atlas cluster (500
+     * connections on the free tier) from filling up with dead ones.
+     */
+    const defaults: Record<string, number> = {
+      serverSelectionTimeoutMS: 8_000,
+      connectTimeoutMS: 8_000,
+      socketTimeoutMS: 20_000,
+      maxIdleTimeMS: 60_000,
+    };
+    const tuning = Object.fromEntries(
+      Object.entries(defaults).filter(([option]) => !uriSets(uri, option)),
+    );
+
+    const client = new MongoClient(uri, {
       maxPoolSize: 10,
+      minPoolSize: 0,
       retryWrites: true,
+      ...tuning,
     });
-    globalThis.__kgMongo = { client, promise: client.connect() };
+
+    /*
+     * A rejected connection must NEVER stay in the cache.
+     *
+     * The first version stored this promise unconditionally. When a cold start failed to
+     * reach Atlas — a timeout, a DNS blip, a cluster still waking up — the REJECTED promise
+     * was cached on globalThis, and every later request handled by that same instance
+     * re-awaited the same rejection. That instance was broken for good while its neighbours
+     * served the same site perfectly, which is exactly the "reload it a few times and it
+     * works" symptom: each reload is a coin toss over which instance answers.
+     *
+     * Clearing the cache on failure means the next request builds a fresh client and gets a
+     * real second chance. The identity check makes that safe against a reconnect that has
+     * already happened in the meantime: only the entry that failed removes itself.
+     */
+    const entry: { client: MongoClient; promise: Promise<MongoClient> } = {
+      client,
+      promise: client.connect().catch((error: unknown) => {
+        if (globalThis.__kgMongo === entry) globalThis.__kgMongo = undefined;
+        void client.close().catch(() => {});
+        throw error;
+      }),
+    };
+    globalThis.__kgMongo = entry;
   }
   return globalThis.__kgMongo.promise;
 }
@@ -45,6 +103,21 @@ export async function closeMongo(): Promise<void> {
     await globalThis.__kgMongo.client.close();
     globalThis.__kgMongo = undefined;
   }
+}
+
+/**
+ * Why index creation failed, if it did.
+ *
+ * The failure is deliberately not fatal — a database user without the right to create an
+ * index can still read and write, and taking the site down over a missing index would be
+ * worse than running without one. But swallowing it into a server log nobody reads meant a
+ * read-only database user looked exactly like a healthy one until search 500'd. /api/health
+ * reports whatever is recorded here.
+ */
+const indexErrors = new Map<string, string>();
+
+export function indexCreationErrors(): Record<string, string> {
+  return Object.fromEntries(indexErrors);
 }
 
 /** Adapts the official driver to the narrow GemCollection surface. */
@@ -86,7 +159,9 @@ export class MongoBackedCollection<T extends BaseDoc> implements GemCollection<T
             expireAfterSeconds: spec.expireAfterSeconds,
           });
         }
+        indexErrors.delete(this.name);
       } catch (error) {
+        indexErrors.set(this.name, (error as Error).message);
         console.warn(
           `Could not create indexes on "${this.name}": ${(error as Error).message}. ` +
             "Queries will still run, but more slowly, and text search will not work.",

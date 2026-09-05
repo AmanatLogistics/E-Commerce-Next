@@ -49,3 +49,29 @@ export async function readDuringBuild<T>(
     return fallback;
   }
 }
+
+/**
+ * A read whose failure must never take a page down.
+ *
+ * The header's variety rail and the footer's link list are decoration. They appear on every
+ * page, so letting a database hiccup throw there turns one slow query into a site-wide
+ * error screen — including on /contact, the page a buyer uses to reach the dealer when
+ * nothing else is working. Losing a lead to a nav rail is the wrong trade.
+ *
+ * This is not the same as swallowing an outage. The home page and the collection pages
+ * still read through readDuringBuild and still fail loudly at runtime, because a shop that
+ * silently shows an empty catalogue is worse than one that admits it is broken. Only the
+ * furniture degrades.
+ */
+export async function readOptional<T>(
+  label: string,
+  read: () => Promise<T>,
+  fallback: T,
+): Promise<T> {
+  try {
+    return await read();
+  } catch (error) {
+    console.warn(`Degraded: ${label} could not be read (${(error as Error).message})`);
+    return fallback;
+  }
+}
