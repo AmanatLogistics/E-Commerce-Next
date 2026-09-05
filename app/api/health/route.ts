@@ -99,6 +99,66 @@ export async function GET() {
                 "/admin, or set SEED_DEMO_CATALOGUE=true and open /login.",
           };
 
+    /*
+     * Which half of "that email and password do not match" is actually wrong.
+     *
+     * The sign-in message is deliberately identical whether the account is missing or the
+     * password is wrong, so it cannot be used to enumerate accounts — which is right, and
+     * also useless to the one person who is entitled to know. This compares the configured
+     * environment against the stored account and says plainly which side is at fault.
+     *
+     * It reports booleans about values the reader would have to already hold to learn
+     * anything: you cannot work backwards from "the configured password opens the account"
+     * to the password itself, and only whoever sets the environment can change what is
+     * being compared.
+     */
+    if (counts.administrators > 0 && env.adminCredentialsConfigured) {
+      const { diagnoseConfiguredCredentials, inspectValue } = await import(
+        "@/lib/auth/recovery"
+      );
+      const diagnosis = await diagnoseConfiguredCredentials();
+      const emailHygiene = inspectValue(env.seedAdminEmail);
+      const passwordHygiene = inspectValue(env.seedAdminPassword);
+
+      const mangled: string[] = [];
+      if (emailHygiene.hasEdgeWhitespace) mangled.push("SEED_ADMIN_EMAIL has a space or newline at one end");
+      if (emailHygiene.looksQuoted) mangled.push("SEED_ADMIN_EMAIL is wrapped in quotes");
+      if (passwordHygiene.hasEdgeWhitespace) mangled.push("SEED_ADMIN_PASSWORD has a space or newline at one end");
+      if (passwordHygiene.looksQuoted) mangled.push("SEED_ADMIN_PASSWORD is wrapped in quotes");
+
+      if (!diagnosis.emailMatches) {
+        checks.configured_credentials = {
+          ok: false,
+          detail:
+            "No account has the address in SEED_ADMIN_EMAIL, so signing in with it can " +
+            "never work. An administrator does exist under a different address — the one " +
+            "SEED_ADMIN_EMAIL held when it was first created. Either put that address " +
+            "back, or set ADMIN_PASSWORD_RESET=true to move the account to the current " +
+            "one." +
+            (mangled.length > 0 ? ` Also: ${mangled.join("; ")}.` : ""),
+        };
+      } else if (diagnosis.passwordMatches === false) {
+        checks.configured_credentials = {
+          ok: false,
+          detail:
+            "The account exists, but SEED_ADMIN_PASSWORD is not its password. It was " +
+            "created from an earlier value and first-run provisioning never overwrites an " +
+            "existing account. Set ADMIN_PASSWORD_RESET=true, redeploy, open /login, then " +
+            "remove that variable." +
+            (mangled.length > 0
+              ? ` This is the likely reason: ${mangled.join("; ")}.`
+              : ""),
+        };
+      } else {
+        checks.configured_credentials = {
+          ok: true,
+          detail:
+            "SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD open the administrator account" +
+            (mangled.length > 0 ? ` (but note: ${mangled.join("; ")})` : ""),
+        };
+      }
+    }
+
     checks.administrator =
       counts.administrators > 0
         ? { ok: true, detail: "an administrator exists; sign in at /login" }

@@ -65,6 +65,15 @@ export const env = {
   },
 
   /**
+   * The way back in when the account's password is no longer the one in the environment.
+   * Applies SEED_ADMIN_PASSWORD to the SEED_ADMIN_EMAIL account and announces itself on the
+   * sign-in page. Meant to be removed again immediately. See lib/auth/recovery.ts.
+   */
+  get adminPasswordReset(): boolean {
+    return process.env.ADMIN_PASSWORD_RESET === "true";
+  },
+
+  /**
    * SMTP. When SMTP_HOST is absent, enquiry emails are written to a local outbox instead
    * of being sent, so the flow is still observable end to end with nothing configured.
    */
