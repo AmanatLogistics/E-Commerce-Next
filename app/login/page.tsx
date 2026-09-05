@@ -7,6 +7,9 @@ import { ensureAdminBootstrapped } from "@/lib/auth/bootstrap";
 import { applyAdminPasswordReset } from "@/lib/auth/recovery";
 import { siteConfig } from "@/lib/site-config";
 
+/** The outcomes that mean the operator can now sign in, as opposed to a refusal. */
+const RECOVERY_APPLIED = new Set(["reset", "moved", "created"]);
+
 export const metadata: Metadata = {
   title: "Sign in",
   robots: { index: false, follow: false },
@@ -69,14 +72,14 @@ export default async function LoginPage({
         <div
           role="status"
           className={
-            recovery.status === "reset"
+            RECOVERY_APPLIED.has(recovery.status)
               ? "mt-6 rounded-[var(--radius-lg)] border border-success bg-success-wash p-4"
               : "mt-6 rounded-[var(--radius-lg)] border border-gold bg-gold-wash p-4"
           }
         >
           <h2 className="text-h3 text-ink">
-            {recovery.status === "reset"
-              ? "Administrator password reset"
+            {RECOVERY_APPLIED.has(recovery.status)
+              ? "Administrator account reset"
               : "Password reset was refused"}
           </h2>
           <p className="mt-1 text-sm text-ink">{recovery.message}</p>

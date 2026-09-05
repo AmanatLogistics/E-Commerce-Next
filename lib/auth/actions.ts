@@ -70,9 +70,12 @@ export async function loginAction(_prev: FormState, formData: FormData): Promise
    * is driven only by a server-side variable — nothing in this formData reaches it.
    */
   const recovery = await applyAdminPasswordReset();
-  if (recovery.status !== "not-requested" && recovery.status !== "reset") {
-    return { ok: false, message: recovery.message };
-  }
+  const recoveryApplied =
+    recovery.status === "not-requested" ||
+    recovery.status === "reset" ||
+    recovery.status === "moved" ||
+    recovery.status === "created";
+  if (!recoveryApplied) return { ok: false, message: recovery.message };
 
   const user = await users().findOne({ email });
   // The same response whether or not the account exists, so this cannot enumerate users.

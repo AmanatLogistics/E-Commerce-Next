@@ -1,5 +1,12 @@
 import "server-only";
-import { MongoClient, type Collection, type Db, type Document, type Sort } from "mongodb";
+import {
+  MongoClient,
+  type Collection,
+  type CreateIndexesOptions,
+  type Db,
+  type Document,
+  type Sort,
+} from "mongodb";
 import { env } from "../env";
 import type {
   BaseDoc,
@@ -120,6 +127,38 @@ export function indexCreationErrors(): Record<string, string> {
   return Object.fromEntries(indexErrors);
 }
 
+/**
+ * Index options with the absent ones actually absent.
+ *
+ * The driver serialises an explicit `undefined` as BSON null unless ignoreUndefined is set,
+ * so spreading an IndexSpec's optional fields straight into createIndex sent
+ * `sparse: null, weights: null, expireAfterSeconds: null` to the server — and MongoDB
+ * rejects that outright:
+ *
+ *     The field 'sparse' has value sparse: null, which is not convertible to bool
+ *
+ * EVERY index therefore failed to be created on a real MongoDB, including the unique one on
+ * users.email and the text index the storefront's search depends on. It never showed up
+ * locally because the in-process store does not go through this path, and the failure was
+ * caught and logged rather than thrown, so the site looked healthy while search was broken
+ * and nothing was uniquely constrained.
+ *
+ * ignoreUndefined on the client would also fix this, but it applies to every query — a
+ * filter field that is accidentally undefined would then be dropped instead of matching
+ * null, silently widening the query. Omitting the keys here is the narrow fix.
+ */
+export function indexOptions(spec: IndexSpec): CreateIndexesOptions {
+  const options: CreateIndexesOptions = {};
+  if (spec.unique !== undefined) options.unique = spec.unique;
+  if (spec.sparse !== undefined) options.sparse = spec.sparse;
+  if (spec.name !== undefined) options.name = spec.name;
+  if (spec.weights !== undefined) options.weights = spec.weights;
+  if (spec.expireAfterSeconds !== undefined) {
+    options.expireAfterSeconds = spec.expireAfterSeconds;
+  }
+  return options;
+}
+
 /** Adapts the official driver to the narrow GemCollection surface. */
 export class MongoBackedCollection<T extends BaseDoc> implements GemCollection<T> {
   /** Runs at most once per collection per process; see col() below. */
@@ -151,13 +190,7 @@ export class MongoBackedCollection<T extends BaseDoc> implements GemCollection<T
         const db = await getDb();
         const col = db.collection(this.name);
         for (const spec of this.indexSpecs) {
-          await col.createIndex(spec.key as Document, {
-            unique: spec.unique,
-            sparse: spec.sparse,
-            name: spec.name,
-            weights: spec.weights,
-            expireAfterSeconds: spec.expireAfterSeconds,
-          });
+          await col.createIndex(spec.key as Document, indexOptions(spec));
         }
         indexErrors.delete(this.name);
       } catch (error) {
@@ -278,13 +311,7 @@ export class MongoBackedCollection<T extends BaseDoc> implements GemCollection<T
   async createIndexes(specs: IndexSpec[]): Promise<void> {
     const col = await this.col();
     for (const spec of specs) {
-      await col.createIndex(spec.key as Document, {
-        unique: spec.unique,
-        sparse: spec.sparse,
-        name: spec.name,
-        weights: spec.weights,
-        expireAfterSeconds: spec.expireAfterSeconds,
-      });
+      await col.createIndex(spec.key as Document, indexOptions(spec));
     }
   }
 }

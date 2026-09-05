@@ -59,3 +59,63 @@ describe("the MongoDB connection cache", () => {
     );
   });
 });
+
+/**
+ * The index options sent to the server, which is where every index on this project's real
+ * MongoDB was silently failing.
+ *
+ * An IndexSpec leaves the options it does not need `undefined`, and the driver serialises an
+ * explicit undefined as BSON null unless ignoreUndefined is set. MongoDB then rejects the
+ * whole command — "The field 'sparse' has value sparse: null, which is not convertible to
+ * bool" — so NOTHING was indexed: not the unique constraint on users.email, not the text
+ * index the storefront's search needs. The in-process store does not go through this path,
+ * so nothing local ever showed it, and the failure was logged rather than thrown, so the
+ * site looked healthy while search was broken.
+ */
+describe("index options", () => {
+  it("omits the options a spec does not set, rather than sending null", async () => {
+    const { indexOptions } = await import("../../lib/db/mongo");
+    const options = indexOptions({ key: { email: 1 }, unique: true, name: "email_unique" });
+
+    assert.deepEqual(options, { unique: true, name: "email_unique" });
+    // deepEqual passes on a key present with value undefined; the wire format does not.
+    for (const absent of ["sparse", "weights", "expireAfterSeconds"]) {
+      assert.equal(absent in options, false, `${absent} must not be sent at all`);
+    }
+  });
+
+  it("still passes through every option a spec does set", async () => {
+    const { indexOptions } = await import("../../lib/db/mongo");
+    assert.deepEqual(
+      indexOptions({
+        key: { title: "text", origin: "text" },
+        name: "gem_text",
+        weights: { title: 10, origin: 4 },
+        sparse: false,
+        unique: false,
+        expireAfterSeconds: 60,
+      }),
+      {
+        unique: false,
+        sparse: false,
+        name: "gem_text",
+        weights: { title: 10, origin: 4 },
+        expireAfterSeconds: 60,
+      },
+    );
+  });
+
+  it("is the reason this matters: an undefined field is sent as null, not dropped", async () => {
+    const { BSON } = await import("mongodb");
+    /*
+     * The driver serialises commands with ignoreUndefined off, so this is the shape the old
+     * code actually put on the wire — and the deployment's own error quoted it back:
+     * "{ unique: true, sparse: null, ... } :: The field 'sparse' has value sparse: null".
+     */
+    const onTheWire = BSON.deserialize(
+      BSON.serialize({ unique: true, sparse: undefined }, { ignoreUndefined: false }),
+    );
+    assert.equal("sparse" in onTheWire, true);
+    assert.equal(onTheWire.sparse, null);
+  });
+});

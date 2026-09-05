@@ -93,6 +93,37 @@ describe("the administrator password reset", () => {
     assert.ok(admin.tokenVersion > 0);
   });
 
+  it("moves the one existing account when the address changed too", async () => {
+    const { recovery, bootstrap, collections } = await withEnv({
+      SEED_ADMIN_EMAIL: "old-address@example.com",
+      SEED_ADMIN_PASSWORD: "FirstPassw0rd123",
+    });
+    await bootstrap.ensureAdminBootstrapped();
+    const original = await collections.users().findOne({ email: "old-address@example.com" });
+    assert.ok(original);
+
+    // Both variables changed. Upserting the new address would leave two administrators:
+    // the new one, and an orphan nobody can name that still opens with the old password.
+    process.env.SEED_ADMIN_EMAIL = "new-address@example.com";
+    process.env.SEED_ADMIN_PASSWORD = "SecondPassw0rd123";
+    process.env.ADMIN_PASSWORD_RESET = "true";
+
+    assert.equal((await recovery.applyAdminPasswordReset()).status, "moved");
+
+    const all = await collections.users().find({});
+    assert.equal(all.length, 1, "there must still be exactly one administrator");
+    assert.equal(all[0].email, "new-address@example.com");
+    assert.equal(
+      all[0]._id.toHexString(),
+      original._id.toHexString(),
+      "it must be the same account, moved — not a replacement",
+    );
+
+    const { verifyPassword } = await import("../../lib/auth/password");
+    assert.ok(await verifyPassword("SecondPassw0rd123", all[0].passwordHash));
+    assert.ok(all[0].tokenVersion > original.tokenVersion, "old sessions must be ended");
+  });
+
   it("refuses the README's public example password", async () => {
     const { recovery, bootstrap, collections } = await withEnv({
       SEED_ADMIN_EMAIL: "owner@example.com",

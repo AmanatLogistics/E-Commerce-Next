@@ -3,6 +3,7 @@ import { DEFAULT_ADMIN_PASSWORD, env } from "../env";
 import { users } from "../db/collections";
 import { passwordSchema } from "../validation/schemas";
 import { upsertAdmin } from "./admin-account";
+import { hashPassword } from "./password";
 
 /**
  * Getting back in, when the account exists but its password is not the one in the
@@ -36,6 +37,8 @@ import { upsertAdmin } from "./admin-account";
 export type RecoveryStatus =
   | "not-requested"
   | "reset"
+  | "moved"
+  | "created"
   | "not-configured"
   | "default-password-refused"
   | "weak-password-refused";
@@ -62,8 +65,9 @@ export async function applyAdminPasswordReset(): Promise<RecoveryResult> {
     return {
       status: "reset",
       message:
-        "The administrator password was reset from ADMIN_PASSWORD_RESET. Remove that " +
-        "variable from your hosting environment now that you are back in.",
+        "The administrator account was reset from ADMIN_PASSWORD_RESET to your current " +
+        "SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD. Sign in with them, then remove that " +
+        "variable from your hosting environment.",
     };
   }
 
@@ -93,15 +97,54 @@ export async function applyAdminPasswordReset(): Promise<RecoveryResult> {
     };
   }
 
+  const email = env.seedAdminEmail.trim().toLowerCase();
+  const existing = await users().find({}, { sort: { createdAt: 1 } });
+  const matching = existing.find((account) => account.email === email);
+
+  /*
+   * SEED_ADMIN_EMAIL can have changed too, not just the password — and then there is an
+   * account nobody can name and a name with no account behind it. Upserting the configured
+   * address would leave BOTH: a second administrator alongside an orphan that still opens
+   * with a password nobody knows. Moving the single existing account is what the operator
+   * actually means by "these are my credentials", and it ends with exactly one admin.
+   */
+  if (!matching && existing.length === 1) {
+    const account = existing[0];
+    await users().updateOne(
+      { _id: account._id },
+      {
+        $set: {
+          email,
+          passwordHash: await hashPassword(password.data),
+          disabled: false,
+          updatedAt: new Date(),
+        },
+        // Every session issued to the old address ends here.
+        $inc: { tokenVersion: 1 },
+      },
+    );
+    alreadyReset = true;
+    return {
+      status: "moved",
+      message:
+        "The administrator account has been moved to your current SEED_ADMIN_EMAIL and " +
+        "SEED_ADMIN_PASSWORD. Sign in with them, then remove ADMIN_PASSWORD_RESET from " +
+        "your hosting environment.",
+    };
+  }
+
   // upsertAdmin bumps tokenVersion, so every session signed with the old password ends here.
-  await upsertAdmin(env.seedAdminEmail, password.data);
+  const result = await upsertAdmin(email, password.data);
   alreadyReset = true;
 
   return {
-    status: "reset",
-    message:
-      "The administrator password has been reset to your current SEED_ADMIN_PASSWORD. " +
-      "Sign in with it, then remove ADMIN_PASSWORD_RESET from your hosting environment.",
+    status: result.created ? "created" : "reset",
+    message: result.created
+      ? "An administrator account was created for your current SEED_ADMIN_EMAIL and " +
+        "SEED_ADMIN_PASSWORD. Sign in with them, then remove ADMIN_PASSWORD_RESET from " +
+        "your hosting environment."
+      : "The administrator password has been reset to your current SEED_ADMIN_PASSWORD. " +
+        "Sign in with it, then remove ADMIN_PASSWORD_RESET from your hosting environment.",
   };
 }
 
