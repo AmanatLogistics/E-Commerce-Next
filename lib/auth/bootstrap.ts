@@ -54,6 +54,9 @@ export async function ensureAdminBootstrapped(): Promise<BootstrapResult> {
 
   if ((await users().countDocuments({})) > 0) {
     provisioned = true;
+    // The catalogue is seeded independently of the account: an operator who set
+    // SEED_DEMO_CATALOGUE only after their first sign-in would otherwise never get it.
+    await seedDemoCatalogueIfRequested();
     return { status: "already-provisioned", message: "" };
   }
 
@@ -83,9 +86,24 @@ export async function ensureAdminBootstrapped(): Promise<BootstrapResult> {
     };
   }
 
-  // A fresh hosted database has no indexes either, including the unique one on users.email
-  // that makes the race below safe.
-  await ensureIndexes();
+  /*
+   * A fresh hosted database has no indexes either, including the unique one on users.email
+   * that makes the race below safe.
+   *
+   * A failure here must not stop the account being created. A database user without the
+   * createIndex privilege can still insert perfectly well, and refusing to provision the
+   * administrator over a missing index would lock the operator out of their own site for a
+   * reason that only slows queries down. The cost is that the race below is no longer
+   * settled by the database, so it is settled by re-reading instead.
+   */
+  try {
+    await ensureIndexes();
+  } catch (error) {
+    console.warn(
+      `Could not create indexes during first-run provisioning: ${(error as Error).message}. ` +
+        "Continuing — the administrator is still created, and /api/health reports this.",
+    );
+  }
 
   try {
     const result = await upsertAdmin(env.seedAdminEmail, password.data);
@@ -110,11 +128,29 @@ export async function ensureAdminBootstrapped(): Promise<BootstrapResult> {
 /**
  * Optional demo stock on a first deployment, so the storefront is not an empty shop before
  * any stone has been entered. Only ever runs when the catalogue is completely empty.
+ *
+ * A failure is logged rather than thrown: this is a convenience, and it must never be the
+ * reason an operator cannot sign in to the site they are trying to fill.
  */
-async function seedDemoCatalogueIfRequested(): Promise<void> {
-  if (!env.seedDemoCatalogue) return;
-  if ((await gems().countDocuments({})) > 0) return;
+let cataloguePlanted = false;
 
+async function seedDemoCatalogueIfRequested(): Promise<void> {
+  if (cataloguePlanted) return;
+  if (!env.seedDemoCatalogue) return;
+  if ((await gems().countDocuments({})) > 0) {
+    cataloguePlanted = true;
+    return;
+  }
+  cataloguePlanted = true;
+  try {
+    await plantDemoCatalogue();
+  } catch (error) {
+    cataloguePlanted = false;
+    console.warn(`Could not seed the demo catalogue: ${(error as Error).message}`);
+  }
+}
+
+async function plantDemoCatalogue(): Promise<void> {
   const { categories } = await import("../db/collections");
   const { CATEGORIES, GEMS } = await import("../../scripts/catalogue");
   const { rupees } = await import("../money");
@@ -178,4 +214,5 @@ async function seedDemoCatalogueIfRequested(): Promise<void> {
 /** Tests need to observe a fresh process. */
 export function resetBootstrapCacheForTests(): void {
   provisioned = false;
+  cataloguePlanted = false;
 }

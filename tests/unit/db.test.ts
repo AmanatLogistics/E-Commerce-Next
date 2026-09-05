@@ -295,3 +295,42 @@ describe("in-memory driver: persistence across processes", () => {
     assert.equal(found!.deletedAt!.getTime(), when.getTime());
   });
 });
+
+/**
+ * Two ways to read through a database that might not answer, and the difference between
+ * them is a product decision, not a technical one.
+ */
+describe("degrading a read", () => {
+  it("readOptional swallows the failure and returns the fallback", async () => {
+    const { readOptional } = await import("../../lib/db/build-safe");
+    const warnings: unknown[] = [];
+    const realWarn = console.warn;
+    console.warn = (...args: unknown[]) => void warnings.push(args);
+    try {
+      const value = await readOptional(
+        "test furniture",
+        () => Promise.reject(new Error("database is down")),
+        ["fallback"],
+      );
+      assert.deepEqual(value, ["fallback"]);
+    } finally {
+      console.warn = realWarn;
+    }
+    // Degrading silently is how this becomes impossible to diagnose later.
+    assert.equal(warnings.length, 1);
+  });
+
+  it("readDuringBuild still rethrows at runtime, so an outage is never hidden", async () => {
+    const { readDuringBuild } = await import("../../lib/db/build-safe");
+    const phase = process.env.NEXT_PHASE;
+    delete process.env.NEXT_PHASE;
+    try {
+      await assert.rejects(
+        readDuringBuild("catalogue", () => Promise.reject(new Error("down")), []),
+        /down/,
+      );
+    } finally {
+      if (phase !== undefined) process.env.NEXT_PHASE = phase;
+    }
+  });
+});

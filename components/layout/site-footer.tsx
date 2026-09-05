@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { siteConfig } from "@/lib/site-config";
 import { getActiveCategories } from "@/lib/gems/queries";
-import { readDuringBuild } from "@/lib/db/build-safe";
+import { readOptional } from "@/lib/db/build-safe";
 import { Crest } from "./wordmark";
 
 export async function SiteFooter() {
-  const cats = await readDuringBuild("footer categories", getActiveCategories, []);
+  const cats = await readOptional("footer categories", getActiveCategories, []);
 
   return (
     <footer className="bg-brand text-brand-ink">

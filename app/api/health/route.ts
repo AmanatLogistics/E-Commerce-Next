@@ -92,9 +92,11 @@ export async function GET() {
         ? { ok: true, detail: `${counts.stones} stones, ${counts.varieties} varieties` }
         : {
             ok: false,
-            detail:
-              "The catalogue is empty, so the storefront will look blank. Add stones in " +
-              "/admin, or set SEED_DEMO_CATALOGUE=true before the first sign-in.",
+            detail: env.seedDemoCatalogue
+              ? "The catalogue is empty. SEED_DEMO_CATALOGUE is on, so opening /login " +
+                "fills it with the demo stones — that page is what runs first-run setup."
+              : "The catalogue is empty, so the storefront will look blank. Add stones in " +
+                "/admin, or set SEED_DEMO_CATALOGUE=true and open /login.",
           };
 
     checks.administrator =
@@ -103,14 +105,54 @@ export async function GET() {
         : {
             ok: false,
             detail:
-              "No administrator yet. It is created on the first sign-in from " +
-              "SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD.",
+              "No administrator yet. Open /login — that page creates it from " +
+              "SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD, and tells you if it refused to.",
           };
+
+    /*
+     * Can this database user actually WRITE?
+     *
+     * A read-only Atlas user looks completely healthy on every check above — it connects,
+     * it counts, it queries — and then silently fails to create the administrator, seed the
+     * catalogue, or record an enquiry. Nothing else here distinguishes "nobody has signed
+     * in yet" from "nobody CAN sign in". One insert and one delete in a throwaway
+     * collection settles it.
+     */
+    if (env.mongodbUri) {
+      try {
+        const { getDb } = await import("@/lib/db/mongo");
+        const db = await getDb();
+        const probe = db.collection("_health_write_probe");
+        const { insertedId } = await probe.insertOne({ at: new Date() });
+        await probe.deleteOne({ _id: insertedId });
+        checks.database_writable = { ok: true, detail: "wrote and removed a test document" };
+      } catch (error) {
+        checks.database_writable = {
+          ok: false,
+          detail:
+            `This database user cannot write: ${(error as Error).message}. ` +
+            "No administrator can be created and no enquiry can be recorded. In MongoDB " +
+            "Atlas, under Database Access, the user needs the \"Read and write to any " +
+            "database\" role, not \"Only read\".",
+        };
+      }
+    }
 
     // Index names, for the real MongoDB only — the local store has nothing to report.
     if (env.mongodbUri) {
       try {
-        const { getDb } = await import("@/lib/db/mongo");
+        const { getDb, indexCreationErrors } = await import("@/lib/db/mongo");
+        const failures = indexCreationErrors();
+        if (Object.keys(failures).length > 0) {
+          checks.index_creation = {
+            ok: false,
+            detail:
+              "Indexes could not be created: " +
+              Object.entries(failures)
+                .map(([name, message]) => `${name} (${message})`)
+                .join("; "),
+          };
+        }
         const db = await getDb();
         const indexes = await db.collection("gems").indexes();
         gemIndexes = indexes.map((index) => index.name ?? "(unnamed)");
@@ -139,6 +181,34 @@ export async function GET() {
             `on first write. (${(error as Error).message})`,
         };
       }
+    }
+    /*
+     * The queries the storefront itself runs, run here.
+     *
+     * When a page shows the error boundary, Next redacts the message in production and
+     * leaves only a digest — which means the person who needs the answer cannot see it.
+     * Running the header's and the home page's own reads here reproduces that failure
+     * somewhere the message survives, so "we could not load this page" stops being a
+     * mystery. These are the same four calls app/(shop)/page.tsx makes.
+     */
+    try {
+      const { getActiveCategories, getFeaturedGems, getLatestGems, getCategoryCounts } =
+        await import("@/lib/gems/queries");
+      await Promise.all([
+        getActiveCategories(),
+        getFeaturedGems(8),
+        getLatestGems(4),
+        getCategoryCounts(),
+      ]);
+      checks.storefront_render = { ok: true, detail: "the home page's queries all succeed" };
+    } catch (error) {
+      httpStatus = 503;
+      checks.storefront_render = {
+        ok: false,
+        detail:
+          `The storefront's own queries fail: ${(error as Error).message}. ` +
+          "This is what the error page on the site is hiding.",
+      };
     }
   } catch (error) {
     httpStatus = 503;
