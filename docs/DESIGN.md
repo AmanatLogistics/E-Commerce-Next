@@ -1,4 +1,4 @@
-# Design direction — Panjshir Emerald Crest
+# Design direction — Afghan Emerald Crest
 
 **Direction name: "Emerald & Ivory".**
 

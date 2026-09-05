@@ -1,13 +1,17 @@
 import type { Metadata } from "next";
 import { ContactForm } from "@/components/enquiry/contact-form";
-import { siteConfig } from "@/lib/site-config";
+import { getSiteSettings } from "@/lib/settings";
 
-export const metadata: Metadata = {
-  title: "Contact",
-  description: `Ask ${siteConfig.name} about a stone, or tell us what you are looking for.`,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const site = await getSiteSettings();
+  return {
+    title: "Contact",
+    description: `Ask ${site.name} about a stone, or tell us what you are looking for.`,
+  };
+}
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const site = await getSiteSettings();
   return (
     <div className="mx-auto max-w-7xl px-4 py-16">
       <div className="grid gap-12 lg:grid-cols-[1fr_20rem]">
@@ -30,12 +34,12 @@ export default function ContactPage() {
           <h2 className="label-caps">Direct</h2>
           <ul className="mt-3 flex flex-col gap-3 text-body">
             <li>
-              <a href={`mailto:${siteConfig.contactEmail}`} className="hover:text-brand">
-                {siteConfig.contactEmail}
+              <a href={`mailto:${site.contactEmail}`} className="hover:text-brand">
+                {site.contactEmail}
               </a>
             </li>
-            <li className="text-ink-muted">{siteConfig.contactPhone}</li>
-            <li className="text-ink-muted">{siteConfig.address}</li>
+            <li className="text-ink-muted">{site.contactPhone}</li>
+            <li className="text-ink-muted">{site.address}</li>
           </ul>
 
           <h2 className="label-caps mt-8">How we work</h2>

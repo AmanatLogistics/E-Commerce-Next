@@ -71,7 +71,7 @@ function browseFilter(params: BrowseParams, categorySlug?: string): Filter<GemDo
   return filter;
 }
 
-/** Stock references look like PEC-EM-0101: letters, hyphens and digits, no spaces. */
+/** Stock references look like AEC-EM-0101: letters, hyphens and digits, no spaces. */
 const REFERENCE_PATTERN = /^[a-z]{1,4}-[a-z]{1,4}-\d{2,8}$/i;
 
 function escapeRegex(value: string): string {
@@ -98,8 +98,8 @@ export async function browseGems(
 
   if (params.q) {
     /*
-     * A stock reference is looked up exactly, not tokenised. "PEC-EM-0101" splits into
-     * "pec", "em" and "0101", and "pec" alone matches every reference in the catalogue —
+     * A stock reference is looked up exactly, not tokenised. "AEC-EM-0101" splits into
+     * "aec", "em" and "0101", and "aec" alone matches every reference in the catalogue —
      * so a dealer typing a stock number would get the whole shop back. Anyone entering
      * something of this shape wants that one stone.
      */
@@ -110,7 +110,7 @@ export async function browseGems(
       });
       /*
        * Returned whether or not it matched. Falling through to the tokenised search on a
-       * miss would answer "PEC-ZZ-9999" with the entire catalogue, for the same reason as
+       * miss would answer "AEC-ZZ-9999" with the entire catalogue, for the same reason as
        * above; an unknown stock number should show the empty state.
        */
       return {

@@ -15,22 +15,36 @@ function resolveSiteUrl(): string {
  * Renaming the business is a change to this file and nothing else.
  */
 export const siteConfig = {
-  name: "Panjshir Emerald Crest",
-  shortName: "Panjshir Emerald",
+  name: "Afghan Emerald Crest",
+  shortName: "Afghan Emerald",
   /** Used where the full name will not fit, e.g. the mobile wordmark. */
-  initials: "PEC",
+  initials: "AEC",
   tagline: "Rare emeralds and fine coloured stones",
   description:
     "Ethically sourced loose gemstones — emerald, ruby, spinel, aquamarine, topaz, " +
-    "tourmaline and peridot — from Swat, Hunza, Skardu, Katlang and Kohistan. " +
+    "tourmaline and peridot — from Panjshir, Jegdalek, Badakhshan, Nuristan and Kunar. " +
     "Every stone is photographed as it is and available to enquire on.",
-  locale: "en-PK",
-  currency: "PKR",
-  /** Enquiry references look like PEC-7Q2M4X. */
-  enquiryPrefix: "PEC",
-  contactEmail: "enquiries@panjshiremeraldcrest.example",
-  contactPhone: "+92 51 000 0000",
-  address: "Blue Area, Islamabad, Pakistan",
+  /**
+   * What the page IS: English, Afghanistan. Used for the html lang attribute, where naming
+   * the country is the point and no formatting data is needed.
+   */
+  locale: "en-AF",
+  /**
+   * What Intl should format LIKE, which is not the same question.
+   *
+   * ICU has no data for en-AF and quietly resolves it to plain "en" — and "en" writes dates
+   * American month-first, "Sep 5, 2026". Afghanistan reads them day-first, so a stray
+   * fallback would have quietly Americanised every date in the admin panel. en-GB is the
+   * nearest locale with real data and the right conventions; the currency is chosen
+   * separately below, so this decides ordering and separators only.
+   */
+  formatLocale: "en-GB",
+  currency: "AFN",
+  /** Enquiry references look like AEC-7Q2M4X. */
+  enquiryPrefix: "AEC",
+  contactEmail: "enquiries@afghanemeraldcrest.example",
+  contactPhone: "+93 20 000 0000",
+  address: "Panjshir Valley, Afghanistan",
   /**
    * Used for metadata, structured data and the links in enquiry emails.
    *

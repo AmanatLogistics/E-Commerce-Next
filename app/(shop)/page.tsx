@@ -8,12 +8,13 @@ import {
   getFeaturedGems,
   getLatestGems,
 } from "@/lib/gems/queries";
-import { siteConfig } from "@/lib/site-config";
+import { getSiteSettings } from "@/lib/settings";
 import { readDuringBuild } from "@/lib/db/build-safe";
 
 export const revalidate = 300;
 
 export default async function HomePage() {
+  const site = await getSiteSettings();
   type HomeData = [
     Awaited<ReturnType<typeof getFeaturedGems>>,
     Awaited<ReturnType<typeof getLatestGems>>,
@@ -42,8 +43,8 @@ export default async function HomePage() {
       <section className="border-b bg-surface">
         <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 py-14 lg:grid-cols-2 lg:gap-16 lg:py-20">
           <div className="order-2 lg:order-1">
-            <p className="label-caps">Islamabad · Since 1998</p>
-            <h1 className="text-display mt-4">{siteConfig.tagline}</h1>
+            <p className="label-caps">Panjshir Valley · Since 1998</p>
+            <h1 className="text-display mt-4">{site.tagline}</h1>
             <p className="mt-6 max-w-md text-ink-muted">
               Every stone is selected by hand at the mine head and photographed exactly as it
               is. Treatments are disclosed on every listing, including when there are none.

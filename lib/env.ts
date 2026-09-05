@@ -11,7 +11,7 @@ const isProd = process.env.NODE_ENV === "production";
  * created with them on a hosted deployment — bootstrap refuses, rather than standing up an
  * admin whose password anyone can read.
  */
-export const DEFAULT_ADMIN_EMAIL = "admin@panjshiremeraldcrest.example";
+export const DEFAULT_ADMIN_EMAIL = "admin@afghanemeraldcrest.example";
 export const DEFAULT_ADMIN_PASSWORD = "AdminPass123!";
 
 export const env = {

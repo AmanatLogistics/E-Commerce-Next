@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/guards";
 import { logoutAction } from "@/lib/auth/actions";
-import { siteConfig } from "@/lib/site-config";
+import { getSiteSettings } from "@/lib/settings";
 import { AdminNav } from "@/components/admin/admin-nav";
 
 /**
@@ -14,6 +14,7 @@ import { AdminNav } from "@/components/admin/admin-nav";
  */
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const user = await requireAdmin();
+  const site = await getSiteSettings();
 
   return (
     <div className="flex min-h-screen flex-col bg-surface-sunken">
@@ -24,7 +25,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       <header className="border-b bg-surface">
         <div className="mx-auto flex max-w-7xl flex-wrap items-center gap-x-4 gap-y-2 px-4 py-3">
           <Link href="/admin" className="font-body text-h3 font-semibold text-ink">
-            {siteConfig.shortName} <span className="text-ink-muted">admin</span>
+            {site.shortName} <span className="text-ink-muted">admin</span>
           </Link>
 
           <div className="ml-auto flex items-center gap-4">

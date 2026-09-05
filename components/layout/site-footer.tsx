@@ -1,10 +1,11 @@
 import Link from "next/link";
-import { siteConfig } from "@/lib/site-config";
+import { getSiteSettings } from "@/lib/settings";
 import { getActiveCategories } from "@/lib/gems/queries";
 import { readOptional } from "@/lib/db/build-safe";
 import { Crest } from "./wordmark";
 
 export async function SiteFooter() {
+  const site = await getSiteSettings();
   const cats = await readOptional("footer categories", getActiveCategories, []);
 
   return (
@@ -13,9 +14,9 @@ export async function SiteFooter() {
         <div className="lg:col-span-1">
           <Crest className="text-gold" />
           <p className="mt-3 font-display text-[1.35rem] leading-none tracking-[0.14em]">
-            {siteConfig.name.toUpperCase()}
+            {site.name.toUpperCase()}
           </p>
-          <p className="mt-4 max-w-xs text-sm opacity-80">{siteConfig.description}</p>
+          <p className="mt-4 max-w-xs text-sm opacity-80">{site.description}</p>
         </div>
 
         <nav aria-label="Gem varieties">
@@ -34,7 +35,7 @@ export async function SiteFooter() {
         <div>
           <h2 className="label-caps !text-brand-ink opacity-70">Buying with us</h2>
           <ul className="mt-4 flex flex-col gap-2 text-sm opacity-85">
-            {siteConfig.promises.map((promise) => (
+            {site.promises.map((promise) => (
               <li key={promise.title}>{promise.title}</li>
             ))}
             <li>
@@ -49,12 +50,12 @@ export async function SiteFooter() {
           <h2 className="label-caps !text-brand-ink opacity-70">Get in touch</h2>
           <ul className="mt-4 flex flex-col gap-2 text-sm opacity-85">
             <li>
-              <a href={`mailto:${siteConfig.contactEmail}`} className="hover:underline">
-                {siteConfig.contactEmail}
+              <a href={`mailto:${site.contactEmail}`} className="hover:underline">
+                {site.contactEmail}
               </a>
             </li>
-            <li>{siteConfig.contactPhone}</li>
-            <li>{siteConfig.address}</li>
+            <li>{site.contactPhone}</li>
+            <li>{site.address}</li>
             <li>
               <Link href="/contact" className="hover:underline">
                 Send an enquiry
@@ -66,7 +67,7 @@ export async function SiteFooter() {
 
       <div className="border-t border-white/15 px-4 py-5">
         <p className="mx-auto max-w-7xl text-xs opacity-70">
-          © {new Date().getFullYear()} {siteConfig.name}. Every stone is sold by enquiry —
+          © {new Date().getFullYear()} {site.name}. Every stone is sold by enquiry —
           nothing is charged through this website. Treatments are disclosed on every listing.
         </p>
       </div>

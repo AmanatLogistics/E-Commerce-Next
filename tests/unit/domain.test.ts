@@ -1,27 +1,41 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
-import { formatMoney, rupees, toRupees } from "../../lib/money";
+import { formatMoney, toMinor, toMajor } from "../../lib/money";
 import { rateLimit, resetRateLimits } from "../../lib/auth/rate-limit";
 import { buildBrowseHref, parseBrowseParams } from "../../lib/browse-params";
 import { contactSchema, enquirySchema, gemInputSchema } from "../../lib/validation/schemas";
+import { siteConfig } from "../../lib/site-config";
 
 describe("money", () => {
-  it("stores whole rupees as integer paisa", () => {
-    assert.equal(rupees(125_000), 12_500_000);
-    assert.equal(rupees(1), 100);
-    assert.equal(toRupees(12_500_000), 125_000);
+  it("stores whole afghanis as integer pul", () => {
+    assert.equal(toMinor(125_000), 12_500_000);
+    assert.equal(toMinor(1), 100);
+    assert.equal(toMajor(12_500_000), 125_000);
   });
 
   it("round-trips without floating-point drift", () => {
     for (const value of [1, 7, 999, 62_999, 189_999, 1_000_000]) {
-      assert.equal(toRupees(rupees(value)), value);
+      assert.equal(toMajor(toMinor(value)), value);
     }
   });
 
-  it("formats in the store's locale and currency", () => {
-    const formatted = formatMoney(rupees(125_000));
+  it("formats in the store's configured currency, not a hard-coded one", () => {
+    const formatted = formatMoney(toMinor(125_000));
     assert.match(formatted, /125,000/);
-    assert.match(formatted, /Rs|PKR|₨/);
+    // Whatever siteConfig says, rather than a currency pasted into this assertion — the
+    // shop has changed currency once already and this test should not need editing again.
+    const expected = new Intl.NumberFormat(siteConfig.formatLocale, {
+      style: "currency",
+      currency: siteConfig.currency,
+      maximumFractionDigits: 0,
+      minimumFractionDigits: 0,
+    }).format(125_000);
+    assert.equal(formatted, expected);
+  });
+
+  it("does not format afghanis as rupees", () => {
+    // The rename went through several files; this is the one that would be user-visible.
+    assert.equal(/Rs|₨|PKR/.test(formatMoney(toMinor(125_000))), false);
   });
 });
 
@@ -56,7 +70,7 @@ describe("browse params", () => {
 
 describe("enquiry validation", () => {
   const valid = {
-    gemSlug: "swat-emerald-oval-1-05ct",
+    gemSlug: "panjshir-emerald-oval-1-05ct",
     name: "Ayesha Khan",
     email: "Ayesha@Example.COM ",
     phone: "+92 300 1234567",
@@ -104,8 +118,8 @@ describe("enquiry validation", () => {
 describe("gem input validation", () => {
   const valid = {
     title: "Swat Emerald, Emerald Cut, 2.14 ct",
-    slug: "swat-emerald-emerald-cut-2-14ct",
-    reference: "PEC-EM-0101",
+    slug: "panjshir-emerald-emerald-cut-2-14ct",
+    reference: "AEC-EM-0101",
     description: "A step-cut emerald from the Swat valley with a bluish green colour.",
     categoryId: "66a577f73aca6ef8aadaf561",
     caratWeight: 2.14,

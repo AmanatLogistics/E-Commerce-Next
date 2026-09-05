@@ -5,7 +5,7 @@ import { redirect } from "next/navigation";
 import { ObjectId } from "mongodb";
 import { categories, enquiries, gems } from "../db/collections";
 import { requireAdminAction } from "../auth/guards";
-import { rupees } from "../money";
+import { toMinor } from "../money";
 import { fieldErrorsFrom, type FormState } from "../forms/state";
 import {
   categoryInputSchema,
@@ -116,8 +116,8 @@ export async function createGemAction(_prev: FormState, formData: FormData): Pro
     origin: input.origin,
     treatment: input.treatment,
     certificate: input.certificate,
-    // Rupees in, paisa stored. Money is never a float and never comes from the client raw.
-    priceMinor: input.priceRupees === null ? null : rupees(input.priceRupees),
+    // Afghanis in, pul stored. Money is never a float and never comes from the client raw.
+    priceMinor: input.priceRupees === null ? null : toMinor(input.priceRupees),
     status: input.status,
     featured: input.featured,
     images: input.images,
@@ -186,7 +186,7 @@ export async function updateGemAction(_prev: FormState, formData: FormData): Pro
         origin: input.origin,
         treatment: input.treatment,
         certificate: input.certificate,
-        priceMinor: input.priceRupees === null ? null : rupees(input.priceRupees),
+        priceMinor: input.priceRupees === null ? null : toMinor(input.priceRupees),
         status: input.status,
         featured: input.featured,
         images: input.images,

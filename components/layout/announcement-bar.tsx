@@ -1,14 +1,15 @@
-import { siteConfig } from "@/lib/site-config";
+import { getSiteSettings } from "@/lib/settings";
 
 /**
  * The thin promise bar every jewellery storefront runs above the header. It carries the
  * things a buyer needs to know before they will enquire on a stone they cannot hold.
  */
-export function AnnouncementBar() {
+export async function AnnouncementBar() {
+  const site = await getSiteSettings();
   return (
     <div className="bg-brand text-brand-ink">
       <ul className="mx-auto flex max-w-7xl items-center justify-center gap-8 px-4 py-2.5">
-        {siteConfig.promises.slice(0, 3).map((promise, index) => (
+        {site.promises.slice(0, 3).map((promise, index) => (
           <li
             key={promise.title}
             className={

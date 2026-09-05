@@ -6,6 +6,7 @@ import { Card, CardBody } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { isSmtpConfigured } from "@/lib/email/mailer";
+import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = { title: "Dashboard", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -127,7 +128,7 @@ export default async function AdminDashboard() {
                       </Badge>
                     </td>
                     <td className="p-3 text-ink-muted">
-                      {enquiry.createdAt.toLocaleDateString("en-PK", {
+                      {enquiry.createdAt.toLocaleDateString(siteConfig.formatLocale, {
                         day: "numeric",
                         month: "short",
                         year: "numeric",

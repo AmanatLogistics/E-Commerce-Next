@@ -8,6 +8,7 @@
  * correctness one.
  */
 import type { CategoryDoc, GemDoc, GemStatus, UserDoc } from "./db/documents";
+import { siteConfig } from "./site-config";
 
 export interface CategoryOption {
   id: string;
@@ -39,7 +40,7 @@ export function toCategoryFormValues(category: CategoryDoc): CategoryFormValues 
   };
 }
 
-/** Everything the admin gem form needs, with money already converted to whole rupees. */
+/** Everything the admin gem form needs, with money already converted to whole afghanis. */
 export interface GemFormValues {
   id: string;
   slug: string;
@@ -117,7 +118,7 @@ export function toAccountView(user: UserDoc, selfId: string): AccountView {
     email: user.email,
     name: user.name,
     disabled: user.disabled,
-    createdAt: new Intl.DateTimeFormat("en-PK", { dateStyle: "medium" }).format(user.createdAt),
+    createdAt: new Intl.DateTimeFormat(siteConfig.formatLocale, { dateStyle: "medium" }).format(user.createdAt),
     isSelf: user._id.toHexString() === selfId,
   };
 }

@@ -1,6 +1,6 @@
-# Research — Panjshir Emerald Crest
+# Research — Afghan Emerald Crest
 
-> The business is **Panjshir Emerald Crest**. It is defined in exactly one place,
+> The business is **Afghan Emerald Crest**. It is defined in exactly one place,
 > `lib/site-config.ts`, so renaming it is a one-line change.
 
 ## A. How loose-gemstone dealers actually sell
@@ -41,20 +41,27 @@ Three of these turned into hard rules in the code:
 3. A stone with no price shows **"Price on request"** and its JSON-LD asserts **no price** —
    a structured-data price on an unpriced stone would be a fabrication.
 
-## B. Why the catalogue is Pakistani material
+## B. Why the catalogue is Afghan material
 
-The currency and locale are PKR / en-PK, and Pakistan is a genuine source for most of what
-this shop sells. The demo catalogue is built from documented deposits rather than invented
-ones:
+The shop is based in the Panjshir valley and prices in afghanis, and Afghanistan is a
+genuine source for everything it sells. The demo catalogue is built from documented deposits
+rather than invented ones:
 
 | Variety | Locality | Note |
 |---|---|---|
-| Emerald | Swat valley, above Mingora | Found in 1958; occurs in talc schist |
-| Ruby & spinel | Hunza valley | Gem corundum and spinel in marble beds |
-| Aquamarine | Dassu / Skardu / Shigar, Gilgit-Baltistan | Among the finest documented material anywhere |
-| Pink topaz | Katlang, near Mardan | The deposit that made baby-pink topaz known |
-| Tourmaline | Gilgit, Shigar, Stak Nala | Greens, pinks and bicolours from pegmatites |
-| Peridot | Sapat, Kohistan | Large, clean crystals with a strong green |
+| Emerald | Panjshir valley — Khenj, Mikeni, Buzmal | Talc-carbonate schist; mined in earnest since the 1970s |
+| Ruby | Jegdalek, east of Kabul | Gem corundum in marble beds |
+| Spinel | Badakhshan, and the Jegdalek marbles | Clean pink and red, almost always untreated |
+| Aquamarine | Paprok (Nuristan), Chapa Dara (Kunar) | Among the finest documented material anywhere |
+| Topaz | Mawi and Nilaw, Laghman | Sherry, pale blue and water-clear, often in large clean crystals |
+| Tourmaline | Paprok, Mawi, Nilaw | Greens, pinks and bicolours from pegmatites |
+| Peridot | Pech valley, Kunar | Large, clean crystals with a strong green |
+
+One deliberate omission: the earlier Pakistani catalogue led with Katlang baby-pink topaz,
+and there is no Afghan equivalent. Rather than move the name across and quietly imply a
+colour these pegmatites do not produce, the topaz entries are the sherry and pale blue that
+Laghman actually yields. Undisclosed provenance is the one thing this shop's own listings
+promise never to do.
 
 **The localities, varieties and typical treatments are real. The individual stones are
 not** — weights, dimensions, references and prices are invented demonstration stock. That
@@ -116,10 +123,21 @@ hydration boundaries, which trades away the thing Astro is good at.
 - [Guide to gemstone certifications — Jewelers Mutual](https://www.jewelersmutual.com/resources/individuals/colored-gemstones/guide-to-gemstone-certifications)
 - [How to read a gem certificate](https://sosnagems.com/blogs/gemstone-guides/how-to-read-a-gem-certificate)
 - [IGI — grading reports](https://www.igi.org/)
-- [Gemstones of Pakistan: emerald, ruby and spinel — Gübelin, GIA (PDF)](https://www.gia.edu/doc/Gemstones-of-Pakistan-Emerald-Ruby-and-Spinel.pdf)
-- [Gemstone of Pakistan — PGJDC](https://www.pgjdc.org/gnjdata.php?cId=61)
-- [Province-by-province mining guide — Orah Jewels](https://orahjewels.com/blogs/journals/where-are-pakistans-gemstones-found-a-province-by-province-mining-location-guide)
-- [Pakistan's gemstones and minerals — Gandhara Gems](https://gandharagems.com/blogs/blog/pakistan-s-gemstones-minerals-an-overview)
+
+### On the deposit sources
+
+The four links that backed the deposit table were about **Pakistani** localities — Swat,
+Hunza, Katlang, Kohistan — and stopped being sources for anything here when the shop moved
+to Afghanistan. They have been removed rather than left standing as citations for a table
+they no longer support.
+
+The Afghan localities that replaced them — Panjshir (Khenj, Mikeni, Buzmal), Jegdalek,
+Badakhshan, Paprok and Chapa Dara, Mawi and Nilaw, the Pech valley — are well documented in
+the gemmological literature, but they were written from general knowledge: outbound access
+to reference sites is blocked in the environment this repo is worked in, so nothing was
+re-verified against a source, and no source is cited here that was not actually read. Treat
+the table as a starting point to check before it goes near a real listing.
+
 - [Baymard Institute — cart & checkout usability research](https://baymard.com/research/checkout-usability)
 - [Best jewelry website design examples — Colorlib](https://colorlib.com/wp/jewelry-website-design/)
 - [Jewelry website design examples — Muffin Group](https://muffingroup.com/blog/jewelry-website-designs/)

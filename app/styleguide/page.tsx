@@ -7,7 +7,7 @@ import { Pagination } from "@/components/ui/pagination";
 import { Checkbox, SelectField, TextAreaField, TextField } from "@/components/ui/field";
 import { GemPrice } from "@/components/gem/price";
 import { GemStatusBadge } from "@/components/gem/status-badge";
-import { formatMoney, rupees } from "@/lib/money";
+import { formatMoney, toMinor } from "@/lib/money";
 import { contrastRatio } from "@/lib/contrast";
 
 export const metadata: Metadata = {
@@ -160,7 +160,7 @@ A warm ivory ground, deep emerald as the brand colour, and gold reserved for
       >
         <div className="flex flex-col gap-3">
           <p className="text-display">Display — Fine loose gemstones</p>
-          <p className="text-h1 font-display">Heading 1 — Swat Emerald, 2.14 ct</p>
+          <p className="text-h1 font-display">Heading 1 — Panjshir Emerald, 2.14 ct</p>
           <p className="text-h2 font-display">Heading 2 — Selected stones</p>
           <p className="text-h3 font-display">Heading 3 — Specification</p>
           <p className="text-body">
@@ -173,9 +173,9 @@ A warm ivory ground, deep emerald as the brand colour, and gold reserved for
             <p className="label-caps mb-2">Tabular figures line up</p>
             <table className="text-sm">
               <tbody>
-                <tr><td className="pr-6">2.14 ct</td><td>{formatMoney(rupees(185_000))}</td></tr>
-                <tr><td className="pr-6">12.60 ct</td><td>{formatMoney(rupees(1_250_000))}</td></tr>
-                <tr><td className="pr-6">46.00 ct</td><td>{formatMoney(rupees(88_000))}</td></tr>
+                <tr><td className="pr-6">2.14 ct</td><td>{formatMoney(toMinor(185_000))}</td></tr>
+                <tr><td className="pr-6">12.60 ct</td><td>{formatMoney(toMinor(1_250_000))}</td></tr>
+                <tr><td className="pr-6">46.00 ct</td><td>{formatMoney(toMinor(88_000))}</td></tr>
               </tbody>
             </table>
           </div>
@@ -222,7 +222,7 @@ A warm ivory ground, deep emerald as the brand colour, and gold reserved for
 
       <Section title="Price and status" note="“Price on request” is a rendered state, not a blank.">
         <div className="flex flex-wrap items-center gap-6">
-          <GemPrice priceMinor={rupees(185_000)} />
+          <GemPrice priceMinor={toMinor(185_000)} />
           <GemPrice priceMinor={null} />
           <GemStatusBadge status="available" />
           <GemStatusBadge status="reserved" />

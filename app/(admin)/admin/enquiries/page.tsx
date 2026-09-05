@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/components/ui/pagination";
 import { cn } from "@/lib/cn";
 import type { EnquiryStatus } from "@/lib/db/documents";
+import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = { title: "Enquiries", robots: { index: false } };
 export const dynamic = "force-dynamic";
@@ -104,7 +105,7 @@ export default async function EnquiriesPage({
                       )}
                     </td>
                     <td className="p-3 text-ink-muted">
-                      {enquiry.createdAt.toLocaleString("en-PK", {
+                      {enquiry.createdAt.toLocaleString(siteConfig.formatLocale, {
                         day: "numeric",
                         month: "short",
                         hour: "2-digit",

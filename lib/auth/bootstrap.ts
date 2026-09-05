@@ -153,7 +153,7 @@ async function seedDemoCatalogueIfRequested(): Promise<void> {
 async function plantDemoCatalogue(): Promise<void> {
   const { categories } = await import("../db/collections");
   const { CATEGORIES, GEMS } = await import("../../scripts/catalogue");
-  const { rupees } = await import("../money");
+  const { toMinor } = await import("../money");
   const { ObjectId } = await import("mongodb");
 
   const now = new Date();
@@ -194,7 +194,7 @@ async function plantDemoCatalogue(): Promise<void> {
       origin: gem.origin,
       treatment: gem.treatment,
       certificate: gem.certificate,
-      priceMinor: gem.price === null ? null : rupees(gem.price),
+      priceMinor: gem.price === null ? null : toMinor(gem.price),
       status: gem.status,
       featured: gem.featured,
       images: Array.from({ length: 3 + (index % 2) }, (_, i) => ({

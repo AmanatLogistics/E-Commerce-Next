@@ -52,6 +52,35 @@ export const changeOwnPasswordSchema = z.object({
   newPassword: passwordSchema,
 });
 
+/**
+ * The site's editable identity.
+ *
+ * Bounded rather than free: the name sets a wordmark that is laid out for a short phrase,
+ * the initials appear where the full name will not fit, and the description goes into a meta
+ * tag that search engines truncate anyway. A limit here is kinder than a broken header.
+ */
+export const siteSettingsSchema = z.object({
+  name: z.string().trim().min(2, "Enter the business name").max(60),
+  shortName: z.string().trim().min(2, "Enter a short name").max(40),
+  initials: z.string().trim().min(1, "Enter initials").max(6),
+  tagline: z.string().trim().min(2, "Enter a tagline").max(120),
+  description: z.string().trim().min(10, "Write a sentence or two").max(320),
+  contactEmail: emailSchema,
+  contactPhone: z.string().trim().min(5, "Enter a phone number").max(32),
+  address: z.string().trim().min(3, "Enter an address").max(120),
+  promises: z
+    .array(
+      z.object({
+        title: z.string().trim().min(2, "Enter a title").max(48),
+        body: z.string().trim().min(2, "Enter a line of detail").max(120),
+      }),
+    )
+    .min(1, "Keep at least one promise")
+    .max(6),
+});
+
+export type SiteSettingsInput = z.infer<typeof siteSettingsSchema>;
+
 /** Buyers reach us from many countries, so the phone rule is permissive but bounded. */
 const phoneSchema = z
   .string()
@@ -96,7 +125,7 @@ const slugField = z
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase words separated by hyphens")
   .max(140);
 
-/** Admin-only. Prices are entered in whole rupees and converted to paisa on the server. */
+/** Admin-only. Prices are entered in whole afghanis and converted to pul on the server. */
 export const gemInputSchema = z.object({
   title: z.string().trim().min(3, "Enter a title").max(140),
   slug: slugField,

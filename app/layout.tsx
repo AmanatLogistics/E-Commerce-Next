@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Jost } from "next/font/google";
-import { siteConfig } from "@/lib/site-config";
+import { getSiteSettings } from "@/lib/settings";
 import "./globals.css";
+import { siteConfig } from "@/lib/site-config";
 
 /**
  * Two faces doing two jobs (docs/DESIGN.md). Cormorant Garamond carries the wordmark, stone
@@ -27,19 +28,27 @@ const jost = Jost({
   fallback: ["Helvetica Neue", "Arial", "sans-serif"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteConfig.url),
-  title: {
-    default: `${siteConfig.name} — ${siteConfig.tagline}`,
-    template: `%s · ${siteConfig.name}`,
-  },
-  description: siteConfig.description,
-  openGraph: {
-    type: "website",
-    siteName: siteConfig.name,
-    locale: "en_PK",
-  },
-};
+/**
+ * Metadata is generated rather than declared, because the business name is editable from
+ * /admin/settings and a static object is evaluated once at module load — it would keep
+ * serving the old name until the process restarted.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSiteSettings();
+  return {
+    metadataBase: new URL(settings.url),
+    title: {
+      default: `${settings.name} — ${settings.tagline}`,
+      template: `%s · ${settings.name}`,
+    },
+    description: settings.description,
+    openGraph: {
+      type: "website",
+      siteName: settings.name,
+      locale: settings.locale.replace("-", "_"),
+    },
+  };
+}
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -52,7 +61,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en-PK" className={`${cormorant.variable} ${jost.variable}`}>
+    <html lang={siteConfig.locale} className={`${cormorant.variable} ${jost.variable}`}>
       <body>{children}</body>
     </html>
   );

@@ -1,4 +1,4 @@
-import { siteConfig } from "@/lib/site-config";
+import { getSiteSettings } from "@/lib/settings";
 import { cn } from "@/lib/cn";
 
 /**
@@ -24,13 +24,14 @@ export function Crest({ className }: { className?: string }) {
   );
 }
 
-export function Wordmark({
+export async function Wordmark({
   className,
   align = "center",
 }: {
   className?: string;
   align?: "center" | "left";
 }) {
+  const site = await getSiteSettings();
   return (
     <span
       className={cn(
@@ -46,7 +47,7 @@ export function Wordmark({
         * than the name being truncated — a wordmark that wraps stops reading as a wordmark.
         */}
       <span className="whitespace-nowrap font-display text-[0.8rem] leading-none tracking-[0.08em] text-ink sm:text-[1.35rem] sm:tracking-[0.14em]">
-        {siteConfig.name.toUpperCase()}
+        {site.name.toUpperCase()}
       </span>
     </span>
   );

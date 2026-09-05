@@ -11,7 +11,7 @@ import { ANONYMOUS, field } from "./helpers";
 test.use({ storageState: ANONYMOUS });
 
 test("a buyer can send an enquiry and the dealer receives it", async ({ page, browser }) => {
-  await page.goto("/gem/swat-emerald-oval-1-05ct");
+  await page.goto("/gem/panjshir-emerald-oval-1-05ct");
 
   await field(page, "name").fill("Ayesha Khan");
   await field(page, "email").fill("ayesha@example.com");
@@ -24,7 +24,7 @@ test("a buyer can send an enquiry and the dealer receives it", async ({ page, br
   const confirmation = page.getByRole("status");
   await expect(confirmation).toContainText("Enquiry sent");
   const reference = (await confirmation.locator("strong").textContent())?.trim() ?? "";
-  expect(reference).toMatch(/^PEC-[A-Z0-9]{6}$/);
+  expect(reference).toMatch(/^AEC-[A-Z0-9]{6}$/);
 
   // The dealer's side, in a separate signed-in context.
   const admin = await browser.newPage({ storageState: "playwright/.auth/admin.json" });
@@ -33,13 +33,13 @@ test("a buyer can send an enquiry and the dealer receives it", async ({ page, br
 
   await expect(admin.getByText("ayesha@example.com")).toBeVisible();
   // The stone's identity comes from the database, not from the submitted form.
-  await expect(admin.getByText("PEC-EM-0102")).toBeVisible();
+  await expect(admin.getByText("AEC-EM-0102")).toBeVisible();
   await expect(admin.getByText(/lab report is available/)).toBeVisible();
   await admin.close();
 });
 
 test("the enquiry form rejects incomplete details server-side", async ({ page }) => {
-  await page.goto("/gem/swat-emerald-oval-1-05ct");
+  await page.goto("/gem/panjshir-emerald-oval-1-05ct");
 
   /*
    * These values pass the browser's own constraint validation, so the form actually

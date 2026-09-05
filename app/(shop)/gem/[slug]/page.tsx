@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { getAllGemSlugs, getCategoryBySlug, getGemBySlug, getRelatedGems } from "@/lib/gems/queries";
 import { readDuringBuild } from "@/lib/db/build-safe";
 import { siteConfig } from "@/lib/site-config";
+import { getSiteSettings } from "@/lib/settings";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -36,6 +37,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!gem) return { title: "Stone not found" };
 
   const summary = `${gem.caratWeight.toFixed(2)} ct ${gem.shape.toLowerCase()} from ${gem.origin}. ${gem.treatment}.`;
+  const { name } = await getSiteSettings();
 
   return {
     title: gem.title,
@@ -43,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: { canonical: `/gem/${gem.slug}` },
     openGraph: {
       type: "website",
-      title: `${gem.title} · ${siteConfig.name}`,
+      title: `${gem.title} · ${name}`,
       description: summary,
       images: gem.images.slice(0, 1).map((image) => ({
         url: image.url,

@@ -19,7 +19,7 @@ async function main() {
   );
   const { upsertAdmin } = await import("../lib/auth/admin-account");
   const { env } = await import("../lib/env");
-  const { rupees } = await import("../lib/money");
+  const { toMinor } = await import("../lib/money");
   const { looksTruncated, quotingAdvice, readRawEnvValue } = await import("../lib/env-file");
   const { passwordSchema } = await import("../lib/validation/schemas");
 
@@ -119,7 +119,7 @@ async function main() {
       origin: gem.origin,
       treatment: gem.treatment,
       certificate: gem.certificate,
-      priceMinor: gem.price === null ? null : rupees(gem.price),
+      priceMinor: gem.price === null ? null : toMinor(gem.price),
       status: gem.status,
       featured: gem.featured,
       images,
