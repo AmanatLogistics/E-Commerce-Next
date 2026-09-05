@@ -8,6 +8,7 @@ import { verifyPassword } from "./password";
 import { limits, rateLimit } from "./rate-limit";
 import { clearSessionCookie, setSessionCookie } from "./session";
 import { ensureAdminBootstrapped } from "./bootstrap";
+import { applyAdminPasswordReset } from "./recovery";
 import { fieldErrorsFrom, type FormState } from "../forms/state";
 
 /**
@@ -60,6 +61,17 @@ export async function loginAction(_prev: FormState, formData: FormData): Promise
     // Setup is incomplete: say so plainly. This describes the deployment, not an account,
     // so it reveals nothing about who does or does not have one.
     return { ok: false, message: bootstrap.message };
+  }
+
+  /*
+   * The recovery path for the case bootstrap deliberately refuses: the account exists, but
+   * its password is no longer the one in the environment. It runs here as well as on the
+   * page so a submitted form does not depend on the page having been rendered first, and it
+   * is driven only by a server-side variable — nothing in this formData reaches it.
+   */
+  const recovery = await applyAdminPasswordReset();
+  if (recovery.status !== "not-requested" && recovery.status !== "reset") {
+    return { ok: false, message: recovery.message };
   }
 
   const user = await users().findOne({ email });

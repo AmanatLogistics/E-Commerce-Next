@@ -188,6 +188,7 @@ Setting `MONGODB_URI` correctly is not enough on its own.
 | `SEED_DEMO_CATALOGUE` | Set to `true` to fill a new deployment with the 23 demo stones, so the shop is not empty on day one |
 | `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASSWORD`, `ENQUIRY_RECIPIENT`, `MAIL_FROM` | Your mail provider. Without these, enquiries are still recorded in the admin inbox — no email is sent |
 | `AUTH_SECRET` | Only if you want to control the session signing key yourself. See below |
+| `ADMIN_PASSWORD_RESET` | Set to `true` only to recover a locked-out administrator, then remove it. See below |
 | `NEXT_PUBLIC_SITE_URL` | Only if you use a custom domain and want it in emails and metadata before Vercel knows about it |
 
 ### What is `AUTH_SECRET`, and why is it not in the required list?
@@ -225,6 +226,34 @@ narrow:
 
 To change the password afterwards, run `npm run admin` locally against the same
 `MONGODB_URI` — it updates in place and leaves your enquiries alone.
+
+### "That email and password do not match", using the values I set
+
+Two ordinary mistakes produce this, and neither is visible by looking at the dashboard:
+
+1. **The account was created from an earlier `SEED_ADMIN_PASSWORD`.** Provisioning had
+   already run, so changing the variable afterwards did nothing — see the rules above.
+2. **The value was pasted with a trailing space or newline, or wrapped in quotes.** The
+   account was created with those characters in the password, and you cannot type them back.
+   Hosting dashboards store the field exactly as given; quotes are `.env` syntax, not part
+   of a value, so `"MyPass"` in the dashboard means a password with quotes in it.
+
+Open `/api/health` first — the `configured_credentials` check says which of the two it is.
+
+To get back in, without a shell:
+
+| Variable | Value |
+|---|---|
+| `ADMIN_PASSWORD_RESET` | `true` |
+
+Redeploy, open `/login`, and the page confirms the reset. Sign in with your current
+`SEED_ADMIN_PASSWORD`, then **remove `ADMIN_PASSWORD_RESET`**.
+
+It applies `SEED_ADMIN_PASSWORD` to the `SEED_ADMIN_EMAIL` account, refuses the same
+passwords first-run provisioning refuses, and signs out every existing session. Like
+everything else here it is driven only by a server-side variable — nothing a request carries
+reaches it — so it grants whoever administers the deployment nothing they did not already
+have through `MONGODB_URI`.
 
 ## Deploying
 

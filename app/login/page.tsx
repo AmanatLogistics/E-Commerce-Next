@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/layout/login-form";
 import { getCurrentUser } from "@/lib/auth/session";
 import { ensureAdminBootstrapped } from "@/lib/auth/bootstrap";
+import { applyAdminPasswordReset } from "@/lib/auth/recovery";
 import { siteConfig } from "@/lib/site-config";
 
 export const metadata: Metadata = {
@@ -37,6 +38,12 @@ export default async function LoginPage({
   const needsSetup =
     setup.status !== "created" && setup.status !== "already-provisioned";
 
+  /*
+   * The escape hatch, when the account exists but its password is not the one configured.
+   * Runs only from a server-side variable; nothing in this request influences it.
+   */
+  const recovery = await applyAdminPasswordReset();
+
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-4 py-12">
       <Link href="/" className="font-display text-h2 font-semibold text-ink">
@@ -55,6 +62,24 @@ export default async function LoginPage({
         >
           <h2 className="text-h3 text-ink">Setup is not finished</h2>
           <p className="mt-1 text-sm text-ink">{setup.message}</p>
+        </div>
+      )}
+
+      {recovery.status !== "not-requested" && (
+        <div
+          role="status"
+          className={
+            recovery.status === "reset"
+              ? "mt-6 rounded-[var(--radius-lg)] border border-success bg-success-wash p-4"
+              : "mt-6 rounded-[var(--radius-lg)] border border-gold bg-gold-wash p-4"
+          }
+        >
+          <h2 className="text-h3 text-ink">
+            {recovery.status === "reset"
+              ? "Administrator password reset"
+              : "Password reset was refused"}
+          </h2>
+          <p className="mt-1 text-sm text-ink">{recovery.message}</p>
         </div>
       )}
 
