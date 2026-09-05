@@ -1,4 +1,4 @@
-# Project: Royal Emerald Crest
+# Project: Panjshir Emerald Crest
 
 A loose-gemstone dealer's site: public catalogue + private admin panel. PKR / en-PK.
 Business name lives in `lib/site-config.ts` only.

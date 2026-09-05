@@ -15,10 +15,10 @@ function resolveSiteUrl(): string {
  * Renaming the business is a change to this file and nothing else.
  */
 export const siteConfig = {
-  name: "Royal Emerald Crest",
-  shortName: "Royal Emerald",
+  name: "Panjshir Emerald Crest",
+  shortName: "Panjshir Emerald",
   /** Used where the full name will not fit, e.g. the mobile wordmark. */
-  initials: "REC",
+  initials: "PEC",
   tagline: "Rare emeralds and fine coloured stones",
   description:
     "Ethically sourced loose gemstones — emerald, ruby, spinel, aquamarine, topaz, " +
@@ -26,9 +26,9 @@ export const siteConfig = {
     "Every stone is photographed as it is and available to enquire on.",
   locale: "en-PK",
   currency: "PKR",
-  /** Enquiry references look like REC-7Q2M4X. */
-  enquiryPrefix: "REC",
-  contactEmail: "enquiries@royalemeraldcrest.example",
+  /** Enquiry references look like PEC-7Q2M4X. */
+  enquiryPrefix: "PEC",
+  contactEmail: "enquiries@panjshiremeraldcrest.example",
   contactPhone: "+92 51 000 0000",
   address: "Blue Area, Islamabad, Pakistan",
   /**

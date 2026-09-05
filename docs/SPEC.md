@@ -1,4 +1,4 @@
-# Architecture spec — Royal Emerald Crest
+# Architecture spec — Panjshir Emerald Crest
 
 A loose-gemstone dealer's site: a public catalogue, and a private admin panel. Buyers
 **enquire**; they do not check out, and they do not have accounts.

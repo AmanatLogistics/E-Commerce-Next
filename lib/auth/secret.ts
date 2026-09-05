@@ -21,7 +21,13 @@
 
 const DEV_FALLBACK = "dev-only-insecure-secret-do-not-use-in-production";
 
-/** Changing this string rotates every derived key, invalidating existing sessions. */
+/**
+ * Changing this string rotates every derived key, invalidating existing sessions.
+ *
+ * It keeps the original business name on purpose. It is a domain-separation label, never
+ * shown to anyone, and renaming it with the brand would sign out every deployment that
+ * derives its key from MONGODB_URI — a real cost for a string nobody reads.
+ */
 const DERIVATION_LABEL = "royal-emerald-crest/session-key/v1";
 
 let cached: Uint8Array | null = null;

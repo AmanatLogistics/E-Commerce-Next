@@ -11,7 +11,7 @@ const isProd = process.env.NODE_ENV === "production";
  * created with them on a hosted deployment — bootstrap refuses, rather than standing up an
  * admin whose password anyone can read.
  */
-export const DEFAULT_ADMIN_EMAIL = "admin@royalemeraldcrest.example";
+export const DEFAULT_ADMIN_EMAIL = "admin@panjshiremeraldcrest.example";
 export const DEFAULT_ADMIN_PASSWORD = "AdminPass123!";
 
 export const env = {
@@ -19,6 +19,14 @@ export const env = {
 
   /** When set, the real MongoDB driver is used. When absent, the in-memory driver is. */
   mongodbUri: process.env.MONGODB_URI ?? null,
+  /*
+   * Deliberately still the original name, and not renamed with the business.
+   *
+   * This is not a label — it is where the documents physically live. Changing it points a
+   * running deployment at a different, empty database: the catalogue disappears and the
+   * administrator account with it, with every health check still reporting a healthy
+   * connection. Renaming it means migrating the data first and setting MONGODB_DB.
+   */
   mongodbDb: process.env.MONGODB_DB ?? "royal_emerald_crest",
 
   /**

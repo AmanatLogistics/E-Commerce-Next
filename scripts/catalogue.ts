@@ -94,7 +94,7 @@ export const GEMS: SeedGem[] = [
   // ---------------- Emerald ----------------
   {
     slug: "swat-emerald-emerald-cut-2-14ct",
-    reference: "REC-EM-0101",
+    reference: "PEC-EM-0101",
     title: "Swat Emerald, Emerald Cut, 2.14 ct",
     category: "emerald",
     carat: 2.14,
@@ -114,7 +114,7 @@ export const GEMS: SeedGem[] = [
   },
   {
     slug: "swat-emerald-oval-1-05ct",
-    reference: "REC-EM-0102",
+    reference: "PEC-EM-0102",
     title: "Swat Emerald, Oval, 1.05 ct",
     category: "emerald",
     carat: 1.05,
@@ -134,7 +134,7 @@ export const GEMS: SeedGem[] = [
   },
   {
     slug: "swat-emerald-pair-cushion-1-88ct",
-    reference: "REC-EM-0103",
+    reference: "PEC-EM-0103",
     title: "Matched Swat Emerald Pair, Cushion, 1.88 ct total",
     category: "emerald",
     carat: 1.88,
@@ -154,7 +154,7 @@ export const GEMS: SeedGem[] = [
   },
   {
     slug: "swat-emerald-crystal-specimen-8-4ct",
-    reference: "REC-EM-0104",
+    reference: "PEC-EM-0104",
     title: "Swat Emerald Crystal on Matrix, 8.40 ct",
     category: "emerald",
     carat: 8.4,
@@ -176,7 +176,7 @@ export const GEMS: SeedGem[] = [
   // ---------------- Ruby ----------------
   {
     slug: "hunza-ruby-oval-1-32ct",
-    reference: "REC-RB-0201",
+    reference: "PEC-RB-0201",
     title: "Hunza Ruby, Oval, 1.32 ct",
     category: "ruby",
     carat: 1.32,
@@ -196,7 +196,7 @@ export const GEMS: SeedGem[] = [
   },
   {
     slug: "hunza-ruby-round-0-61ct",
-    reference: "REC-RB-0202",
+    reference: "PEC-RB-0202",
     title: "Hunza Ruby, Round, 0.61 ct",
     category: "ruby",
     carat: 0.61,
@@ -216,7 +216,7 @@ export const GEMS: SeedGem[] = [
   },
   {
     slug: "hunza-ruby-cabochon-3-05ct",
-    reference: "REC-RB-0203",
+    reference: "PEC-RB-0203",
     title: "Hunza Ruby Cabochon, 3.05 ct",
     category: "ruby",
     carat: 3.05,
@@ -238,7 +238,7 @@ export const GEMS: SeedGem[] = [
   // ---------------- Spinel ----------------
   {
     slug: "hunza-red-spinel-octagon-1-74ct",
-    reference: "REC-SP-0301",
+    reference: "PEC-SP-0301",
     title: "Hunza Red Spinel, Octagon, 1.74 ct",
     category: "spinel",
     carat: 1.74,
@@ -258,7 +258,7 @@ export const GEMS: SeedGem[] = [
   },
   {
     slug: "hunza-pink-spinel-cushion-2-31ct",
-    reference: "REC-SP-0302",
+    reference: "PEC-SP-0302",
     title: "Hunza Pink Spinel, Cushion, 2.31 ct",
     category: "spinel",
     carat: 2.31,
@@ -278,7 +278,7 @@ export const GEMS: SeedGem[] = [
   },
   {
     slug: "hunza-lavender-spinel-round-0-92ct",
-    reference: "REC-SP-0303",
+    reference: "PEC-SP-0303",
     title: "Lavender Spinel, Round, 0.92 ct",
     category: "spinel",
     carat: 0.92,
@@ -300,7 +300,7 @@ export const GEMS: SeedGem[] = [
   // ---------------- Aquamarine ----------------
   {
     slug: "shigar-aquamarine-emerald-cut-12-6ct",
-    reference: "REC-AQ-0401",
+    reference: "PEC-AQ-0401",
     title: "Shigar Aquamarine, Emerald Cut, 12.60 ct",
     category: "aquamarine",
     carat: 12.6,
@@ -320,7 +320,7 @@ export const GEMS: SeedGem[] = [
   },
   {
     slug: "skardu-aquamarine-oval-4-85ct",
-    reference: "REC-AQ-0402",
+    reference: "PEC-AQ-0402",
     title: "Skardu Aquamarine, Oval, 4.85 ct",
     category: "aquamarine",
     carat: 4.85,
@@ -340,7 +340,7 @@ export const GEMS: SeedGem[] = [
   },
   {
     slug: "skardu-aquamarine-crystal-46ct",
-    reference: "REC-AQ-0403",
+    reference: "PEC-AQ-0403",
     title: "Aquamarine Crystal, Terminated, 46.00 ct",
     category: "aquamarine",
     carat: 46,
@@ -360,7 +360,7 @@ export const GEMS: SeedGem[] = [
   },
   {
     slug: "shigar-aquamarine-pair-trillion-6-2ct",
-    reference: "REC-AQ-0404",
+    reference: "PEC-AQ-0404",
     title: "Matched Aquamarine Pair, Trillion, 6.20 ct total",
     category: "aquamarine",
     carat: 6.2,
@@ -382,7 +382,7 @@ export const GEMS: SeedGem[] = [
   // ---------------- Topaz ----------------
   {
     slug: "katlang-pink-topaz-oval-3-42ct",
-    reference: "REC-TZ-0501",
+    reference: "PEC-TZ-0501",
     title: "Katlang Pink Topaz, Oval, 3.42 ct",
     category: "topaz",
     carat: 3.42,
@@ -402,7 +402,7 @@ export const GEMS: SeedGem[] = [
   },
   {
     slug: "katlang-pink-topaz-cushion-1-96ct",
-    reference: "REC-TZ-0502",
+    reference: "PEC-TZ-0502",
     title: "Katlang Pink Topaz, Cushion, 1.96 ct",
     category: "topaz",
     carat: 1.96,
@@ -422,7 +422,7 @@ export const GEMS: SeedGem[] = [
   },
   {
     slug: "katlang-topaz-crystal-22ct",
-    reference: "REC-TZ-0503",
+    reference: "PEC-TZ-0503",
     title: "Pink Topaz Crystal, 22.00 ct",
     category: "topaz",
     carat: 22,
@@ -444,7 +444,7 @@ export const GEMS: SeedGem[] = [
   // ---------------- Tourmaline ----------------
   {
     slug: "stak-nala-bicolour-tourmaline-5-12ct",
-    reference: "REC-TM-0601",
+    reference: "PEC-TM-0601",
     title: "Bicolour Tourmaline, Emerald Cut, 5.12 ct",
     category: "tourmaline",
     carat: 5.12,
@@ -464,7 +464,7 @@ export const GEMS: SeedGem[] = [
   },
   {
     slug: "gilgit-green-tourmaline-oval-3-68ct",
-    reference: "REC-TM-0602",
+    reference: "PEC-TM-0602",
     title: "Green Tourmaline, Oval, 3.68 ct",
     category: "tourmaline",
     carat: 3.68,
@@ -484,7 +484,7 @@ export const GEMS: SeedGem[] = [
   },
   {
     slug: "shigar-pink-tourmaline-pear-2-44ct",
-    reference: "REC-TM-0603",
+    reference: "PEC-TM-0603",
     title: "Pink Tourmaline, Pear, 2.44 ct",
     category: "tourmaline",
     carat: 2.44,
@@ -506,7 +506,7 @@ export const GEMS: SeedGem[] = [
   // ---------------- Peridot ----------------
   {
     slug: "sapat-peridot-oval-9-15ct",
-    reference: "REC-PD-0701",
+    reference: "PEC-PD-0701",
     title: "Sapat Peridot, Oval, 9.15 ct",
     category: "peridot",
     carat: 9.15,
@@ -526,7 +526,7 @@ export const GEMS: SeedGem[] = [
   },
   {
     slug: "sapat-peridot-cushion-4-70ct",
-    reference: "REC-PD-0702",
+    reference: "PEC-PD-0702",
     title: "Sapat Peridot, Cushion, 4.70 ct",
     category: "peridot",
     carat: 4.7,
@@ -546,7 +546,7 @@ export const GEMS: SeedGem[] = [
   },
   {
     slug: "sapat-peridot-round-2-05ct",
-    reference: "REC-PD-0703",
+    reference: "PEC-PD-0703",
     title: "Sapat Peridot, Round, 2.05 ct",
     category: "peridot",
     carat: 2.05,

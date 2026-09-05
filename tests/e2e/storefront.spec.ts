@@ -35,10 +35,10 @@ test("search matches names and looks up a stock reference exactly", async ({ pag
   await expect(page.locator("[aria-live=polite]").first()).toContainText("4 stones");
 
   // A reference must not be tokenised: "KG" alone would otherwise match every stone.
-  await page.goto("/collection?q=REC-EM-0101");
+  await page.goto("/collection?q=PEC-EM-0101");
   await expect(page.locator("[aria-live=polite]").first()).toContainText("1 stone");
 
-  await page.goto("/collection?q=REC-ZZ-9999");
+  await page.goto("/collection?q=PEC-ZZ-9999");
   await expect(page.getByText(/Nothing matches/)).toBeVisible();
 });
 
@@ -53,7 +53,7 @@ test("a stone page shows the full specification with treatment disclosed", async
   await page.goto("/gem/swat-emerald-emerald-cut-2-14ct");
 
   await expect(page.getByRole("heading", { level: 1 })).toContainText("Swat Emerald");
-  await expect(page.getByText("REC-EM-0101").first()).toBeVisible();
+  await expect(page.getByText("PEC-EM-0101").first()).toBeVisible();
   await expect(page.getByRole("row", { name: /Carat weight/ })).toContainText("2.14 ct");
   await expect(page.getByRole("row", { name: /Dimensions/ })).toContainText(
     "8.42 × 6.18 × 4.55 mm",

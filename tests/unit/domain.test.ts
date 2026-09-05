@@ -105,7 +105,7 @@ describe("gem input validation", () => {
   const valid = {
     title: "Swat Emerald, Emerald Cut, 2.14 ct",
     slug: "swat-emerald-emerald-cut-2-14ct",
-    reference: "REC-EM-0101",
+    reference: "PEC-EM-0101",
     description: "A step-cut emerald from the Swat valley with a bluish green colour.",
     categoryId: "66a577f73aca6ef8aadaf561",
     caratWeight: 2.14,

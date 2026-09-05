@@ -62,7 +62,7 @@ export function GemForm({
           defaultValue={gem?.reference}
           required
           error={state.fieldErrors?.reference}
-          hint="Your own packet reference, e.g. REC-EM-0101."
+          hint="Your own packet reference, e.g. PEC-EM-0101."
         />
         <TextField
           label="URL slug"

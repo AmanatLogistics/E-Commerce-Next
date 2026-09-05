@@ -30,7 +30,7 @@ test.describe("as a logged-out visitor", () => {
     // Posting straight at the endpoint, bypassing the UI entirely.
     const response = await request.post("/admin/gems/new", {
       headers: { "Next-Action": "0000000000000000000000000000000000000000" },
-      form: { title: "Injected stone", slug: "injected-stone", reference: "REC-HACK-1" },
+      form: { title: "Injected stone", slug: "injected-stone", reference: "PEC-HACK-1" },
       maxRedirects: 0,
     });
 

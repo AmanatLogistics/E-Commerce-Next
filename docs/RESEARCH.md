@@ -1,6 +1,6 @@
-# Research — Royal Emerald Crest
+# Research — Panjshir Emerald Crest
 
-> The business is **Royal Emerald Crest**. It is defined in exactly one place,
+> The business is **Panjshir Emerald Crest**. It is defined in exactly one place,
 > `lib/site-config.ts`, so renaming it is a one-line change.
 
 ## A. How loose-gemstone dealers actually sell
