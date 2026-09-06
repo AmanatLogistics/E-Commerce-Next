@@ -210,12 +210,12 @@ export function GemForm({
 
       <Section title="Price and availability">
         <TextField
-          label="Price (whole afghanis)"
-          name="priceRupees"
+          label="Price (whole dollars)"
+          name="priceMajor"
           type="number"
           inputMode="numeric"
-          defaultValue={gem?.priceRupees ?? ""}
-          error={state.fieldErrors?.priceRupees}
+          defaultValue={gem?.priceMajor ?? ""}
+          error={state.fieldErrors?.priceMajor}
           hint="Leave blank for “price on request”."
         />
         <SelectField

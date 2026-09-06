@@ -40,7 +40,7 @@ export function toCategoryFormValues(category: CategoryDoc): CategoryFormValues 
   };
 }
 
-/** Everything the admin gem form needs, with money already converted to whole afghanis. */
+/** Everything the admin gem form needs, with money already converted to whole dollars. */
 export interface GemFormValues {
   id: string;
   slug: string;
@@ -60,7 +60,7 @@ export interface GemFormValues {
   treatment: string;
   certificate: string;
   /** null means "price on request". */
-  priceRupees: number | null;
+  priceMajor: number | null;
   status: GemStatus;
   featured: boolean;
   published: boolean;
@@ -86,7 +86,7 @@ export function toGemFormValues(gem: GemDoc): GemFormValues {
     origin: gem.origin,
     treatment: gem.treatment,
     certificate: gem.certificate,
-    priceRupees: gem.priceMinor === null ? null : Math.round(gem.priceMinor / 100),
+    priceMajor: gem.priceMinor === null ? null : Math.round(gem.priceMinor / 100),
     status: gem.status,
     featured: gem.featured,
     published: gem.published,

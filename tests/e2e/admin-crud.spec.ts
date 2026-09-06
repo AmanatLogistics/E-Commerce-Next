@@ -8,7 +8,7 @@ import { slugify } from "../../lib/slug";
  * These run with the session saved by the setup project.
  */
 
-const EXPECTED_PRICE = formatMoney(toMinor(125_000));
+const EXPECTED_PRICE = formatMoney(toMinor(2_500));
 
 function stoneFixture() {
   // Unique per run so the suite can be run repeatedly against the same database.
@@ -30,7 +30,7 @@ function stoneFixture() {
     depthMm: "4.20",
     origin: "Jegdalek, Kabul Province, Afghanistan",
     treatment: "None (untreated)",
-    priceRupees: "125000",
+    priceMajor: "2500",
     imageUrl: "/img/gem/test-spinel/1",
     imageAlt: "Test spinel, view 1",
   };

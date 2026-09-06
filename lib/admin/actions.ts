@@ -41,8 +41,8 @@ function gemInputFrom(formData: FormData) {
     .map((url, i) => ({ url: url.trim(), alt: (alts[i] ?? "").trim(), width: 600, height: 600 }))
     .filter((image) => image.url.length > 0);
 
-  const priceRaw = formData.get("priceRupees");
-  const priceRupees =
+  const priceRaw = formData.get("priceMajor");
+  const priceMajor =
     priceRaw === null || String(priceRaw).trim() === "" ? null : Number(priceRaw);
 
   return {
@@ -69,7 +69,7 @@ function gemInputFrom(formData: FormData) {
     origin: formData.get("origin"),
     treatment: formData.get("treatment"),
     certificate: optional(formData, "certificate"),
-    priceRupees,
+    priceMajor,
     status: optional(formData, "status") ?? "available",
     featured: formData.get("featured") === "on",
     published: formData.get("published") === "on",
@@ -151,8 +151,8 @@ export async function createGemAction(_prev: FormState, formData: FormData): Pro
     origin: input.origin,
     treatment: input.treatment,
     certificate: input.certificate,
-    // Afghanis in, pul stored. Money is never a float and never comes from the client raw.
-    priceMinor: input.priceRupees === null ? null : toMinor(input.priceRupees),
+    // Dollars in, cents stored. Money is never a float and never comes from the client raw.
+    priceMinor: input.priceMajor === null ? null : toMinor(input.priceMajor),
     status: input.status,
     featured: input.featured,
     images,
@@ -224,7 +224,7 @@ export async function updateGemAction(_prev: FormState, formData: FormData): Pro
         origin: input.origin,
         treatment: input.treatment,
         certificate: input.certificate,
-        priceMinor: input.priceRupees === null ? null : toMinor(input.priceRupees),
+        priceMinor: input.priceMajor === null ? null : toMinor(input.priceMajor),
         status: input.status,
         featured: input.featured,
         images,

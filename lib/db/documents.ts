@@ -66,7 +66,7 @@ export interface GemDoc extends BaseDoc {
   certificate: string;
 
   /**
-   * Price in pul, or null for "price on request" — normal for higher-value stones.
+   * Price in cents, or null for "price on request" — normal for higher-value stones.
    * Never a float, and never accepted from the client.
    */
   priceMinor: number | null;
