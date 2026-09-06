@@ -11,6 +11,20 @@ export interface FormState {
   message: string;
   /** Field-level messages, keyed by field name, for inline display. */
   fieldErrors?: Record<string, string>;
+  /**
+   * What the person actually typed, handed back so a refused save does not erase it.
+   *
+   * React resets an uncontrolled <form action={…}> once the action returns — which is
+   * reasonable for a form that succeeded and catastrophic for one that did not. A dealer
+   * filling in fifteen fields, forgetting the photograph, and losing all fifteen will not
+   * make that mistake twice, because they will stop using the form.
+   */
+  values?: Record<string, string | string[]>;
+  /**
+   * Changes on every submission, so the form can be re-keyed and remount with `values` as
+   * its defaults. Without a new key React keeps the DOM nodes it just blanked.
+   */
+  attempt?: number;
 }
 
 export interface EnquiryFormState extends FormState {

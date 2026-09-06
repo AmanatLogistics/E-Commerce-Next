@@ -258,3 +258,54 @@ test("the upload endpoint refuses a request with no session", async ({ browser }
   expect(response.status()).toBe(401);
   await stranger.close();
 });
+
+
+test("a refused save keeps everything already typed", async ({ page }) => {
+  /*
+   * React resets an uncontrolled form as soon as its action returns, so a single missing
+   * field used to cost a dealer all fifteen of the others. Nobody makes that mistake twice —
+   * they stop using the form instead.
+   */
+  const stone = stoneFixture();
+
+  await page.goto("/admin/gems/new");
+  await field(page, "title").fill(stone.title);
+  await field(page, "reference").fill(stone.reference);
+  await field(page, "description").fill(stone.description);
+  await field(page, "categoryId").selectOption({ label: "Spinel" });
+  await field(page, "caratWeight").fill("2.10");
+  await field(page, "shape").fill("Cushion");
+  await field(page, "colour").fill("Vivid red");
+  await field(page, "lengthMm").fill("7");
+  await field(page, "widthMm").fill("6");
+  await field(page, "depthMm").fill("4");
+  await field(page, "origin").fill("Jegdalek, Afghanistan");
+  await field(page, "treatment").fill("None (untreated)");
+  await field(page, "priceMajor").fill("2500");
+  await field(page, "published").check();
+
+  // Submitted with no photograph at all, which is the one thing missing.
+  await page.getByRole("button", { name: "Add stone" }).click();
+  await expect(page.getByText("Add at least one photograph")).toBeVisible();
+
+  // Nothing typed was thrown away — including the dropdown and the checkbox.
+  await expect(field(page, "title")).toHaveValue(stone.title);
+  await expect(field(page, "reference")).toHaveValue(stone.reference);
+  await expect(field(page, "description")).toHaveValue(stone.description);
+  await expect(field(page, "caratWeight")).toHaveValue("2.10");
+  await expect(field(page, "treatment")).toHaveValue("None (untreated)");
+  await expect(field(page, "priceMajor")).toHaveValue("2500");
+  await expect(field(page, "published")).toBeChecked();
+  await expect(field(page, "categoryId")).not.toHaveValue("");
+
+  // Supplying only the missing thing is enough to finish.
+  await field(page, "imageUrl").first().fill("https://images.example.com/a-spinel.jpg");
+  await page.getByRole("button", { name: "Add stone" }).click();
+  await page.waitForURL(/\/admin\/gems\?/);
+  await expect(page.getByText("Stone added.")).toBeVisible();
+
+  // Leave the catalogue as it was found; the storefront spec counts stock.
+  await page.getByRole("link", { name: stone.title }).click();
+  await page.getByRole("button", { name: "Delete stone" }).click();
+  await page.waitForURL(/\/admin\/gems\?/);
+});

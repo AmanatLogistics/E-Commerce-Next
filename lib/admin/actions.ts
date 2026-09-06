@@ -102,6 +102,42 @@ function withAltText<T extends { url: string; alt: string }>(images: T[], title:
   }));
 }
 
+/**
+ * Everything the person typed, in the shape the form reads it back as.
+ *
+ * Attached to every REFUSED result. React resets an uncontrolled form once its action
+ * returns, so without this a missing photograph costs a dealer the other fifteen fields.
+ */
+function submittedValues(formData: FormData): Record<string, string | string[]> {
+  const values: Record<string, string | string[]> = {};
+  for (const [key, value] of formData.entries()) {
+    if (typeof value !== "string") continue;
+    // imageUrl and imageAlt repeat, one pair per photograph.
+    if (key === "imageUrl" || key === "imageAlt") {
+      const existing = values[key];
+      values[key] = Array.isArray(existing) ? [...existing, value] : [value];
+    } else {
+      values[key] = value;
+    }
+  }
+  return values;
+}
+
+/** A refusal that keeps the dealer's work. */
+function refuse(
+  formData: FormData,
+  message: string,
+  fieldErrors?: Record<string, string>,
+): FormState {
+  return {
+    ok: false,
+    message,
+    fieldErrors,
+    values: submittedValues(formData),
+    attempt: Date.now(),
+  };
+}
+
 function revalidateGemPaths(slug?: string): void {
   revalidatePath("/");
   revalidatePath("/collection");
@@ -114,7 +150,7 @@ export async function createGemAction(_prev: FormState, formData: FormData): Pro
 
   const parsed = gemInputSchema.safeParse(gemInputFrom(formData));
   if (!parsed.success) {
-    return { ok: false, message: "Please fix the errors below.", fieldErrors: fieldErrorsFrom(parsed.error.issues) };
+    return refuse(formData, "Please fix the errors below.", fieldErrorsFrom(parsed.error.issues));
   }
   const input = parsed.data;
 
@@ -122,11 +158,9 @@ export async function createGemAction(_prev: FormState, formData: FormData): Pro
   // choose, so a clash there is settled rather than reported.
   const referenceClash = await gems().findOne({ reference: input.reference });
   if (referenceClash) {
-    return {
-      ok: false,
-      message: "",
-      fieldErrors: { reference: "Another stone already uses this reference." },
-    };
+    return refuse(formData, "", {
+      reference: "Another stone already uses this reference.",
+    });
   }
 
   const slug = await uniqueSlug(input.title, async (candidate) =>
@@ -180,18 +214,16 @@ export async function updateGemAction(_prev: FormState, formData: FormData): Pro
 
   const parsed = gemInputSchema.safeParse(gemInputFrom(formData));
   if (!parsed.success) {
-    return { ok: false, message: "Please fix the errors below.", fieldErrors: fieldErrorsFrom(parsed.error.issues) };
+    return refuse(formData, "Please fix the errors below.", fieldErrorsFrom(parsed.error.issues));
   }
   const input = parsed.data;
   const _id = new ObjectId(id);
 
   const clash = await gems().findOne({ _id: { $ne: _id }, reference: input.reference });
   if (clash) {
-    return {
-      ok: false,
-      message: "",
-      fieldErrors: { reference: "Another stone already uses this reference." },
-    };
+    return refuse(formData, "", {
+      reference: "Another stone already uses this reference.",
+    });
   }
 
   const previous = await gems().findOne({ _id });
