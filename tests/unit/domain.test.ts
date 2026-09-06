@@ -117,10 +117,9 @@ describe("enquiry validation", () => {
 
 describe("gem input validation", () => {
   const valid = {
-    title: "Swat Emerald, Emerald Cut, 2.14 ct",
-    slug: "panjshir-emerald-emerald-cut-2-14ct",
+    title: "Panjshir Emerald, Emerald Cut, 2.14 ct",
     reference: "AEC-EM-0101",
-    description: "A step-cut emerald from the Swat valley with a bluish green colour.",
+    description: "A step-cut emerald from the Panjshir valley with a bluish green colour.",
     categoryId: "66a577f73aca6ef8aadaf561",
     caratWeight: 2.14,
     shape: "Rectangular",
@@ -130,7 +129,7 @@ describe("gem input validation", () => {
     lengthMm: 8.42,
     widthMm: 6.18,
     depthMm: 4.55,
-    origin: "Swat Valley, Pakistan",
+    origin: "Panjshir Valley, Afghanistan",
     treatment: "None (untreated)",
     images: [{ url: "/img/gem/x/1", alt: "view 1" }],
   };
@@ -152,8 +151,16 @@ describe("gem input validation", () => {
     assert.equal(gemInputSchema.safeParse({ ...valid, images: [] }).success, false);
   });
 
-  it("rejects a slug that is not URL safe", () => {
-    assert.equal(gemInputSchema.safeParse({ ...valid, slug: "Not A Slug!" }).success, false);
+  it("has no slug field at all, so nothing a form sends can set the address", () => {
+    /*
+     * There used to be a required `slug` here with the rule "lowercase words separated by
+     * hyphens", and it refused more saves than it ever protected. It is derived from the
+     * title now (lib/slug.ts), and an extra key in the payload is stripped rather than
+     * honoured — so a crafted request cannot choose a stone's address either.
+     */
+    const parsed = gemInputSchema.safeParse({ ...valid, slug: "Not A Slug!" });
+    assert.equal(parsed.success, true);
+    assert.equal("slug" in parsed.data, false);
   });
 
   it("rejects a negative carat weight", () => {

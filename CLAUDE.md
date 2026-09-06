@@ -63,6 +63,16 @@ the sale starts as a conversation. Do not add e-commerce machinery back without 
 - An enquiry is written to the database BEFORE the notification email is attempted, and a
   send failure is recorded on the record rather than shown to the buyer. Losing a lead to an
   SMTP outage is worse than a missing email.
+- A stone's `slug` is DERIVED from its title (`lib/slug.ts`) on create, and never re-derived
+  on edit — it is the public address, and a retitle must not break existing links. It is in
+  no schema, so nothing a request sends can choose it.
+- `cut` and `clarity` are optional; `treatment` is not. Empty optional rows are dropped from
+  the spec table rather than rendered blank.
+- An image address may point ANYWHERE (`lib/image-src.ts`), but never at a scheme that can
+  execute. Remote addresses render through `GemPhoto` as a plain `<img>`, NEVER `next/image`
+  — optimizing them would make this server fetch a URL a form supplied. Uploads go to the
+  `media` collection via `/api/admin/media` (guarded, magic-number checked, no SVG) and are
+  served from `/media/<id>`.
 - Never pass a database document into a Client Component. ObjectId does not survive React
   serialisation. Map through `lib/view-models.ts`.
 

@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { GemPhoto } from "@/components/gem/gem-photo";
 import Link from "next/link";
 import type { GemCardView } from "@/lib/gems/queries";
 import { GemPrice } from "./price";
@@ -25,7 +25,7 @@ export function GemCard({
   return (
     <article className="group relative flex flex-col">
       <div className="relative aspect-square overflow-hidden rounded-[var(--radius-lg)] bg-plate">
-        <Image
+        <GemPhoto
           src={gem.image}
           alt={gem.imageAlt}
           width={600}
@@ -39,10 +39,10 @@ export function GemCard({
           )}
         />
         {secondImage && (
-          <Image
+          <GemPhoto
             src={secondImage}
             alt=""
-            aria-hidden="true"
+            ariaHidden
             width={600}
             height={600}
             sizes="(min-width: 1100px) 23vw, (min-width: 640px) 31vw, 46vw"

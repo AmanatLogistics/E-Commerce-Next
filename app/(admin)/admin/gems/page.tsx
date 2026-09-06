@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Image from "next/image";
+import { GemPhoto } from "@/components/gem/gem-photo";
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth/guards";
 import { listGems } from "@/lib/admin/queries";
@@ -111,7 +111,7 @@ export default async function AdminGemsPage({
                     <td className="p-3">
                       <div className="flex items-center gap-3">
                         {gem.image && (
-                          <Image
+                          <GemPhoto
                             src={gem.image}
                             alt=""
                             width={40}
