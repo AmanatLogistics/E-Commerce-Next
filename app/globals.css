@@ -183,6 +183,100 @@
   --shadow-e2: var(--elevation-2);
 }
 
+/*
+ * Motion.
+ *
+ * The point of all of this is perceived speed, not decoration. A page that fades its
+ * content in over 300ms is not faster than one that does not — it just stops feeling like
+ * the browser dumped a screen at you, which is what a hard cut reads as. Everything here is
+ * short, and everything is opacity and transform only: those are the two properties a
+ * browser can animate on the compositor without laying the page out again, so none of it
+ * competes with the work of actually rendering the page.
+ *
+ * All of it is switched off for anyone who has asked their system for reduced motion. That
+ * is not a nicety — for some people this kind of movement causes nausea.
+ */
+@theme inline {
+  --ease-out-soft: cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(0.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@layer components {
+  /* Page content, entering. Applied once per route by the shop layout. */
+  .enter {
+    animation: rise-in 0.42s var(--ease-out-soft) both;
+  }
+
+  /*
+   * A grid whose children arrive in sequence rather than all at once.
+   *
+   * The stagger is capped at eight because after that the delay is longer than anyone waits
+   * before scrolling, and a card that animates in under the viewport is a card that looks
+   * broken when you scroll back up to it.
+   */
+  .stagger > * {
+    animation: rise-in 0.45s var(--ease-out-soft) both;
+  }
+  .stagger > *:nth-child(1) { animation-delay: 0ms; }
+  .stagger > *:nth-child(2) { animation-delay: 45ms; }
+  .stagger > *:nth-child(3) { animation-delay: 90ms; }
+  .stagger > *:nth-child(4) { animation-delay: 135ms; }
+  .stagger > *:nth-child(5) { animation-delay: 180ms; }
+  .stagger > *:nth-child(6) { animation-delay: 225ms; }
+  .stagger > *:nth-child(7) { animation-delay: 270ms; }
+  .stagger > *:nth-child(n + 8) { animation-delay: 300ms; }
+
+  /*
+   * Photographs, arriving.
+   *
+   * A stone photograph decodes at its own pace, and a hard swap from the empty plate to a
+   * full-colour image is the single jumpiest thing on a catalogue page. Fading it over the
+   * plate it already sits on turns that into a develop. The plate colour behind it means
+   * there is never a white flash first.
+   */
+  .photo-in {
+    animation: fade-in 0.5s var(--ease-out-soft) both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /*
+   * Not "faster" — off. Someone who has set this has usually done so because motion makes
+   * them ill, and a shorter animation is still an animation.
+   */
+  .enter,
+  .stagger > *,
+  .photo-in {
+    animation: none !important;
+  }
+
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 @layer base {
   * {
     border-color: var(--line);

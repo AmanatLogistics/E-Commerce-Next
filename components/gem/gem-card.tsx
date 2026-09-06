@@ -96,7 +96,7 @@ export function GemGrid({
   priorityCount?: number;
 }) {
   return (
-    <div className="gem-grid">
+    <div className="gem-grid stagger">
       {gems.map((gem, index) => (
         <GemCard
           key={gem.id}

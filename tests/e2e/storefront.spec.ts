@@ -117,3 +117,43 @@ test("the storefront is usable at 360px", async ({ page }) => {
   );
   expect(overflow).toBe(false);
 });
+
+
+test("a clicked navigation link shows it is working, and the results stream", async ({ page }) => {
+  /*
+   * The variety pages render on demand, so there is a round trip between the click and the
+   * new page. Silence in that gap reads as the click having missed — people click again,
+   * and the second click makes it slower.
+   */
+  await page.goto("/collection");
+  // The variety rail renders for both breakpoints, so there are two of each link.
+  const ruby = page
+    .getByRole("navigation", { name: "Gem varieties" })
+    .getByRole("link", { name: "Ruby", exact: true })
+    .first();
+  const bar = ruby.locator("span[aria-hidden]");
+
+  // Tailwind v4 sets the standalone `scale` property, not `transform`.
+  await expect
+    .poll(async () => bar.evaluate((el) => getComputedStyle(el).scale))
+    .toBe("0 1");
+
+  await ruby.click();
+  await page.waitForURL("**/collection/ruby");
+  await expect(page.getByRole("heading", { level: 1 })).toContainText("Ruby");
+});
+
+test("motion is switched off for anyone who asked for reduced motion", async ({ browser }) => {
+  // Not shortened — off. Motion makes some people ill, and a brief animation is still one.
+  const context = await browser.newContext({ reducedMotion: "reduce" });
+  const page = await context.newPage();
+  await page.goto("/collection");
+
+  const card = page.locator(".stagger > *").first();
+  await expect(card).toBeVisible();
+  expect(await card.evaluate((el) => getComputedStyle(el).animationName)).toBe("none");
+
+  const main = page.locator("main#main");
+  expect(await main.evaluate((el) => getComputedStyle(el).animationName)).toBe("none");
+  await context.close();
+});

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { getActiveCategories } from "@/lib/gems/queries";
 import { readOptional } from "@/lib/db/build-safe";
+import { NavLink } from "./nav-link";
 import { SearchBox } from "./search-box";
 import { AnnouncementBar } from "./announcement-bar";
 import { Wordmark } from "./wordmark";
@@ -47,21 +48,21 @@ export async function SiteHeader({ query = "" }: { query?: string }) {
         <nav aria-label="Gem varieties" className="mx-auto max-w-7xl px-2 pb-1">
           <ul className="no-scrollbar flex justify-start gap-1 overflow-x-auto lg:justify-center">
             <li className="shrink-0">
-              <Link
+              <NavLink
                 href="/collection"
                 className="label-caps inline-flex h-10 items-center px-3 !text-ink transition-colors hover:text-brand"
               >
                 All stones
-              </Link>
+              </NavLink>
             </li>
             {cats.map((category) => (
               <li key={category.slug} className="shrink-0">
-                <Link
+                <NavLink
                   href={`/collection/${category.slug}`}
                   className="label-caps inline-flex h-10 items-center px-3 transition-colors hover:text-brand"
                 >
                   {category.name}
-                </Link>
+                </NavLink>
               </li>
             ))}
           </ul>
