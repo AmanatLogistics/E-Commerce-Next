@@ -40,6 +40,7 @@ export async function saveSettingsAction(
     description: formData.get("description"),
     contactEmail: formData.get("contactEmail"),
     contactPhone: formData.get("contactPhone"),
+    whatsappNumber: formData.get("whatsappNumber"),
     address: formData.get("address"),
     promises: promisesFrom(formData),
   });

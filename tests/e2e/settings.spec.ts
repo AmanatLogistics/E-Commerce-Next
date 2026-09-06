@@ -80,3 +80,31 @@ test("restoring brings back the details the site shipped with", async ({ page, b
   await expect(shop.getByRole("banner").getByText("AFGHAN EMERALD CREST")).toBeVisible();
   await visitor.close();
 });
+
+test("the WhatsApp button links to the configured number, and clearing it removes the button", async ({
+  page,
+  browser,
+}) => {
+  const visitor = await browser.newContext({ storageState: { cookies: [], origins: [] } });
+  const shop = await visitor.newPage();
+  await shop.goto("/");
+
+  const button = shop.getByRole("link", { name: /on WhatsApp$/ });
+  await expect(button).toBeVisible();
+  // Digits only, and a prefilled message: a link with the plus and spaces left in lands the
+  // buyer on "this number is invalid".
+  await expect(button).toHaveAttribute("href", /^https:\/\/wa\.me\/93702800277\?text=/);
+  await expect(button).toHaveAttribute("target", "_blank");
+  await expect(button).toHaveAttribute("rel", /noopener/);
+
+  // Clearing the number is how the button is switched off.
+  await page.goto("/admin/settings");
+  const form = page.locator("form").filter({ has: page.getByRole("button", { name: "Save details" }) });
+  await form.locator('[name="whatsappNumber"]').fill("");
+  await form.getByRole("button", { name: "Save details" }).click();
+  await expect(page.getByText("Saved. The whole site now uses these details.")).toBeVisible();
+
+  await shop.goto("/");
+  await expect(shop.getByRole("link", { name: /on WhatsApp$/ })).toHaveCount(0);
+  await visitor.close();
+});

@@ -230,8 +230,9 @@ To change the password afterwards, run `npm run admin` locally against the same
 ### Changing the name and contact details
 
 **Site details** in the admin panel edits the business name, short name, initials, tagline,
-description, contact email, phone, address, and the four promises shown at the top of every
-page. Saving updates the whole site immediately, including pages served from cache.
+description, contact email, phone, WhatsApp number, address, and the four promises shown at
+the top of every page. Clearing the WhatsApp number removes the floating button; every other
+field falls back to its shipped default when left blank. Saving updates the whole site immediately, including pages served from cache.
 **Restore the original details** puts back what the site shipped with.
 
 Four things stay in code, and the page says so: the currency (every stored price is an

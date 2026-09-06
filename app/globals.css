@@ -46,6 +46,17 @@
   --danger-wash: #fbeae8;
   --focus: #b08d45;
 
+  /*
+   * WhatsApp's own green, not one of ours.
+   *
+   * It is a logo colour, and the whole value of the floating button is that it is
+   * recognised before it is read. Restyling it in the shop's emerald would make it a
+   * mystery circle. The darker shade is for the hover and for the icon's own counter-shape.
+   */
+  --whatsapp: #25d366;
+  --whatsapp-hover: #1da851;
+  --whatsapp-ink: #ffffff;
+
   /* Type */
   --font-display: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
   --font-body: var(--font-jost), "Jost", "Helvetica Neue", Arial, sans-serif;
@@ -123,6 +134,11 @@
     --success-wash: #16291f;
     --danger: #d97066;
     --danger-wash: #331b18;
+
+    /* Held at the brand colour in dark mode too: a logo that changes shade stops being one. */
+    --whatsapp: #25d366;
+    --whatsapp-hover: #1da851;
+    --whatsapp-ink: #06210f;
     --focus: #d3ad5f;
 
     --elevation-1: 0 1px 3px rgb(0 0 0 / 0.4), 0 6px 20px -8px rgb(0 0 0 / 0.5);
@@ -152,6 +168,9 @@
   --color-success-wash: var(--success-wash);
   --color-danger: var(--danger);
   --color-danger-wash: var(--danger-wash);
+  --color-whatsapp: var(--whatsapp);
+  --color-whatsapp-hover: var(--whatsapp-hover);
+  --color-whatsapp-ink: var(--whatsapp-ink);
 
   --font-display: var(--font-display);
   --font-body: var(--font-body);

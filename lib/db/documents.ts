@@ -122,6 +122,7 @@ export interface SettingsDoc extends BaseDoc {
   description: string;
   contactEmail: string;
   contactPhone: string;
+  whatsappNumber: string;
   address: string;
   /** The four claims in the announcement bar and the trust strip. */
   promises: { title: string; body: string }[];

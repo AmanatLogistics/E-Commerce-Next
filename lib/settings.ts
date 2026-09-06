@@ -30,6 +30,8 @@ export interface EditableSettings {
   description: string;
   contactEmail: string;
   contactPhone: string;
+  /** Empty means no WhatsApp button. See CLEARABLE_FIELDS below. */
+  whatsappNumber: string;
   address: string;
   promises: { title: string; body: string }[];
 }
@@ -45,8 +47,18 @@ export const EDITABLE_FIELDS = [
   "description",
   "contactEmail",
   "contactPhone",
+  "whatsappNumber",
   "address",
 ] as const;
+
+/**
+ * Fields where an empty value is a real answer rather than an unfilled box.
+ *
+ * Everywhere else a blank stored value falls back to the default, so a half-completed form
+ * cannot wipe the business name off every page. But "no WhatsApp number" has to be
+ * expressible, or the button could never be switched off once the default put one there.
+ */
+const CLEARABLE_FIELDS = new Set<string>(["whatsappNumber"]);
 
 export function defaultSettings(): EditableSettings {
   return {
@@ -57,6 +69,7 @@ export function defaultSettings(): EditableSettings {
     description: siteConfig.description,
     contactEmail: siteConfig.contactEmail,
     contactPhone: siteConfig.contactPhone,
+    whatsappNumber: siteConfig.whatsappNumber,
     address: siteConfig.address,
     promises: siteConfig.promises.map((promise) => ({ ...promise })),
   };
@@ -69,9 +82,11 @@ function merge(stored: SettingsDoc | null): SiteSettings {
   const overrides: Partial<EditableSettings> = {};
   for (const field of EDITABLE_FIELDS) {
     const value = stored[field];
-    // An empty string is not an override, it is a field nobody filled in. Falling back keeps
-    // a half-completed form from blanking the business name across the whole site.
-    if (typeof value === "string" && value.trim().length > 0) overrides[field] = value.trim();
+    if (typeof value !== "string") continue;
+    // An empty string is not an override, it is a field nobody filled in — except where
+    // empty is the way to say "none at all". Falling back otherwise keeps a half-completed
+    // form from blanking the business name across the whole site.
+    if (value.trim().length > 0 || CLEARABLE_FIELDS.has(field)) overrides[field] = value.trim();
   }
   if (Array.isArray(stored.promises) && stored.promises.length > 0) {
     overrides.promises = stored.promises.map((promise) => ({
@@ -115,6 +130,7 @@ export async function readSettingsForEditing(): Promise<EditableSettings> {
       description: merged.description,
       contactEmail: merged.contactEmail,
       contactPhone: merged.contactPhone,
+      whatsappNumber: merged.whatsappNumber,
       address: merged.address,
       promises: merged.promises,
     };
