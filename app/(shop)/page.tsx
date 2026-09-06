@@ -1,4 +1,4 @@
-import Image from "next/image";
+import { GemPhoto } from "@/components/gem/gem-photo";
 import Link from "next/link";
 import { GemGrid } from "@/components/gem/gem-card";
 import { Button } from "@/components/ui/button";
@@ -68,7 +68,7 @@ export default async function HomePage() {
               aria-label={`${hero.title} — view this stone`}
             >
               <div className="relative aspect-[4/3] overflow-hidden rounded-[var(--radius-lg)] bg-plate">
-                <Image
+                <GemPhoto
                   src={hero.image}
                   alt={hero.imageAlt}
                   width={900}

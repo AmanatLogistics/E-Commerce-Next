@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import { GemPhoto } from "@/components/gem/gem-photo";
 import { useCallback, useRef, useState } from "react";
 import { cn } from "@/lib/cn";
 import type { GemImage } from "@/lib/db/documents";
@@ -70,7 +70,7 @@ export function GemGallery({ images, title }: { images: GemImage[]; title: strin
           }}
           className={cn("block size-full", zoomed ? "cursor-zoom-out" : "cursor-zoom-in")}
         >
-          <Image
+          <GemPhoto
             key={active.url}
             src={active.url}
             alt={active.alt || `${title} — view ${index + 1} of ${count}`}
@@ -123,7 +123,7 @@ export function GemGallery({ images, title }: { images: GemImage[]; title: strin
                   i === index ? "border-brand" : "hover:border-ink-muted",
                 )}
               >
-                <Image
+                <GemPhoto
                   src={image.url}
                   alt=""
                   width={160}

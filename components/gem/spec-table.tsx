@@ -2,13 +2,21 @@ import type { GemDoc } from "@/lib/db/documents";
 
 /**
  * The specification table is the substance of a stone listing — a buyer compares on these
- * fields and nothing else. Treatment is always shown, never omitted when it is "none":
- * disclosure is a trade obligation, and "untreated" is itself a selling point.
+ * fields and nothing else. Empty optional fields are dropped; treatment never is.
  */
 export function GemSpecTable({ gem }: { gem: GemDoc }) {
   const { length, width, depth } = gem.dimensionsMm;
 
-  const rows: { label: string; value: string }[] = [
+  /*
+   * Cut and clarity are optional, so a row with nothing in it is dropped rather than shown
+   * empty. Plenty of stock has neither honestly: an uncut crystal has no cut, and a
+   * translucent specimen has no clarity grade worth stating. A blank row invites the reader
+   * to wonder what is being withheld.
+   *
+   * Treatment is NEVER dropped, even when it is "none" — disclosure is a trade obligation,
+   * and "untreated" is itself the selling point.
+   */
+  const rows = [
     { label: "Reference", value: gem.reference },
     { label: "Carat weight", value: `${gem.caratWeight.toFixed(2)} ct` },
     { label: "Shape", value: gem.shape },
@@ -20,10 +28,11 @@ export function GemSpecTable({ gem }: { gem: GemDoc }) {
       value: `${length.toFixed(2)} × ${width.toFixed(2)} × ${depth.toFixed(2)} mm`,
     },
     { label: "Origin", value: gem.origin },
-    { label: "Treatment", value: gem.treatment },
-  ];
-
-  if (gem.certificate) rows.push({ label: "Certification", value: gem.certificate });
+    // Kept in place rather than appended, so it reads next to origin where a buyer expects
+    // it — and kept even when empty would have dropped it.
+    { label: "Treatment", value: gem.treatment, always: true },
+    { label: "Certification", value: gem.certificate },
+  ].filter((row: { label: string; value: string; always?: boolean }) => row.always === true || String(row.value ?? "").trim().length > 0);
 
   return (
     <table className="w-full text-left">

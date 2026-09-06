@@ -128,3 +128,25 @@ export interface SettingsDoc extends BaseDoc {
   promises: { title: string; body: string }[];
   updatedAt: Date;
 }
+
+/**
+ * An uploaded photograph, stored in the database rather than on disk or in a bucket.
+ *
+ * A serverless host has no writable disk that survives a request, so "save it to
+ * /public/uploads" does not work on Vercel — the file is gone before anyone can load it.
+ * The honest alternatives were a storage service (another account, another key, another
+ * thing to go wrong on a first deployment) or the database that is already configured. For
+ * a dealer's catalogue — hundreds of stones, a handful of images each, downscaled before
+ * they are sent — the database is the right size of answer.
+ *
+ * Bytes are base64 rather than a Buffer so the same document round-trips through both
+ * drivers: the in-process store persists to JSON, and a Buffer does not survive that.
+ */
+export interface MediaDoc extends BaseDoc {
+  contentType: string;
+  /** base64, no data: prefix. */
+  data: string;
+  /** Bytes of the decoded image, for the size cap and for reporting. */
+  size: number;
+  createdAt: Date;
+}

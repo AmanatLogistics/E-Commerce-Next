@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import { ObjectId } from "mongodb";
 import { categories, enquiries, gems } from "../db/collections";
 import { requireAdminAction } from "../auth/guards";
+import { uniqueSlug } from "../slug";
 import { toMinor } from "../money";
 import { fieldErrorsFrom, type FormState } from "../forms/state";
 import {
@@ -46,27 +47,59 @@ function gemInputFrom(formData: FormData) {
 
   return {
     title: formData.get("title"),
-    slug: formData.get("slug"),
     reference: formData.get("reference"),
     description: formData.get("description"),
     categoryId: formData.get("categoryId"),
     caratWeight: numberField(formData, "caratWeight"),
     shape: formData.get("shape"),
-    cut: formData.get("cut"),
+    /*
+     * `optional(formData, …)` rather than `.get()` for every field with a Zod default.
+     *
+     * FormData.get returns NULL for a field the form does not contain, and Zod applies a
+     * default to UNDEFINED only — null is a value, and a null fails `z.string()`. So the
+     * moment `cut` and `clarity` were taken off the form, every save would have been
+     * rejected with an error about fields the dealer could no longer even see.
+     */
+    cut: optional(formData, "cut"),
     colour: formData.get("colour"),
-    clarity: formData.get("clarity"),
+    clarity: optional(formData, "clarity"),
     lengthMm: numberField(formData, "lengthMm"),
     widthMm: numberField(formData, "widthMm"),
     depthMm: numberField(formData, "depthMm"),
     origin: formData.get("origin"),
     treatment: formData.get("treatment"),
-    certificate: formData.get("certificate") ?? "",
+    certificate: optional(formData, "certificate"),
     priceRupees,
-    status: formData.get("status") ?? "available",
+    status: optional(formData, "status") ?? "available",
     featured: formData.get("featured") === "on",
     published: formData.get("published") === "on",
     images,
   };
+}
+
+/** undefined for a field the form does not carry, so a Zod default can apply. */
+function optional(formData: FormData, name: string): string | undefined {
+  const value = formData.get(name);
+  return typeof value === "string" ? value : undefined;
+}
+
+/**
+ * Every image ends up with alt text, without the form insisting on it.
+ *
+ * A blank description used to refuse the whole save. Falling back to the stone's title with
+ * a view number is not as good as a written description, and it is enormously better than
+ * both the alternatives that were actually on offer: no listing at all, or an empty alt
+ * attribute that tells a screen reader nothing.
+ */
+function withAltText<T extends { url: string; alt: string }>(images: T[], title: string): T[] {
+  return images.map((image, index) => ({
+    ...image,
+    alt: image.alt.trim().length > 0
+      ? image.alt.trim()
+      : images.length > 1
+        ? `${title} — view ${index + 1}`
+        : title,
+  }));
 }
 
 function revalidateGemPaths(slug?: string): void {
@@ -85,23 +118,25 @@ export async function createGemAction(_prev: FormState, formData: FormData): Pro
   }
   const input = parsed.data;
 
-  const clash = await gems().findOne({
-    $or: [{ slug: input.slug }, { reference: input.reference }],
-  });
-  if (clash) {
+  // The stock reference is the dealer's own and must stay unique; the slug is ours to
+  // choose, so a clash there is settled rather than reported.
+  const referenceClash = await gems().findOne({ reference: input.reference });
+  if (referenceClash) {
     return {
       ok: false,
       message: "",
-      fieldErrors: {
-        [clash.slug === input.slug ? "slug" : "reference"]:
-          "Another stone already uses this value.",
-      },
+      fieldErrors: { reference: "Another stone already uses this reference." },
     };
   }
 
+  const slug = await uniqueSlug(input.title, async (candidate) =>
+    Boolean(await gems().findOne({ slug: candidate })),
+  );
+  const images = withAltText(input.images, input.title);
+
   const now = new Date();
   await gems().insertOne({
-    slug: input.slug,
+    slug,
     reference: input.reference,
     title: input.title,
     description: input.description,
@@ -120,14 +155,14 @@ export async function createGemAction(_prev: FormState, formData: FormData): Pro
     priceMinor: input.priceRupees === null ? null : toMinor(input.priceRupees),
     status: input.status,
     featured: input.featured,
-    images: input.images,
+    images,
     published: input.published,
     deletedAt: null,
     createdAt: now,
     updatedAt: now,
   });
 
-  revalidateGemPaths(input.slug);
+  revalidateGemPaths(slug);
   redirect("/admin/gems?created=1");
 }
 
@@ -150,28 +185,31 @@ export async function updateGemAction(_prev: FormState, formData: FormData): Pro
   const input = parsed.data;
   const _id = new ObjectId(id);
 
-  const clash = await gems().findOne({
-    _id: { $ne: _id },
-    $or: [{ slug: input.slug }, { reference: input.reference }],
-  });
+  const clash = await gems().findOne({ _id: { $ne: _id }, reference: input.reference });
   if (clash) {
     return {
       ok: false,
       message: "",
-      fieldErrors: {
-        [clash.slug === input.slug ? "slug" : "reference"]:
-          "Another stone already uses this value.",
-      },
+      fieldErrors: { reference: "Another stone already uses this reference." },
     };
   }
 
   const previous = await gems().findOne({ _id });
+  if (!previous) return { ok: false, message: "Unknown stone." };
+
+  /*
+   * The slug is NOT re-derived on an edit. It is the stone's public address, and a dealer
+   * correcting a typo in the title should not silently break every link and QR code already
+   * pointing at it. A slug only gets chosen once, when the stone is created.
+   */
+  const slug = previous.slug;
+  const images = withAltText(input.images, input.title);
 
   await gems().updateOne(
     { _id },
     {
       $set: {
-        slug: input.slug,
+        slug,
         reference: input.reference,
         title: input.title,
         description: input.description,
@@ -189,15 +227,14 @@ export async function updateGemAction(_prev: FormState, formData: FormData): Pro
         priceMinor: input.priceRupees === null ? null : toMinor(input.priceRupees),
         status: input.status,
         featured: input.featured,
-        images: input.images,
+        images,
         published: input.published,
         updatedAt: new Date(),
       },
     },
   );
 
-  revalidateGemPaths(input.slug);
-  if (previous && previous.slug !== input.slug) revalidatePath(`/gem/${previous.slug}`);
+  revalidateGemPaths(slug);
   revalidatePath(`/admin/gems/${id}`);
 
   return { ok: true, message: "Saved." };

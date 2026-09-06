@@ -3,7 +3,14 @@ import { env } from "../env";
 import { MemoryCollection } from "./memory/collection";
 import { getMemoryStore } from "./memory/store";
 import { MongoBackedCollection } from "./mongo";
-import type { CategoryDoc, EnquiryDoc, GemDoc, SettingsDoc, UserDoc } from "./documents";
+import type {
+  CategoryDoc,
+  EnquiryDoc,
+  GemDoc,
+  MediaDoc,
+  SettingsDoc,
+  UserDoc,
+} from "./documents";
 import type { BaseDoc, GemCollection, IndexSpec } from "./types";
 
 /**
@@ -48,6 +55,7 @@ export const categories = () => collection<CategoryDoc>("categories");
 export const gems = () => collection<GemDoc>("gems");
 export const enquiries = () => collection<EnquiryDoc>("enquiries");
 export const settings = () => collection<SettingsDoc>("settings");
+export const media = () => collection<MediaDoc>("media");
 
 /** Weights for the gems text index, used by both drivers so ranking intent matches. */
 export const GEM_TEXT_WEIGHTS = {

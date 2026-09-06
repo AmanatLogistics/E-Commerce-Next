@@ -6,6 +6,7 @@
  * value has no field to arrive in.
  */
 import { z } from "zod";
+import { checkImageSrc } from "../image-src";
 
 export const emailSchema = z
   .string()
@@ -127,19 +128,29 @@ const slugField = z
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase words separated by hyphens")
   .max(140);
 
-/** Admin-only. Prices are entered in whole afghanis and converted to pul on the server. */
+/**
+ * Admin-only. Prices are entered in whole afghanis and converted to pul on the server.
+ *
+ * There is no `slug` here on purpose. It used to be a required field with the rule
+ * "lowercase words separated by hyphens", and everyone typed the title into it and had the
+ * save refused. It is derived from the title now — see lib/slug.ts.
+ *
+ * `cut` and `clarity` are optional because plenty of stock genuinely has neither: an uncut
+ * crystal has no cut, and a translucent specimen has no clarity grade worth stating. They
+ * were required, so a dealer listing a rough crystal had to invent a value or give up.
+ * `treatment` stays required — that one is a disclosure obligation, not a nicety.
+ */
 export const gemInputSchema = z.object({
   title: z.string().trim().min(3, "Enter a title").max(140),
-  slug: slugField,
   reference: z.string().trim().min(2, "Enter a stock reference").max(40),
   description: z.string().trim().min(20, "Write at least a sentence or two").max(4000),
   categoryId: z.string().regex(/^[0-9a-f]{24}$/, "Choose a gem variety"),
 
   caratWeight: z.number().min(0.01, "Enter the carat weight").max(10_000),
   shape: z.string().trim().min(1, "Enter the shape").max(40),
-  cut: z.string().trim().min(1, "Enter the cut").max(40),
+  cut: z.string().trim().max(40).default(""),
   colour: z.string().trim().min(1, "Describe the colour").max(80),
-  clarity: z.string().trim().min(1, "Enter the clarity").max(40),
+  clarity: z.string().trim().max(40).default(""),
   lengthMm: z.number().min(0.1, "Enter the length").max(1000),
   widthMm: z.number().min(0.1, "Enter the width").max(1000),
   depthMm: z.number().min(0.1, "Enter the depth").max(1000),
@@ -154,16 +165,30 @@ export const gemInputSchema = z.object({
   status: gemStatusSchema.default("available"),
   featured: z.boolean().default(false),
   published: z.boolean().default(false),
+  /*
+   * `alt` is optional and filled in from the title when it is blank. It used to be required,
+   * with no asterisk and no hint saying so, which meant pasting an image URL and pressing
+   * Add produced "Describe the image" and no saved stone. Accessibility is not served by
+   * refusing the listing; it is served by there always being SOME alt text.
+   *
+   * The url rule is in lib/image-src.ts: any host, any path, but nothing that can execute.
+   */
   images: z
     .array(
       z.object({
-        url: z.string().min(1, "Each image needs a URL").max(500),
-        alt: z.string().trim().min(1, "Describe the image").max(200),
+        url: z
+          .string()
+          .min(1, "Add an image address, or upload a file")
+          .max(2000)
+          .refine((value) => checkImageSrc(value).ok, {
+            message: "Paste a normal image link (https://…) or upload the file",
+          }),
+        alt: z.string().trim().max(200).default(""),
         width: z.number().int().min(1).max(10_000).default(1200),
         height: z.number().int().min(1).max(10_000).default(1200),
       }),
     )
-    .min(1, "Add at least one image")
+    .min(1, "Add at least one photograph")
     .max(8),
 });
 
