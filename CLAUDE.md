@@ -7,7 +7,10 @@ name, shortName, initials, tagline, description, contact details, promises — i
 the `settings` collection and read through `getSiteSettings()` in `lib/settings.ts`, which
 merges overrides over the defaults and falls back to them if the database is unreachable.
 Anything user-visible reads `await getSiteSettings()`, never `siteConfig` directly; a blank
-stored value is treated as "not set" so a half-filled form cannot blank the site.
+stored value is treated as "not set" so a half-filled form cannot blank the site. The one
+exception is `whatsappNumber`, listed in `CLEARABLE_FIELDS`, where blank means "no button".
+Phone numbers reach `wa.me` through `whatsappLink()` in `lib/whatsapp.ts`, which strips to
+digits — a `+` or a space in that URL gives the buyer "this number is invalid".
 
 **Buyers enquire; they do not check out.** There is no cart, no checkout, no payment, no
 order and no customer account. A stone is one of a kind and is often priced on request, so

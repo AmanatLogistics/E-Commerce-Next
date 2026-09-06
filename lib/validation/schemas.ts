@@ -67,6 +67,8 @@ export const siteSettingsSchema = z.object({
   description: z.string().trim().min(10, "Write a sentence or two").max(320),
   contactEmail: emailSchema,
   contactPhone: z.string().trim().min(5, "Enter a phone number").max(32),
+  // Optional on purpose: an empty value is how the floating button is switched off.
+  whatsappNumber: z.string().trim().max(32).default(""),
   address: z.string().trim().min(3, "Enter an address").max(120),
   promises: z
     .array(

@@ -44,6 +44,11 @@ export const siteConfig = {
   enquiryPrefix: "AEC",
   contactEmail: "enquiries@afghanemeraldcrest.example",
   contactPhone: "+93 20 000 0000",
+  /**
+   * The floating WhatsApp button, and the shortest path a buyer has to a conversation.
+   * Clearing it in Site details removes the button; see lib/settings.ts.
+   */
+  whatsappNumber: "+93 70 280 0277",
   address: "Panjshir Valley, Afghanistan",
   /**
    * Used for metadata, structured data and the links in enquiry emails.

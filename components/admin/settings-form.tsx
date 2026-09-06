@@ -95,6 +95,13 @@ export function SettingsForm({ settings }: { settings: EditableSettings }) {
           />
         </div>
         <TextField
+          label="WhatsApp number"
+          name="whatsappNumber"
+          defaultValue={settings.whatsappNumber}
+          error={state.fieldErrors?.whatsappNumber}
+          hint="Full international form, e.g. +93 70 280 0277. Shown as the floating button on every page — leave it empty to remove the button."
+        />
+        <TextField
           label="Address"
           name="address"
           defaultValue={settings.address}

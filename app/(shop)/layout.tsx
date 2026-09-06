@@ -1,6 +1,7 @@
 import { SiteFooter } from "@/components/layout/site-footer";
 import { TrustStrip } from "@/components/layout/trust-strip";
 import { SiteHeader } from "@/components/layout/site-header";
+import { WhatsAppButton } from "@/components/layout/whatsapp-button";
 
 export default function ShopLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -14,6 +15,7 @@ export default function ShopLayout({ children }: { children: React.ReactNode }) 
       </main>
       <TrustStrip />
       <SiteFooter />
+      <WhatsAppButton />
     </div>
   );
 }
