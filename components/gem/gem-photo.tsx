@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { isRemoteImage } from "@/lib/image-src";
+import { cn } from "@/lib/cn";
 
 /**
  * One image component for photographs whose address a dealer typed.
@@ -38,6 +39,13 @@ export function GemPhoto({
   style?: React.CSSProperties;
   ariaHidden?: boolean;
 }) {
+  /*
+   * Every photograph fades in rather than snapping from the empty plate to full colour.
+   * It costs nothing — the animation runs on the compositor — and it is the difference
+   * between a catalogue that pops and one that develops.
+   */
+  const withFade = cn("photo-in", className);
+
   if (isRemoteImage(src)) {
     return (
       /* eslint-disable-next-line @next/next/no-img-element --
@@ -52,7 +60,7 @@ export function GemPhoto({
         loading={priority ? "eager" : "lazy"}
         decoding="async"
         // A broken link should leave a quiet empty frame, not a torn-page icon over the grid.
-        className={className}
+        className={withFade}
         style={style}
         aria-hidden={ariaHidden}
         // Do not leak which stone a buyer is looking at to the image's host.
@@ -69,7 +77,7 @@ export function GemPhoto({
       height={height}
       sizes={sizes}
       priority={priority}
-      className={className}
+      className={withFade}
       style={style}
       aria-hidden={ariaHidden}
     />

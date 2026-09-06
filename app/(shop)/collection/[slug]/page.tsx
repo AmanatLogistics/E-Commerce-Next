@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { BrowseView } from "@/components/gem/browse-view";
 import { EmptyState } from "@/components/ui/empty";
+import { GemGridSkeleton } from "@/components/gem/grid-skeleton";
 import { Button } from "@/components/ui/button";
 import { browseGems, getActiveCategories, getCategoryBySlug, getOrigins } from "@/lib/gems/queries";
 import { parseBrowseParams, type RawSearchParams } from "@/lib/browse-params";
@@ -26,9 +28,49 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function CategoryPage({ params, searchParams }: Props) {
   const { slug } = await params;
   const category = await getCategoryBySlug(slug);
+  // Resolved BEFORE anything streams: once a byte of a 200 has gone out, notFound() can no
+  // longer change the status, and every unknown variety would answer 200.
   if (!category) notFound();
 
-  const browseParams = parseBrowseParams(await searchParams);
+  const raw = await searchParams;
+
+  /*
+   * Changing a filter here used to hold the whole page — heading, filters and all — until
+   * the new query came back, which reads as the page reloading rather than responding.
+   * Streaming just the results keeps the page you are already looking at on screen, and the
+   * key restarts the skeleton on every filter change instead of leaving the old results up
+   * looking authoritative.
+   */
+  return (
+    <Suspense key={JSON.stringify(raw)} fallback={<CategorySkeleton name={category.name} />}>
+      <CategoryResults slug={slug} category={category} raw={raw} />
+    </Suspense>
+  );
+}
+
+function CategorySkeleton({ name }: { name: string }) {
+  return (
+    <div className="mx-auto max-w-6xl px-4 py-10">
+      <div className="mx-auto max-w-2xl text-center">
+        <h1 className="text-h1">{name}</h1>
+      </div>
+      <div className="mt-8">
+        <GemGridSkeleton />
+      </div>
+    </div>
+  );
+}
+
+async function CategoryResults({
+  slug,
+  category,
+  raw,
+}: {
+  slug: string;
+  category: NonNullable<Awaited<ReturnType<typeof getCategoryBySlug>>>;
+  raw: RawSearchParams;
+}) {
+  const browseParams = parseBrowseParams(raw);
   const [result, categories, origins] = await Promise.all([
     browseGems(browseParams, slug),
     getActiveCategories(),
