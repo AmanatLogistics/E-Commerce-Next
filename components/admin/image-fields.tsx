@@ -118,11 +118,15 @@ export function ImageFields({
   return (
     <fieldset className="rounded-[var(--radius-md)] border bg-surface p-5">
       <legend className="px-1">
-        <span className="text-h3 font-body">Photographs</span>
+        <span className="text-h3 font-body">
+          Photographs <span className="text-danger" aria-hidden="true">*</span>
+          <span className="sr-only">(required)</span>
+        </span>
       </legend>
       <p className="mt-1 max-w-2xl text-sm text-ink-muted">
-        Upload a photograph from this device, or paste the address of one that is already
-        online — either works, and you can mix them. The first one is the cover image.
+        <strong className="font-medium text-ink">At least one is needed</strong> — a stone
+        with no picture cannot be listed. Upload one from this device, or paste the address
+        of one that is already online. You can mix the two. The first is the cover image.
       </p>
 
       {error && (

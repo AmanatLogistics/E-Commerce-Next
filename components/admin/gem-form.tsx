@@ -57,31 +57,56 @@ export function GemForm({
     initialFormState,
   );
 
+  /*
+   * What a field should show: what was just typed, if the save came back refused; otherwise
+   * the stone being edited; otherwise nothing.
+   *
+   * React resets an uncontrolled <form action={…}> as soon as the action returns, so a
+   * refusal used to blank every box on the page. Re-keying the form on `attempt` remounts it
+   * with these as the new defaults, which is the only way the DOM picks them up — passing a
+   * different defaultValue to an input that is already mounted does nothing.
+   */
+  const kept = (name: string, fallback?: string | number) => {
+    const value = state.values?.[name];
+    if (typeof value === "string") return value;
+    return fallback === undefined ? undefined : String(fallback);
+  };
+
+  const keptImages = (): { url: string; alt: string }[] => {
+    const urls = state.values?.imageUrl;
+    if (!Array.isArray(urls)) return gem?.images ?? [];
+    const alts = state.values?.imageAlt;
+    return urls.map((url, index) => ({
+      url,
+      alt: (Array.isArray(alts) ? alts[index] : undefined) ?? "",
+    }));
+  };
+
   return (
-    <form action={formAction} className="flex flex-col gap-6">
+    <form key={state.attempt ?? 0} action={formAction} className="flex flex-col gap-6">
       {editing && <input type="hidden" name="gemId" value={gem.id} />}
 
       <Section title="Identity" hint="The web address is made from the title — there is nothing to fill in for it.">
         <TextField
           label="Title"
           name="title"
-          defaultValue={gem?.title}
+          defaultValue={kept("title", gem?.title)}
           required
           error={state.fieldErrors?.title}
-          hint="How the stone is named on the site."
+          hint="How it is named on the site. The web address is made from this."
         />
         <TextField
           label="Stock reference"
           name="reference"
-          defaultValue={gem?.reference}
+          defaultValue={kept("reference", gem?.reference)}
           required
           error={state.fieldErrors?.reference}
-          hint="Your own packet reference, e.g. AEC-EM-0101."
+          hint="Your own code for this stone, so you can find the packet again — whatever you already write on the envelope. Any format. It must not repeat another stone\u2019s."
         />
         <SelectField
           label="Variety"
           name="categoryId"
-          defaultValue={gem?.categoryId}
+          defaultValue={kept("categoryId", gem?.categoryId)}
           required
           error={state.fieldErrors?.categoryId}
           options={categories.map((category) => ({
@@ -93,7 +118,7 @@ export function GemForm({
           <TextAreaField
             label="Description"
             name="description"
-            defaultValue={gem?.description}
+            defaultValue={kept("description", gem?.description)}
             rows={6}
             required
             error={state.fieldErrors?.description}
@@ -103,7 +128,7 @@ export function GemForm({
       </Section>
 
       <ImageFields
-        initial={gem?.images ?? []}
+        initial={keptImages()}
         error={state.fieldErrors?.images}
       />
 
@@ -114,14 +139,14 @@ export function GemForm({
           type="number"
           step="0.01"
           inputMode="decimal"
-          defaultValue={gem?.caratWeight}
+          defaultValue={kept("caratWeight", gem?.caratWeight)}
           required
           error={state.fieldErrors?.caratWeight}
         />
         <TextField
           label="Shape"
           name="shape"
-          defaultValue={gem?.shape}
+          defaultValue={kept("shape", gem?.shape)}
           required
           error={state.fieldErrors?.shape}
           hint="Oval, cushion, natural crystal…"
@@ -129,14 +154,14 @@ export function GemForm({
         <TextField
           label="Cut"
           name="cut"
-          defaultValue={gem?.cut}
+          defaultValue={kept("cut", gem?.cut)}
           error={state.fieldErrors?.cut}
           hint="Optional — an uncut crystal has none."
         />
         <TextField
           label="Clarity"
           name="clarity"
-          defaultValue={gem?.clarity}
+          defaultValue={kept("clarity", gem?.clarity)}
           error={state.fieldErrors?.clarity}
           hint="Optional."
         />
@@ -144,7 +169,7 @@ export function GemForm({
           <TextField
             label="Colour"
             name="colour"
-            defaultValue={gem?.colour}
+            defaultValue={kept("colour", gem?.colour)}
             required
             error={state.fieldErrors?.colour}
           />
@@ -155,7 +180,7 @@ export function GemForm({
           type="number"
           step="0.01"
           inputMode="decimal"
-          defaultValue={gem?.lengthMm}
+          defaultValue={kept("lengthMm", gem?.lengthMm)}
           required
           error={state.fieldErrors?.lengthMm}
         />
@@ -165,7 +190,7 @@ export function GemForm({
           type="number"
           step="0.01"
           inputMode="decimal"
-          defaultValue={gem?.widthMm}
+          defaultValue={kept("widthMm", gem?.widthMm)}
           required
           error={state.fieldErrors?.widthMm}
         />
@@ -175,14 +200,14 @@ export function GemForm({
           type="number"
           step="0.01"
           inputMode="decimal"
-          defaultValue={gem?.depthMm}
+          defaultValue={kept("depthMm", gem?.depthMm)}
           required
           error={state.fieldErrors?.depthMm}
         />
         <TextField
           label="Origin"
           name="origin"
-          defaultValue={gem?.origin}
+          defaultValue={kept("origin", gem?.origin)}
           required
           error={state.fieldErrors?.origin}
           hint="e.g. Panjshir Valley, Afghanistan"
@@ -191,17 +216,17 @@ export function GemForm({
           <TextField
             label="Treatment"
             name="treatment"
-            defaultValue={gem?.treatment}
+            defaultValue={kept("treatment", gem?.treatment)}
             required
             error={state.fieldErrors?.treatment}
-            hint="Required. Write “None (untreated)” when there is none — disclosure is not optional."
+            hint="Has the stone been heated, oiled, dyed or filled? Say so here. If nothing was done to it, write “None (untreated)” — that is a selling point, not a blank."
           />
         </Wide>
         <Wide>
           <TextField
             label="Certification"
             name="certificate"
-            defaultValue={gem?.certificate}
+            defaultValue={kept("certificate", gem?.certificate)}
             error={state.fieldErrors?.certificate}
             hint="Optional. Lab and report number, or a note that one is available."
           />
@@ -214,14 +239,14 @@ export function GemForm({
           name="priceMajor"
           type="number"
           inputMode="numeric"
-          defaultValue={gem?.priceMajor ?? ""}
+          defaultValue={kept("priceMajor", gem?.priceMajor ?? "")}
           error={state.fieldErrors?.priceMajor}
           hint="Leave blank for “price on request”."
         />
         <SelectField
           label="Status"
           name="status"
-          defaultValue={gem?.status ?? "available"}
+          defaultValue={kept("status", gem?.status ?? "available")}
           options={[
             { value: "available", label: "Available" },
             { value: "reserved", label: "Reserved" },
@@ -232,12 +257,12 @@ export function GemForm({
           <div className="flex flex-col gap-3">
           <Checkbox
             name="published"
-            defaultChecked={gem?.published ?? false}
+            defaultChecked={state.values ? state.values.published === "on" : (gem?.published ?? false)}
             label="Published — visible on the site"
           />
           <Checkbox
             name="featured"
-            defaultChecked={gem?.featured ?? false}
+            defaultChecked={state.values ? state.values.featured === "on" : (gem?.featured ?? false)}
             label="Featured — show under “Selected stones” on the home page"
           />
           </div>
