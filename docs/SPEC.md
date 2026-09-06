@@ -76,7 +76,7 @@ Nothing else in the app reads the cookie or hashes anything.
 
 ## 3. Data model
 
-Money is an integer count of pul (100 pul = 1 AFN). No floats, ever, including on the
+Money is an integer count of cents (100 cents = 1 USD). No floats, ever, including on the
 wire. Formatting happens only at render.
 
 ### `users`

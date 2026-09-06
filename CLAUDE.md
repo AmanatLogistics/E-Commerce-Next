@@ -1,6 +1,6 @@
 # Project: Afghan Emerald Crest
 
-A loose-gemstone dealer's site: public catalogue + private admin panel. Based in Afghanistan; AFN, English.
+A loose-gemstone dealer's site: public catalogue + private admin panel. Based in Afghanistan; priced in USD, English.
 Identity has two halves. `lib/site-config.ts` holds the DEFAULTS and the fields that stay
 in code (`currency`, `formatLocale`, `locale`, `enquiryPrefix`, `url`). The editable half —
 name, shortName, initials, tagline, description, contact details, promises — is stored in
@@ -51,9 +51,11 @@ the sale starts as a conversation. Do not add e-commerce machinery back without 
   never suspend or delete yourself, nor the last account that can still sign in.
 - Env values must be quoted in `.env.local`: dotenv cuts an unquoted value at the first
   `#`. Both scripts refuse a truncated `SEED_ADMIN_PASSWORD` rather than storing it.
-- Prices are integers in MINOR units — pul, 100 to the afghani. Never floats. The helpers
+- Prices are integers in MINOR units — cents, 100 to the dollar. Never floats. The helpers
   in `lib/money.ts` are `toMinor`/`toMajor`, named for the unit's role and not the currency,
-  because the shop has changed currency once already. `priceMinor: null` means "price on
+  because the shop has changed currency twice already (PKR, AFN, USD) without either helper
+  changing. Switching currency RE-LABELS stored numbers, it does not convert them — any
+  change means re-pricing the data too. `priceMinor: null` means "price on
   request" and must render as that, never as a blank or a zero.
 - `siteConfig.locale` ("en-AF") is identity, for the html lang attribute. `formatLocale`
   ("en-GB") is what Intl formats with, because ICU has no en-AF data and silently falls back

@@ -129,7 +129,7 @@ const slugField = z
   .max(140);
 
 /**
- * Admin-only. Prices are entered in whole afghanis and converted to pul on the server.
+ * Admin-only. Prices are entered in whole dollars and converted to cents on the server.
  *
  * There is no `slug` here on purpose. It used to be a required field with the rule
  * "lowercase words separated by hyphens", and everyone typed the title into it and had the
@@ -159,8 +159,12 @@ export const gemInputSchema = z.object({
   treatment: z.string().trim().min(2, "State the treatment, or 'None (unheated)'").max(120),
   certificate: z.string().trim().max(120).default(""),
 
-  /** Blank means "price on request", which is normal for higher-value stones. */
-  priceRupees: z.number().int().min(0).max(1_000_000_000).nullable().default(null),
+  /**
+   * Whole units of the configured currency — dollars today, and named for that role
+   * rather than for the currency, since this field has outlived two of them.
+   * Blank means "price on request", which is normal for higher-value stones.
+   */
+  priceMajor: z.number().int().min(0).max(1_000_000_000).nullable().default(null),
 
   status: gemStatusSchema.default("available"),
   featured: z.boolean().default(false),

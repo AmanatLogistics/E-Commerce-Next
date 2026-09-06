@@ -7,7 +7,7 @@ import { contactSchema, enquirySchema, gemInputSchema } from "../../lib/validati
 import { siteConfig } from "../../lib/site-config";
 
 describe("money", () => {
-  it("stores whole afghanis as integer pul", () => {
+  it("stores whole dollars as integer cents", () => {
     assert.equal(toMinor(125_000), 12_500_000);
     assert.equal(toMinor(1), 100);
     assert.equal(toMajor(12_500_000), 125_000);
@@ -22,20 +22,25 @@ describe("money", () => {
   it("formats in the store's configured currency, not a hard-coded one", () => {
     const formatted = formatMoney(toMinor(125_000));
     assert.match(formatted, /125,000/);
+    // The symbol a shop that quotes in one currency should show.
+    assert.match(formatted, /^\$/);
     // Whatever siteConfig says, rather than a currency pasted into this assertion — the
     // shop has changed currency once already and this test should not need editing again.
     const expected = new Intl.NumberFormat(siteConfig.formatLocale, {
       style: "currency",
       currency: siteConfig.currency,
+      // Matching formatMoney: en-GB would otherwise write "US$125,000", disambiguating a
+      // dollar for a reader who is not choosing between currencies.
+      currencyDisplay: "narrowSymbol",
       maximumFractionDigits: 0,
       minimumFractionDigits: 0,
     }).format(125_000);
     assert.equal(formatted, expected);
   });
 
-  it("does not format afghanis as rupees", () => {
-    // The rename went through several files; this is the one that would be user-visible.
-    assert.equal(/Rs|₨|PKR/.test(formatMoney(toMinor(125_000))), false);
+  it("does not format the price in a currency the shop left behind", () => {
+    // Two currency changes have been through here; this is the one that would be visible.
+    assert.equal(/Rs|₨|PKR|AFN|؋/.test(formatMoney(toMinor(125_000))), false);
   });
 });
 
@@ -139,7 +144,7 @@ describe("gem input validation", () => {
     assert.ok(parsed.success);
     assert.equal(parsed.data.published, false);
     assert.equal(parsed.data.status, "available");
-    assert.equal(parsed.data.priceRupees, null, "a blank price means price on request");
+    assert.equal(parsed.data.priceMajor, null, "a blank price means price on request");
   });
 
   it("requires a treatment disclosure", () => {

@@ -39,7 +39,14 @@ export const siteConfig = {
    * separately below, so this decides ordering and separators only.
    */
   formatLocale: "en-GB",
-  currency: "AFN",
+  /**
+   * The international coloured-stone trade quotes in dollars, and this shop offers insured
+   * worldwide delivery — a buyer in Bangkok or Jaipur should not have to convert.
+   *
+   * en-GB would render this "US$2,600", which is correct and reads as foreign; lib/money.ts
+   * asks for the narrow symbol so it comes out "$2,600" while dates stay day-first.
+   */
+  currency: "USD",
   /** Enquiry references look like AEC-7Q2M4X. */
   enquiryPrefix: "AEC",
   contactEmail: "enquiries@afghanemeraldcrest.example",

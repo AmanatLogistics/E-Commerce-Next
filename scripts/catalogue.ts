@@ -7,7 +7,7 @@
  * The individual stones — weights, dimensions, references and prices — are invented
  * demonstration stock and are not real inventory or real valuations.
  *
- * Prices are whole afghanis here and converted to pul by the seed script.
+ * Prices are whole dollars here and converted to cents by the seed script.
  * `price: null` means "price on request", which is normal for higher-value stones.
  */
 
@@ -126,7 +126,7 @@ export const GEMS: SeedGem[] = [
     origin: "Khenj, Panjshir Valley, Afghanistan",
     treatment: "Minor clear oil",
     certificate: "",
-    price: 185000,
+    price: 2600,
     status: "available",
     featured: false,
     description:
@@ -146,7 +146,7 @@ export const GEMS: SeedGem[] = [
     origin: "Panjshir Valley, Afghanistan",
     treatment: "Minor clear oil",
     certificate: "",
-    price: 240000,
+    price: 3400,
     status: "reserved",
     featured: false,
     description:
@@ -166,7 +166,7 @@ export const GEMS: SeedGem[] = [
     origin: "Panjshir Valley, Afghanistan",
     treatment: "None (untreated)",
     certificate: "",
-    price: 320000,
+    price: 4500,
     status: "available",
     featured: true,
     description:
@@ -208,7 +208,7 @@ export const GEMS: SeedGem[] = [
     origin: "Jegdalek, Kabul Province, Afghanistan",
     treatment: "None (unheated)",
     certificate: "",
-    price: 96000,
+    price: 1350,
     status: "available",
     featured: false,
     description:
@@ -228,7 +228,7 @@ export const GEMS: SeedGem[] = [
     origin: "Jegdalek, Kabul Province, Afghanistan",
     treatment: "None (unheated)",
     certificate: "",
-    price: 142000,
+    price: 2000,
     status: "sold",
     featured: false,
     description:
@@ -270,7 +270,7 @@ export const GEMS: SeedGem[] = [
     origin: "Badakhshan, Afghanistan",
     treatment: "None (untreated)",
     certificate: "",
-    price: 168000,
+    price: 2400,
     status: "available",
     featured: false,
     description:
@@ -290,7 +290,7 @@ export const GEMS: SeedGem[] = [
     origin: "Badakhshan, Afghanistan",
     treatment: "None (untreated)",
     certificate: "",
-    price: 74000,
+    price: 1050,
     status: "available",
     featured: false,
     description:
@@ -332,7 +332,7 @@ export const GEMS: SeedGem[] = [
     origin: "Chapa Dara, Kunar, Afghanistan",
     treatment: "None (unheated)",
     certificate: "",
-    price: 128000,
+    price: 1800,
     status: "available",
     featured: false,
     description:
@@ -352,7 +352,7 @@ export const GEMS: SeedGem[] = [
     origin: "Chapa Dara, Kunar, Afghanistan",
     treatment: "None (untreated)",
     certificate: "",
-    price: 88000,
+    price: 1250,
     status: "available",
     featured: false,
     description:
@@ -372,7 +372,7 @@ export const GEMS: SeedGem[] = [
     origin: "Paprok, Nuristan, Afghanistan",
     treatment: "None (unheated)",
     certificate: "",
-    price: 156000,
+    price: 2200,
     status: "available",
     featured: false,
     description:
@@ -414,7 +414,7 @@ export const GEMS: SeedGem[] = [
     origin: "Mawi, Laghman, Afghanistan",
     treatment: "None (untreated)",
     certificate: "",
-    price: 118000,
+    price: 1650,
     status: "available",
     featured: false,
     description:
@@ -434,7 +434,7 @@ export const GEMS: SeedGem[] = [
     origin: "Mawi, Laghman, Afghanistan",
     treatment: "None (untreated)",
     certificate: "",
-    price: 64000,
+    price: 900,
     status: "available",
     featured: false,
     description:
@@ -456,7 +456,7 @@ export const GEMS: SeedGem[] = [
     origin: "Paprok, Nuristan, Afghanistan",
     treatment: "None (untreated)",
     certificate: "",
-    price: 92000,
+    price: 1300,
     status: "available",
     featured: true,
     description:
@@ -476,7 +476,7 @@ export const GEMS: SeedGem[] = [
     origin: "Nilaw, Laghman, Afghanistan",
     treatment: "None (untreated)",
     certificate: "",
-    price: 58000,
+    price: 800,
     status: "available",
     featured: false,
     description:
@@ -496,7 +496,7 @@ export const GEMS: SeedGem[] = [
     origin: "Paprok, Nuristan, Afghanistan",
     treatment: "None (untreated)",
     certificate: "",
-    price: 42000,
+    price: 600,
     status: "available",
     featured: false,
     description:
@@ -538,7 +538,7 @@ export const GEMS: SeedGem[] = [
     origin: "Pech Valley, Kunar, Afghanistan",
     treatment: "None (untreated)",
     certificate: "",
-    price: 46000,
+    price: 650,
     status: "available",
     featured: false,
     description:
@@ -558,7 +558,7 @@ export const GEMS: SeedGem[] = [
     origin: "Pech Valley, Kunar, Afghanistan",
     treatment: "None (untreated)",
     certificate: "",
-    price: 21000,
+    price: 300,
     status: "available",
     featured: false,
     description:

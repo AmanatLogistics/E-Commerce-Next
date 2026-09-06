@@ -43,7 +43,8 @@ Three of these turned into hard rules in the code:
 
 ## B. Why the catalogue is Afghan material
 
-The shop is based in the Panjshir valley and prices in afghanis, and Afghanistan is a
+The shop is based in the Panjshir valley and prices in US dollars — the currency the
+international coloured-stone trade quotes in — and Afghanistan is a
 genuine source for everything it sells. The demo catalogue is built from documented deposits
 rather than invented ones:
 
